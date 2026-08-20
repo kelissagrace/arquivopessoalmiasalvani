@@ -120,5 +120,21 @@ input{
     font-size:16px;
   }
 }
+
+/* ===== LOADING CENTRALIZADO NO DESKTOP ===== */
+@media (min-width: 561px) and (min-height: 561px){
+  body{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-height:100vh !important;
+    min-height:100dvh !important;
+    padding:24px !important;
+  }
+  .loader{
+    margin:0 auto !important;
+    width:min(600px,88vw) !important;
+  }
+}
 </style></head><body><div class="loader">&gt; VERIFICANDO CHAVE...<br>&gt; CRUZANDO ARQUIVOS...<br>&gt; SINAL INSTÁVEL...<br>&gt; RECUPERANDO PACOTES...<br>&gt; VALIDANDO IDENTIDADE...<div class="line"><span></span></div></div>
 <script>setInterval(()=>{if(Math.random()>.6){document.body.style.filter="contrast(1.8) brightness(.7)";setTimeout(()=>document.body.style.filter="",100)}},420);setTimeout(()=>location.replace(sessionStorage.getItem("phantasma_resultado")==="ok"?"anuncio.html":"erro.html"),4200)</script></body></html>
