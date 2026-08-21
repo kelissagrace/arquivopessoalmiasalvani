@@ -118,6 +118,285 @@ input{
     font-size:16px;
   }
 }
+
+/* ===== PHANTASMA // MATRIX AMBIENTE ===== */
+#matrixBg{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+  opacity:.18;
+}
+.wrap{
+  position:relative;
+  z-index:2;
+}
+.card{
+  animation:bootIn .85s steps(2) both,flick 5s infinite 1s;
+}
+@keyframes bootIn{
+  0%{opacity:0;transform:scale(.985) translateY(8px);filter:blur(3px) contrast(1.8)}
+  28%{opacity:.45;transform:translateX(5px)}
+  45%{opacity:.78;transform:translateX(-4px)}
+  65%{opacity:.95;transform:translateX(2px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+
+.transition{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  place-items:center;
+  padding:20px;
+  background:#000;
+  overflow:hidden;
+}
+.transition.show{
+  display:grid;
+  animation:transitionIn .35s steps(2) both;
+}
+.transition canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:.65;
+}
+.transition:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(to bottom,rgba(255,255,255,.055) 0 1px,transparent 2px 5px),
+    radial-gradient(circle at center,transparent 0 25%,rgba(0,0,0,.55) 67%,#000 100%);
+  animation:scanTransition .12s steps(2) infinite;
+}
+.transition:after{
+  content:"";
+  position:absolute;
+  inset:-10%;
+  z-index:3;
+  pointer-events:none;
+  opacity:0;
+  background:
+    linear-gradient(90deg,
+      transparent 0 17%,
+      rgba(49,230,255,.18) 18% 20%,
+      transparent 21% 47%,
+      rgba(255,62,88,.16) 48% 50%,
+      transparent 51%);
+  animation:tearTransition .9s steps(2) infinite;
+}
+.transition-box{
+  position:relative;
+  z-index:5;
+  width:min(780px,100%);
+  text-align:left;
+  border:1px solid rgba(109,255,152,.18);
+  background:rgba(0,4,2,.52);
+  padding:clamp(24px,5vw,48px);
+  box-shadow:0 0 55px rgba(109,255,152,.08);
+}
+.transition-line{
+  min-height:1.8em;
+  margin:.7em 0;
+  color:rgba(233,255,240,.68);
+  font-size:clamp(14px,2.4vw,20px);
+  letter-spacing:.06em;
+}
+.transition-line.active{
+  color:var(--g);
+  text-shadow:2px 0 rgba(255,62,88,.65),-2px 0 rgba(49,230,255,.55);
+  animation:lineGlitch .22s steps(2) infinite;
+}
+.transition-title{
+  color:var(--g);
+  font-size:clamp(24px,5vw,48px);
+  line-height:1.05;
+  margin-bottom:20px;
+  text-shadow:2px 0 var(--r),-2px 0 var(--c);
+}
+@keyframes transitionIn{
+  from{opacity:0;filter:contrast(2) blur(3px)}
+  to{opacity:1;filter:none}
+}
+@keyframes scanTransition{50%{transform:translateY(2px)}}
+@keyframes tearTransition{
+  0%,55%,100%{opacity:0;transform:none}
+  56%{opacity:1;transform:translateX(5%) skewX(-4deg)}
+  60%{opacity:.35;transform:translateX(-4%)}
+}
+@keyframes lineGlitch{
+  0%,70%,100%{transform:none}
+  72%{transform:translateX(4px)}
+  78%{transform:translateX(-3px)}
+}
+
 </style></head><body>
-<main class="wrap"><section class="card"><div class="tag">Transmissão interceptada // origem desconhecida</div><h1 class="glitch">VOCÊ<br>CHEGOU.</h1><p>Seguir um código é fácil. Entender o que existe por trás dele é outra história.</p><div class="quote">“Vocês conhecem as histórias. Eu conheço o que foi escondido.”</div><p>Existe um arquivo esperando por alguém capaz de abri-lo.</p><div class="signal">SINAL: <span class="unstable">INSTÁVEL</span> // TRACE: FALHOU</div><a class="btn" href="charada.html">Continuar</a><div class="small">PHANTASMA // conexão temporária</div></section></main>
-<script>setInterval(()=>{if(Math.random()>.72){document.body.style.transform=`translateX(${Math.random()*4-2}px)`;setTimeout(()=>document.body.style.transform="",80)}},700)</script></body></html>
+<canvas id="matrixBg" aria-hidden="true"></canvas>
+
+<main class="wrap">
+  <section class="card">
+    <div class="tag">Transmissão interceptada // origem desconhecida</div>
+    <h1 class="glitch">VOCÊ<br>CHEGOU.</h1>
+
+    <p>Seguir um código é fácil. Entender o que existe por trás dele é outra história.</p>
+
+    <div class="quote">“Vocês conhecem as histórias. Eu conheço o que foi escondido.”</div>
+
+    <p>Existe um arquivo esperando por alguém capaz de abri-lo.</p>
+    <p><strong>Uma tentativa.</strong></p>
+    <p>Tente não me fazer perder o interesse.</p>
+
+    <div class="signal">SINAL: <span class="unstable">INSTÁVEL</span> // TRACE: FALHOU</div>
+
+    <button id="continueBtn">Continuar</button>
+
+    <div class="small">PHANTASMA // conexão temporária</div>
+  </section>
+</main>
+
+<div class="transition" id="transition" aria-hidden="true">
+  <canvas id="transitionMatrix"></canvas>
+  <div class="transition-box">
+    <div class="transition-title">ACESSANDO...</div>
+    <div class="transition-line" id="line1">&gt; ESTABELECENDO CONEXÃO...</div>
+    <div class="transition-line" id="line2">&gt; LOCALIZANDO ARQUIVO...</div>
+    <div class="transition-line" id="line3">&gt; ACESSO PARCIAL CONCEDIDO...</div>
+    <div class="transition-line" id="line4">&gt; VOCÊ TEM UMA CHANCE.</div>
+  </div>
+</div>
+
+<script>
+const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/\\\\[]{}";
+const matrixBg=document.getElementById("matrixBg");
+const bgCtx=matrixBg.getContext("2d");
+const fs=15;
+let bgDrops=[];
+
+function resizeBackgroundMatrix(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  matrixBg.width=Math.floor(innerWidth*dpr);
+  matrixBg.height=Math.floor(innerHeight*dpr);
+  matrixBg.style.width=innerWidth+"px";
+  matrixBg.style.height=innerHeight+"px";
+  bgCtx.setTransform(dpr,0,0,dpr,0,0);
+  bgDrops=Array.from(
+    {length:Math.ceil(innerWidth/fs)},
+    (_,i)=>bgDrops[i] ?? Math.random()*-45
+  );
+}
+
+function backgroundMatrixLoop(){
+  bgCtx.fillStyle="rgba(0,0,0,.105)";
+  bgCtx.fillRect(0,0,innerWidth,innerHeight);
+  bgCtx.font=fs+"px monospace";
+
+  for(let i=0;i<bgDrops.length;i++){
+    bgCtx.fillStyle=Math.random()>.97
+      ?"rgba(220,255,228,.42)"
+      :"rgba(109,255,152,.27)";
+
+    bgCtx.fillText(
+      glyphs[(Math.random()*glyphs.length)|0],
+      i*fs,
+      bgDrops[i]*fs
+    );
+
+    if(bgDrops[i]*fs>innerHeight && Math.random()>.975){
+      bgDrops[i]=0;
+    }
+    bgDrops[i]+=.25+Math.random()*.2;
+  }
+
+  requestAnimationFrame(backgroundMatrixLoop);
+}
+
+resizeBackgroundMatrix();
+addEventListener("resize",resizeBackgroundMatrix,{passive:true});
+backgroundMatrixLoop();
+
+const continueBtn=document.getElementById("continueBtn");
+const transition=document.getElementById("transition");
+const transitionCanvas=document.getElementById("transitionMatrix");
+const transitionCtx=transitionCanvas.getContext("2d");
+const lines=[
+  document.getElementById("line1"),
+  document.getElementById("line2"),
+  document.getElementById("line3"),
+  document.getElementById("line4")
+];
+
+let transitionAnimation=null;
+
+function startTransitionMatrix(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  transitionCanvas.width=Math.floor(innerWidth*dpr);
+  transitionCanvas.height=Math.floor(innerHeight*dpr);
+  transitionCanvas.style.width=innerWidth+"px";
+  transitionCanvas.style.height=innerHeight+"px";
+  transitionCtx.setTransform(dpr,0,0,dpr,0,0);
+
+  const size=16;
+  const drops=Array.from(
+    {length:Math.ceil(innerWidth/size)},
+    ()=>Math.random()*-35
+  );
+
+  function frame(){
+    transitionCtx.fillStyle="rgba(0,0,0,.13)";
+    transitionCtx.fillRect(0,0,innerWidth,innerHeight);
+    transitionCtx.font=size+"px monospace";
+
+    for(let i=0;i<drops.length;i++){
+      transitionCtx.fillStyle=Math.random()>.96
+        ?"rgba(230,255,236,.72)"
+        :"rgba(109,255,152,.52)";
+
+      transitionCtx.fillText(
+        glyphs[(Math.random()*glyphs.length)|0],
+        i*size,
+        drops[i]*size
+      );
+
+      if(drops[i]*size>innerHeight && Math.random()>.965){
+        drops[i]=0;
+      }
+      drops[i]+=.65+Math.random()*.42;
+    }
+
+    transitionAnimation=requestAnimationFrame(frame);
+  }
+
+  cancelAnimationFrame(transitionAnimation);
+  frame();
+}
+
+continueBtn.addEventListener("click",()=>{
+  continueBtn.disabled=true;
+  transition.classList.add("show");
+  transition.setAttribute("aria-hidden","false");
+  startTransitionMatrix();
+
+  lines.forEach(line=>line.classList.remove("active"));
+
+  const timings=[500,1300,2200,3100];
+
+  timings.forEach((time,index)=>{
+    setTimeout(()=>{
+      lines.forEach(line=>line.classList.remove("active"));
+      lines[index].classList.add("active");
+    },time);
+  });
+
+  setTimeout(()=>{
+    location.href="charada.html";
+  },4300);
+});
+</script>
+</body></html>
