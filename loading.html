@@ -52,6 +52,26 @@ button:hover{background:var(--g);color:#001407}
 .screen.show{display:block;animation:boot .8s steps(2) both}@keyframes boot{0%{opacity:0;transform:translateY(6px) scale(.99);filter:blur(3px)}35%{opacity:.6;transform:translateX(4px)}55%{transform:translateX(-3px)}100%{opacity:1;transform:none;filter:none}}
 @media(max-width:560px){body{display:block;padding:14px}.wrap{margin:14px auto}.card{padding:26px 20px}}
 
+
+.sound-toggle{
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  z-index:220;
+  width:auto;
+  min-width:118px;
+  margin:0;
+  padding:9px 12px;
+  min-height:0;
+  font-size:11px;
+  background:rgba(0,0,0,.78);
+  border-color:rgba(109,255,152,.45);
+  color:var(--g);
+}
+.sound-toggle.sound-on{
+  box-shadow:0 0 18px rgba(109,255,152,.16);
+}
+
 /* ===== TOMADA DE CONTROLE // PHANTASMA ===== */
 #takeover{
   position:fixed;
@@ -212,6 +232,7 @@ body.hijacked .wrap{
 </style>
 </head>
 <body>
+<button id="soundToggle" class="sound-toggle" type="button">SOM: ATIVAR</button>
 
 <canvas id="matrixBg"></canvas>
 
@@ -262,6 +283,80 @@ body.hijacked .wrap{
 
 <script>
 
+/*
+  ============================================================
+  TEMPO DAS ANIMAÇÕES — LOADING
+  1000 = 1 segundo. Ex.: 4500 = 4,5 segundos.
+  ============================================================
+*/
+const TIMING = {
+  verificacao: 3600,       // tempo em "VALIDANDO"
+  corretoNaTela: 4000,     // quanto tempo "CORRETO" fica visível
+  erroPermissao: 650,      // 1º erro da invasão
+  rastreio: 1350,          // "RASTREANDO ORIGEM"
+  controle: 2050,          // "CONTROLE DA SESSÃO..."
+  invasaoTotal: 3000,      // duração total da tomada de controle
+  entradaProvocacao: 1900  // glitch forte ao entrar em "VOCÊ ACHOU..."
+};
+
+/*
+  SOM:
+  Os arquivos ficam na pasta /sons da RAIZ do repositório.
+*/
+const SOUND_PATH = "sons/";
+const soundFiles = {
+  acesso: SOUND_PATH+"acesso.wav",
+  glitch: SOUND_PATH+"glitch.wav",
+  erro: SOUND_PATH+"erro.wav"
+};
+
+let soundEnabled = localStorage.getItem("phantasma_sound") !== "off";
+let audioUnlocked = false;
+const soundToggle = document.getElementById("soundToggle");
+
+function updateSoundButton(){
+  if(!audioUnlocked){
+    soundToggle.textContent = soundEnabled ? "SOM: ATIVAR" : "SOM: OFF";
+  }else{
+    soundToggle.textContent = soundEnabled ? "SOM: ON" : "SOM: OFF";
+  }
+  soundToggle.classList.toggle("sound-on", soundEnabled && audioUnlocked);
+}
+
+function playSound(name, volume=.45){
+  if(!soundEnabled || !audioUnlocked || !soundFiles[name]) return;
+  const audio = new Audio(soundFiles[name]);
+  audio.volume = volume;
+  audio.play().catch(()=>{});
+}
+
+function unlockAudio(){
+  audioUnlocked = true;
+  updateSoundButton();
+}
+
+soundToggle.addEventListener("click",()=>{
+  audioUnlocked = true;
+  soundEnabled = !soundEnabled;
+  // Se ainda não estava ativo, o primeiro clique deve ativar, não desligar.
+  if(soundToggle.textContent === "SOM: ATIVAR"){
+    soundEnabled = true;
+  }
+  localStorage.setItem("phantasma_sound", soundEnabled ? "on" : "off");
+  updateSoundButton();
+  if(soundEnabled) playSound("acesso", .30);
+});
+
+document.addEventListener("pointerdown",(event)=>{
+  // Se o primeiro clique for no próprio botão de som,
+  // deixamos o click dele cuidar da ativação.
+  if(event.target===soundToggle) return;
+  if(soundEnabled) unlockAudio();
+},{once:true,capture:true});
+
+updateSoundButton();
+
+
 const matrixBg=document.getElementById("matrixBg");
 const mctx=matrixBg.getContext("2d");
 const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/\\\\[]{}";
@@ -296,12 +391,13 @@ matrixLoop();
 const result=sessionStorage.getItem("phantasma_resultado");
 
 if(result!=="ok"){
-  setTimeout(()=>location.replace("erro.html"),3600);
+  setTimeout(()=>location.replace("erro.html"), TIMING.verificacao);
 }else{
   setTimeout(()=>{
     document.getElementById("verify").classList.remove("show");
     document.getElementById("correct").classList.add("show");
-  },3600);
+    playSound("acesso", .36);
+  }, TIMING.verificacao);
 
   setTimeout(()=>{
     document.getElementById("correct").classList.remove("show");
@@ -325,18 +421,21 @@ if(result!=="ok"){
       takeoverCode.innerHTML+=
         '<br><span class="danger">&gt; ERRO: PERMISSÃO REVOGADA.</span>'+
         '<br><span class="danger">&gt; ERRO: PROCESSO DESCONHECIDO INJETADO.</span>';
-    },650);
+      playSound("erro", .45);
+    }, TIMING.erroPermissao);
 
     setTimeout(()=>{
       takeoverCode.innerHTML+=
         '<br><span class="cyan">&gt; RASTREANDO ORIGEM...</span>'+
         '<br><span class="danger">&gt; ORIGEM NÃO ENCONTRADA.</span>';
       takeoverTitle.textContent="VOCÊ REALMENTE ACREDITOU?";
-    },1350);
+      playSound("glitch", .34);
+    }, TIMING.rastreio);
 
     setTimeout(()=>{
       takeoverSub.textContent="CONTROLE DA SESSÃO TRANSFERIDO // PHANTASMA";
-    },2050);
+      playSound("glitch", .42);
+    }, TIMING.controle);
 
     setTimeout(()=>{
       takeover.classList.remove("show");
@@ -347,10 +446,10 @@ if(result!=="ok"){
 
       setTimeout(()=>{
         trap.classList.remove("aggressive-entry");
-      },1900);
-    },3000);
+      }, TIMING.entradaProvocacao);
+    }, TIMING.invasaoTotal);
 
-  },7600);
+  }, TIMING.verificacao + TIMING.corretoNaTela);
 }
 
 document.getElementById("next").addEventListener("click",()=>{
