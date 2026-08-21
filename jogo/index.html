@@ -661,11 +661,13 @@ const SOUND_FILES = {
   erro: SOUND_PATH+"erro.wav",
   countdown: SOUND_PATH+"countdown.wav",
   agora: SOUND_PATH+"agora.wav",
-  tiro: SOUND_PATH+"tiro.wav"
+  tiro: SOUND_PATH+"tiro.wav",
+  ambiente: SOUND_PATH+"ambiente.wav"
 };
 
 let soundEnabled = localStorage.getItem("phantasma_sound") !== "off";
-let audioUnlocked = false;
+let audioUnlocked = sessionStorage.getItem("phantasma_audio_unlocked")==="1";
+let ambientAudio=null;
 
 
 const canvas=document.getElementById("game");
@@ -741,9 +743,21 @@ function updateSoundButton(){
   soundToggle.classList.toggle("sound-on",soundEnabled && audioUnlocked);
 }
 
+function ensureAmbient(){
+  if(!soundEnabled || !audioUnlocked) return;
+  if(!ambientAudio){
+    ambientAudio=new Audio(SOUND_FILES.ambiente);
+    ambientAudio.loop=true;
+    ambientAudio.volume=.09;
+  }
+  ambientAudio.play().catch(()=>{});
+}
+
 function unlockAudio(){
   audioUnlocked=true;
+  sessionStorage.setItem("phantasma_audio_unlocked","1");
   updateSoundButton();
+  ensureAmbient();
 }
 
 function playSound(name,volume=.4){
@@ -765,6 +779,8 @@ soundToggle.addEventListener("click",()=>{
   }
 
   localStorage.setItem("phantasma_sound",soundEnabled?"on":"off");
+  if(!soundEnabled && ambientAudio) ambientAudio.pause();
+  if(soundEnabled) ensureAmbient();
   updateSoundButton();
   if(soundEnabled) playSound("acesso",.28);
 });
@@ -777,6 +793,7 @@ document.addEventListener("pointerdown",(event)=>{
 },{once:true,capture:true});
 
 updateSoundButton();
+if(soundEnabled && audioUnlocked)setTimeout(ensureAmbient,80);
 
 let ambientAnim=null;
 
