@@ -540,7 +540,7 @@ button:hover{
         <h2 id="winTitle">QUE IRRITANTE.</h2>
         <p id="finalMessage"></p>
         <p id="rewardMessage"></p>
-        <button id="revealBtn">ABRIR ARQUIVO DO CORVO</button>
+        <button id="revealBtn">ABRIR ARQUIVO CONFIDENCIAL</button>
       </div>
     </div>
 
@@ -577,16 +577,22 @@ const CHARACTERS = [
 */
 const PHASES = [
   {
+const PHASES = [
+  {
     quota:6,
     speedMin:70,
     speedMax:190,
     spawnMin:.90,
     spawnMax:1.35,
     size:1.12,
-    intro:"Vamos devagar. Não quero que você se machuque tentando acompanhar.",
+
+    intro:"Vamos começar devagar. Vocês fãs costumam ser muito corajosos quando estão só comentando a história.",
+
     endTitle:"HM.",
-    endLine:"Você aprende rápido. Que pena."
+
+    endLine:"Olha só. É bem mais fácil quando eles são apenas alvos, não é?"
   },
+
   {
     quota:12,
     speedMin:115,
@@ -594,10 +600,14 @@ const PHASES = [
     spawnMin:.70,
     spawnMax:1.05,
     size:1.00,
-    intro:"Já se acostumou? Que pena.",
-    endTitle:"MELHOR.",
-    endLine:"Você está começando a me decepcionar menos."
+
+    intro:"Quantas vezes você já disse que faria qualquer coisa pelos Cisnes? Sempre achei essa frase divertida.",
+
+    endTitle:"QUE BONITO.",
+
+    endLine:"Toda essa lealdade... e ainda assim você continua apertando."
   },
+
   {
     quota:16,
     speedMin:175,
@@ -605,10 +615,14 @@ const PHASES = [
     spawnMin:.52,
     spawnMax:.82,
     size:.90,
-    intro:"Está ficando nervoso? Bom.",
-    endTitle:"INTERESSANTE.",
-    endLine:"Talvez eu tenha subestimado você. Não se acostume."
+
+    intro:"Vocês passam tanto tempo escolhendo lados, defendendo favoritos, justificando decisões... eu só tirei a parte confortável.",
+
+    endTitle:"ADORÁVEL.",
+
+    endLine:"Continue. Tenho certeza de que seu favorito entenderia."
   },
+
   {
     quota:20,
     speedMin:250,
@@ -616,9 +630,12 @@ const PHASES = [
     spawnMin:.34,
     spawnMax:.58,
     size:.80,
-    intro:"Você foi longe demais para parar agora. Vamos ver o quanto essa escolha aguenta.",
+
+    intro:"Agora fica interessante. Você conhece os Cisnes tão bem... vamos descobrir quanto desse carinho sobrevive quando escolher começa a custar alguma coisa.",
+
     endTitle:"SUFICIENTE.",
-    endLine:"Você sobreviveu ao teste. Isso não significa que eu confie em você."
+
+    endLine:"Parabéns. Depois disso, eu evitaria usar a palavra 'lealdade' com tanta facilidade."
   }
 ];
 
