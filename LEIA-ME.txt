@@ -1,25 +1,58 @@
-PHANTASMA V2
-Inclui:
-- phantasma-bg.jpg como imagem de fundo;
-- flicker, scanlines, rasgos horizontais, jitter e sinal instável;
-- 3 charadas aleatórias;
-- loading irregular;
-- falsa queda após resposta errada.
+PHANTASMA — SOM EM TODO O FLUXO
 
-EDITE:
-- charada.html -> const CHARADAS
-- anuncio.html -> XX.XX.2026
+ESTRUTURA PARA O GITHUB:
 
-Suba todos os arquivos juntos na raiz do GitHub Pages.
+index.html
+charada.html
+loading.html
+erro.html
+anuncio.html
+phantasma-bg.jpg
+phantasma-fx.js
+phantasma-audio.js
 
+sons/
+  ambiente.wav
+  acesso.wav
+  agora.wav
+  click.wav
+  countdown.wav
+  erro.wav
+  glitch.wav
+  revelacao.wav
+  tecla.wav
+  tiro.wav
 
-V3: a imagem enviada pelo usuário foi aplicada como fundo em todas as etapas.
+jogo/
+  index.html
+  dex.jpg
+  olivia.jpg
+  declan.jpg
+  charlotte.jpg
+  killian.jpg
+  melissa.jpg
+  reid.jpg
+  lara.jpg
+  chuck.jpg
+  zuri.jpg
 
-V4 MOBILE
-- Corrige layout em telas pequenas.
-- Remove overflow:hidden no mobile.
-- Usa 100dvh/100svh para respeitar a área real da tela.
-- Evita zoom automático do iPhone ao focar o input.
-- Faz o campo de resposta rolar para o centro quando o teclado abre.
-- Adiciona margens de safe-area para aparelhos com notch.
-- Fundo deixa de usar background-attachment:fixed no celular.
+ONDE TEM SOM:
+- INDEX: ambiente + clique + glitch da transição.
+- CHARADA: ambiente + teclas + envio da resposta.
+- LOADING: ambiente + confirmação + erro + glitch/invasão.
+- ERRO: ambiente + erro/glitch ao aceitar segunda chance.
+- JOGO: ambiente + transições + countdown + tiros + erro + vitória.
+- ANÚNCIO: ambiente + som de revelação.
+
+IMPORTANTE:
+Navegadores não permitem som automático real antes da primeira interação do usuário.
+No primeiro clique/toque, o sistema desbloqueia o áudio e grava isso na sessão.
+O botão SOM: ATIVAR / ON / OFF aparece nas páginas.
+
+ATENÇÃO AO ANÚNCIO:
+Nesta versão, anuncio.html só abre depois de VENCER O JOGO.
+Isso combina com o fluxo atual, em que tanto quem acerta quanto quem erra vai ao teste.
+
+COMO SUBIR:
+Pode substituir os HTMLs da raiz e jogo/index.html pelos deste pacote,
+e enviar as pastas sons/ e jogo/ mantendo exatamente os nomes.

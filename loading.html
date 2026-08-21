@@ -292,11 +292,11 @@ body.hijacked .wrap{
 const TIMING = {
   verificacao: 3600,       // tempo em "VALIDANDO"
   corretoNaTela: 4000,     // quanto tempo "CORRETO" fica visível
-  erroPermissao: 3000,      // 1º erro da invasão
-  rastreio: 2350,          // "RASTREANDO ORIGEM"
+  erroPermissao: 650,      // 1º erro da invasão
+  rastreio: 1350,          // "RASTREANDO ORIGEM"
   controle: 2050,          // "CONTROLE DA SESSÃO..."
   invasaoTotal: 3000,      // duração total da tomada de controle
-  entradaProvocacao: 3000  // glitch forte ao entrar em "VOCÊ ACHOU..."
+  entradaProvocacao: 1900  // glitch forte ao entrar em "VOCÊ ACHOU..."
 };
 
 /*
@@ -307,11 +307,13 @@ const SOUND_PATH = "sons/";
 const soundFiles = {
   acesso: SOUND_PATH+"acesso.wav",
   glitch: SOUND_PATH+"glitch.wav",
-  erro: SOUND_PATH+"erro.wav"
+  erro: SOUND_PATH+"erro.wav",
+  ambiente: SOUND_PATH+"ambiente.wav"
 };
 
 let soundEnabled = localStorage.getItem("phantasma_sound") !== "off";
-let audioUnlocked = false;
+let audioUnlocked = sessionStorage.getItem("phantasma_audio_unlocked")==="1";
+let ambientAudio=null;
 const soundToggle = document.getElementById("soundToggle");
 
 function updateSoundButton(){
@@ -330,9 +332,21 @@ function playSound(name, volume=.45){
   audio.play().catch(()=>{});
 }
 
+function ensureAmbient(){
+  if(!soundEnabled || !audioUnlocked) return;
+  if(!ambientAudio){
+    ambientAudio=new Audio(soundFiles.ambiente);
+    ambientAudio.loop=true;
+    ambientAudio.volume=.10;
+  }
+  ambientAudio.play().catch(()=>{});
+}
+
 function unlockAudio(){
   audioUnlocked = true;
+  sessionStorage.setItem("phantasma_audio_unlocked","1");
   updateSoundButton();
+  ensureAmbient();
 }
 
 soundToggle.addEventListener("click",()=>{
@@ -343,6 +357,8 @@ soundToggle.addEventListener("click",()=>{
     soundEnabled = true;
   }
   localStorage.setItem("phantasma_sound", soundEnabled ? "on" : "off");
+  if(!soundEnabled && ambientAudio) ambientAudio.pause();
+  if(soundEnabled) ensureAmbient();
   updateSoundButton();
   if(soundEnabled) playSound("acesso", .30);
 });

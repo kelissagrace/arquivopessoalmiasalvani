@@ -120,7 +120,7 @@ input{
 }
 </style></head><body>
 <main class="wrap"><section class="card"><div class="tag">Arquivo #004 // acesso restrito</div><h1 class="glitch">PROVE.</h1><div class="signal">PACOTES PERDIDOS: <span class="unstable" id="loss">17%</span> // CANAL: COMPROMETIDO</div><div class="quote" id="charada"></div>
-<form id="form"><input id="resposta" autocomplete="off" placeholder="Digite a resposta..." required><button>Enviar resposta</button></form><div class="small">
+<form id="form"><input id="resposta" autocomplete="off" placeholder="Digite a resposta..." required><button>Enviar resposta</button></form><div class="small">A charada muda. O arquivo, não.</div></section></main>
 <script>
 const CHARADAS=[
 {texto:`Eu entro sem chave.<br>Vejo sem olhos.<br>Guardo aquilo que ninguém deveria saber.<br><br>Quem sou eu?`,respostas:["phantasma","o phantasma"]},
@@ -129,7 +129,7 @@ const CHARADAS=[
 ];
 function n(t){return t.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g,"").replace(/\s+/g," ")}
 let i=Number(sessionStorage.getItem("charada_idx"));if(!Number.isInteger(i)||i<0||i>=CHARADAS.length){i=Math.floor(Math.random()*CHARADAS.length);sessionStorage.setItem("charada_idx",i)}const atual=CHARADAS[i];document.getElementById("charada").innerHTML=atual.texto;
-document.getElementById("form").onsubmit=e=>{e.preventDefault();const ok=atual.respostas.map(n).includes(n(document.getElementById("resposta").value));sessionStorage.setItem("phantasma_resultado",ok?"ok":"erro");location.href="loading.html"};
+document.getElementById("form").onsubmit=e=>{e.preventDefault();if(window.PhantasmaAudio)PhantasmaAudio.play("acesso",.28);const ok=atual.respostas.map(n).includes(n(document.getElementById("resposta").value));sessionStorage.setItem("phantasma_resultado",ok?"ok":"erro");if(window.PhantasmaFX){PhantasmaFX.transitionTo("loading.html","> RESPOSTA CAPTURADA // VALIDANDO...")}else{location.href="loading.html"}};
 setInterval(()=>{loss.textContent=(8+Math.floor(Math.random()*27))+"%";if(Math.random()>.6){document.querySelector(".card").style.transform=`translate(${Math.random()*6-3}px,${Math.random()*3-1.5}px)`;setTimeout(()=>document.querySelector(".card").style.transform="",90)}},800);
 </script>
 <script>
@@ -146,6 +146,15 @@ setInterval(()=>{loss.textContent=(8+Math.floor(Math.random()*27))+"%";if(Math.r
   input.addEventListener('focus', keepInputVisible);
   input.addEventListener('click', keepInputVisible);
 
+  let lastKeySound=0;
+  input.addEventListener('input',()=>{
+    const now=performance.now();
+    if(now-lastKeySound>42 && window.PhantasmaAudio){
+      PhantasmaAudio.play("tecla",.07);
+      lastKeySound=now;
+    }
+  });
+
   if (window.visualViewport) {
     const adjustForKeyboard = () => {
       document.documentElement.style.setProperty(
@@ -160,4 +169,4 @@ setInterval(()=>{loss.textContent=(8+Math.floor(Math.random()*27))+"%";if(Math.r
   }
 })();
 </script>
-</body></html>
+<script src="phantasma-fx.js"></script><script src="phantasma-audio.js"></script></body></html>

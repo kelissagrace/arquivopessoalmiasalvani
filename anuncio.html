@@ -121,14 +121,21 @@ input{
 </style></head><body>
 <main class="wrap"><section class="card center"><div class="tag">Acesso concedido</div><h1 class="glitch">CORVO</h1><div class="date">XX.XX.2026</div><p>Agora que você sabe.</p><div class="quote">Consegue guardar esse o segredo?</div><p class="green">— PHANTASMA</p></section></main>
 <script>
-const acertouCharada = sessionStorage.getItem("phantasma_resultado") === "ok";
 const venceuJogo = sessionStorage.getItem("corvo_access") === "granted";
 
-if (!acertouCharada && !venceuJogo) {
+if (!venceuJogo) {
   location.replace("index.html");
 } else {
   sessionStorage.removeItem("phantasma_resultado");
   sessionStorage.removeItem("charada_idx");
   sessionStorage.removeItem("corvo_access");
 }
+</script><script src="phantasma-fx.js"></script>
+<script src="phantasma-audio.js"></script>
+<script>
+setTimeout(()=>{
+  if(window.PhantasmaAudio){
+    PhantasmaAudio.play("revelacao",.38);
+  }
+},500);
 </script></body></html>

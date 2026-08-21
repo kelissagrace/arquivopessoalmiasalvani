@@ -99,5 +99,15 @@ addEventListener("resize",resizeMatrix,{passive:true});
 matrixLoop();
 
 </script>
+<script src="phantasma-audio.js"></script>
+<script>
+document.getElementById("go").addEventListener("pointerdown",()=>{
+  if(window.PhantasmaAudio){
+    PhantasmaAudio.unlock();
+    PhantasmaAudio.play("erro",.22);
+    setTimeout(()=>PhantasmaAudio.play("glitch",.28),100);
+  }
+},{once:true});
+</script>
 </body>
 </html>

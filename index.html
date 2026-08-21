@@ -272,6 +272,7 @@ input{
   </div>
 </div>
 
+<script src="phantasma-audio.js"></script>
 <script>
 const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/\\\\[]{}";
 const matrixBg=document.getElementById("matrixBg");
@@ -378,8 +379,13 @@ function startTransitionMatrix(){
 }
 
 continueBtn.addEventListener("click",()=>{
+  if(window.PhantasmaAudio){
+    PhantasmaAudio.unlock();
+    PhantasmaAudio.play("click",.24);
+  }
   continueBtn.disabled=true;
   transition.classList.add("show");
+  if(window.PhantasmaAudio) PhantasmaAudio.play("glitch",.34);
   transition.setAttribute("aria-hidden","false");
   startTransitionMatrix();
 
