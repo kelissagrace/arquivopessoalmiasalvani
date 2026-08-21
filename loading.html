@@ -51,10 +51,182 @@ button:hover{background:var(--g);color:#001407}
 .screen{display:none}
 .screen.show{display:block;animation:boot .8s steps(2) both}@keyframes boot{0%{opacity:0;transform:translateY(6px) scale(.99);filter:blur(3px)}35%{opacity:.6;transform:translateX(4px)}55%{transform:translateX(-3px)}100%{opacity:1;transform:none;filter:none}}
 @media(max-width:560px){body{display:block;padding:14px}.wrap{margin:14px auto}.card{padding:26px 20px}}
+
+/* ===== TOMADA DE CONTROLE // PHANTASMA ===== */
+#takeover{
+  position:fixed;
+  inset:0;
+  z-index:120;
+  display:none;
+  overflow:hidden;
+  background:#000;
+  place-items:center;
+  padding:20px;
+}
+#takeover.show{
+  display:grid;
+  animation:takeoverBoot .16s steps(2) both;
+}
+#takeover::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.08) 0 1px,
+      transparent 2px 5px
+    ),
+    radial-gradient(circle at 50% 45%,transparent 0 18%,rgba(0,0,0,.34) 52%,#000 100%);
+  animation:takeoverScan .085s steps(2) infinite;
+  z-index:3;
+}
+#takeover::after{
+  content:"";
+  position:absolute;
+  inset:-12%;
+  pointer-events:none;
+  opacity:0;
+  z-index:4;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 12%,
+      rgba(49,230,255,.32) 13% 15%,
+      transparent 16% 42%,
+      rgba(255,62,88,.28) 43% 46%,
+      transparent 47% 73%,
+      rgba(109,255,152,.15) 74% 76%,
+      transparent 77%
+    );
+  animation:violentTear .48s steps(2) infinite;
+}
+.takeover-grid{
+  position:absolute;
+  inset:0;
+  opacity:.28;
+  background:
+    linear-gradient(rgba(109,255,152,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(109,255,152,.06) 1px,transparent 1px);
+  background-size:28px 28px;
+  transform:perspective(500px) rotateX(58deg) scale(1.7) translateY(18%);
+  transform-origin:center bottom;
+}
+.takeover-box{
+  position:relative;
+  z-index:8;
+  width:min(900px,100%);
+  border:1px solid rgba(255,62,88,.34);
+  background:rgba(0,0,0,.72);
+  padding:clamp(26px,5vw,52px);
+  box-shadow:
+    0 0 0 1px rgba(49,230,255,.09) inset,
+    0 0 80px rgba(255,62,88,.08);
+}
+.takeover-code{
+  font-size:clamp(11px,1.8vw,14px);
+  line-height:1.75;
+  color:rgba(109,255,152,.62);
+  letter-spacing:.08em;
+  min-height:7.2em;
+}
+.takeover-code .danger{color:var(--r)}
+.takeover-code .cyan{color:var(--c)}
+.takeover-title{
+  margin:24px 0 10px;
+  font-size:clamp(34px,8vw,82px);
+  line-height:.9;
+  color:var(--fg);
+  text-transform:uppercase;
+  text-shadow:
+    5px 0 rgba(255,62,88,.85),
+    -5px 0 rgba(49,230,255,.72);
+  animation:violentTitle .17s steps(2) infinite;
+}
+.takeover-sub{
+  color:var(--r);
+  font-size:clamp(12px,2vw,17px);
+  letter-spacing:.16em;
+}
+body.hijacked #matrixBg{
+  opacity:.52 !important;
+  filter:contrast(1.35);
+}
+body.hijacked .wrap{
+  animation:pageCorrupt .14s steps(2) infinite;
+}
+#trap.aggressive-entry{
+  animation:trapCrashIn 1.15s steps(2) both !important;
+}
+#trap.aggressive-entry h1{
+  animation:trapTitleAttack .18s steps(2) 10, gl 2.7s infinite 1.8s;
+}
+@keyframes takeoverBoot{
+  0%{opacity:0;filter:brightness(3) contrast(2)}
+  35%{opacity:1;transform:translateX(8px)}
+  55%{transform:translateX(-7px)}
+  75%{transform:translateX(3px)}
+  100%{transform:none;filter:none}
+}
+@keyframes takeoverScan{50%{transform:translateY(3px)}}
+@keyframes violentTear{
+  0%,36%,100%{opacity:0;transform:none}
+  37%{opacity:1;transform:translateX(7%) skewX(-7deg)}
+  47%{opacity:.55;transform:translateX(-8%) skewX(5deg)}
+  55%{opacity:0}
+}
+@keyframes violentTitle{
+  0%,55%,100%{transform:none;clip-path:inset(0)}
+  58%{transform:translate(7px,-2px);clip-path:inset(0 0 58% 0)}
+  66%{transform:translate(-6px,2px);clip-path:inset(45% 0 0 0)}
+  74%{transform:translateX(3px);clip-path:inset(18% 0 27% 0)}
+}
+@keyframes pageCorrupt{
+  0%,100%{transform:none}
+  25%{transform:translateX(2px)}
+  50%{transform:translateX(-2px)}
+  75%{transform:translateY(1px)}
+}
+@keyframes trapCrashIn{
+  0%{opacity:0;transform:scale(1.035);filter:blur(8px) contrast(2)}
+  18%{opacity:.2;transform:translateX(14px) scale(1.02)}
+  32%{opacity:.65;transform:translateX(-11px)}
+  46%{opacity:.85;transform:translateX(8px);filter:blur(2px) contrast(1.7)}
+  61%{opacity:.94;transform:translateX(-5px)}
+  78%{transform:translateX(2px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+@keyframes trapTitleAttack{
+  0%,100%{transform:none}
+  25%{transform:translateX(8px);text-shadow:8px 0 var(--r),-8px 0 var(--c)}
+  50%{transform:translateX(-7px);letter-spacing:.035em}
+  75%{transform:translateY(-2px)}
+}
+
+@media(max-width:560px){
+  .takeover-box{padding:24px 18px}
+  .takeover-title{font-size:clamp(34px,13vw,62px)}
+}
+
 </style>
 </head>
 <body>
+
 <canvas id="matrixBg"></canvas>
+
+<div id="takeover" aria-hidden="true">
+  <div class="takeover-grid"></div>
+  <div class="takeover-box">
+    <div class="takeover-code" id="takeoverCode">
+      &gt; ABRINDO RECOMPENSA...<br>
+      &gt; VALIDANDO PERMISSÕES...<br>
+      &gt; CARREGANDO ARQUIVO...
+    </div>
+    <div class="takeover-title" id="takeoverTitle">ACESSO INTERROMPIDO</div>
+    <div class="takeover-sub" id="takeoverSub">SESSÃO COMPROMETIDA // ORIGEM: PHANTASMA</div>
+  </div>
+</div>
 <main class="wrap">
   <section class="card">
 
@@ -81,7 +253,8 @@ button:hover{background:var(--g);color:#001407}
       <p class="big">Que adorável.</p>
       <p>Você resolveu uma charada e já estava esperando sua recompensa.</p>
       <p><strong>Então você ainda não me conhece.</strong></p>
-           <button id="next">INICIAR TESTE DE LEALDADE</button>
+
+      <button id="next">INICIAR TESTE DE LEALDADE</button>
     </div>
 
   </section>
@@ -132,7 +305,51 @@ if(result!=="ok"){
 
   setTimeout(()=>{
     document.getElementById("correct").classList.remove("show");
-    document.getElementById("trap").classList.add("show");
+
+    const takeover=document.getElementById("takeover");
+    const takeoverCode=document.getElementById("takeoverCode");
+    const takeoverTitle=document.getElementById("takeoverTitle");
+    const takeoverSub=document.getElementById("takeoverSub");
+    const trap=document.getElementById("trap");
+
+    document.body.classList.add("hijacked");
+    takeover.classList.add("show");
+    takeover.setAttribute("aria-hidden","false");
+
+    takeoverCode.innerHTML=
+      '&gt; ABRINDO RECOMPENSA...<br>'+
+      '&gt; VALIDANDO PERMISSÕES...<br>'+
+      '&gt; CARREGANDO ARQUIVO...';
+
+    setTimeout(()=>{
+      takeoverCode.innerHTML+=
+        '<br><span class="danger">&gt; ERRO: PERMISSÃO REVOGADA.</span>'+
+        '<br><span class="danger">&gt; ERRO: PROCESSO DESCONHECIDO INJETADO.</span>';
+    },650);
+
+    setTimeout(()=>{
+      takeoverCode.innerHTML+=
+        '<br><span class="cyan">&gt; RASTREANDO ORIGEM...</span>'+
+        '<br><span class="danger">&gt; ORIGEM NÃO ENCONTRADA.</span>';
+      takeoverTitle.textContent="VOCÊ REALMENTE ACREDITOU?";
+    },1350);
+
+    setTimeout(()=>{
+      takeoverSub.textContent="CONTROLE DA SESSÃO TRANSFERIDO // PHANTASMA";
+    },2050);
+
+    setTimeout(()=>{
+      takeover.classList.remove("show");
+      takeover.setAttribute("aria-hidden","true");
+      document.body.classList.remove("hijacked");
+
+      trap.classList.add("show","aggressive-entry");
+
+      setTimeout(()=>{
+        trap.classList.remove("aggressive-entry");
+      },1900);
+    },3000);
+
   },7600);
 }
 
