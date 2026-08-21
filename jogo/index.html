@@ -268,6 +268,22 @@ button:hover{
   background:var(--g);
   color:#001407;
 }
+
+.sound-toggle{
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  z-index:150;
+  margin:0;
+  min-height:0;
+  padding:9px 12px;
+  font-size:11px;
+  background:rgba(0,0,0,.82);
+  border-color:rgba(105,255,150,.45);
+}
+.sound-toggle.sound-on{
+  box-shadow:0 0 18px rgba(105,255,150,.16);
+}
 .tip{
   font-size:11px;
   color:var(--dim);
@@ -416,6 +432,7 @@ button:hover{
 </style>
 </head>
 <body>
+<button id="soundToggle" class="sound-toggle" type="button">SOM: ATIVAR</button>
 <div class="wrap">
 
   <div class="top">
@@ -610,6 +627,47 @@ const REVEAL_URL = "../anuncio.html";
 const FAVORITE_WEIGHTS = [1.8, 2.0, 2.5, 4.5];
 const MAX_RESTARTS = 2;
 
+/*
+  ============================================================
+  TEMPO DAS ANIMAÇÕES — JOGO
+  1000 = 1 segundo.
+  Aumente o número para deixar mais lento.
+  Diminua para deixar mais rápido.
+  ============================================================
+*/
+const TIMING = {
+  entradaAcertoEspera: 450,
+  entradaAcertoHack: 2600,
+  entradaErroHack: 2800,
+  leituraFavoritoHack: 2600,
+  favoritoNaTela: 3400,
+  prepararTesteHack: 2600,
+  briefingParaContagem: 2100,
+  passoContagem: 1250,
+  agoraNaTela: 1100,
+  trocaDeFase: 3300,
+  novaTentativaHack: 2800,
+  reinicioAposFavorito: 900
+};
+
+/*
+  Os sons ficam em /sons na RAIZ.
+  Como este arquivo está dentro de /jogo, usamos ../sons/
+*/
+const SOUND_PATH = "../sons/";
+const SOUND_FILES = {
+  acesso: SOUND_PATH+"acesso.wav",
+  glitch: SOUND_PATH+"glitch.wav",
+  erro: SOUND_PATH+"erro.wav",
+  countdown: SOUND_PATH+"countdown.wav",
+  agora: SOUND_PATH+"agora.wav",
+  tiro: SOUND_PATH+"tiro.wav"
+};
+
+let soundEnabled = localStorage.getItem("phantasma_sound") !== "off";
+let audioUnlocked = false;
+
+
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 
@@ -648,6 +706,7 @@ const ambientMatrixCtx=ambientMatrixCanvas.getContext("2d");
 const timeHud=document.getElementById("timeHud");
 const signalHud=document.getElementById("signalHud");
 const progressBar=document.getElementById("progressBar");
+const soundToggle=document.getElementById("soundToggle");
 
 let W=0,H=0,dpr=1;
 let targets=[];
@@ -671,6 +730,53 @@ let timerAcc=0;
 let last=performance.now();
 
 
+
+
+function updateSoundButton(){
+  if(!audioUnlocked){
+    soundToggle.textContent = soundEnabled ? "SOM: ATIVAR" : "SOM: OFF";
+  }else{
+    soundToggle.textContent = soundEnabled ? "SOM: ON" : "SOM: OFF";
+  }
+  soundToggle.classList.toggle("sound-on",soundEnabled && audioUnlocked);
+}
+
+function unlockAudio(){
+  audioUnlocked=true;
+  updateSoundButton();
+}
+
+function playSound(name,volume=.4){
+  if(!soundEnabled || !audioUnlocked || !SOUND_FILES[name]) return;
+  const audio=new Audio(SOUND_FILES[name]);
+  audio.volume=volume;
+  audio.play().catch(()=>{});
+}
+
+soundToggle.addEventListener("click",()=>{
+  const wasLocked=!audioUnlocked;
+  audioUnlocked=true;
+
+  if(wasLocked && soundEnabled){
+    // Primeiro clique só desbloqueia.
+    soundEnabled=true;
+  }else{
+    soundEnabled=!soundEnabled;
+  }
+
+  localStorage.setItem("phantasma_sound",soundEnabled?"on":"off");
+  updateSoundButton();
+  if(soundEnabled) playSound("acesso",.28);
+});
+
+document.addEventListener("pointerdown",(event)=>{
+  // Se o primeiro clique for no próprio botão de som,
+  // deixamos o click dele cuidar da ativação.
+  if(event.target===soundToggle) return;
+  if(soundEnabled) unlockAudio();
+},{once:true,capture:true});
+
+updateSoundButton();
 
 let ambientAnim=null;
 
@@ -725,6 +831,7 @@ function startAmbientMatrix(){
 let matrixAnim=null;
 
 function playHackTransition(message, callback, duration=2800){
+  playSound("glitch",.30);
   hackText.textContent=message || "> ACESSANDO...";
   hackTransition.classList.add("show");
 
@@ -821,9 +928,9 @@ if(origem === "acerto"){
       ()=>{
         favoriteScreen.classList.add("show");
       },
-      2600
+      TIMING.entradaAcertoHack
     );
-  },450);
+  },TIMING.entradaAcertoEspera);
 }else{
   introTitle.textContent = "NÃO DESPERDICE MEU TEMPO.";
   introCopy.innerHTML = `
@@ -842,7 +949,7 @@ document.getElementById("continueBtn").addEventListener("click",()=>{
     ()=>{
       favoriteScreen.classList.add("show");
     },
-    2800
+    TIMING.entradaErroHack
   );
 });
 
@@ -868,17 +975,17 @@ function selectFavorite(id){
           ()=>{
             briefingScreen.classList.add("show");
           },
-          2600
+          TIMING.prepararTesteHack
         );
-      },3400);
+      },TIMING.favoritoNaTela);
     },
-    2600
+    TIMING.leituraFavoritoHack
   );
 }
 
 briefingBtn.addEventListener("click",()=>{
   briefingScreen.classList.remove("show");
-  playHackTransition("> SINCRONIZANDO ALVOS...", startCountdown, 2100);
+  playHackTransition("> SINCRONIZANDO ALVOS...", startCountdown, TIMING.briefingParaContagem);
 });
 
 function startCountdown(){
@@ -886,23 +993,26 @@ function startCountdown(){
 
   let n=3;
   countdownNumber.textContent=n;
+  playSound("countdown",.38);
 
   const timer=setInterval(()=>{
     n--;
 
     if(n>0){
       countdownNumber.textContent=n;
+      playSound("countdown",.38);
       return;
     }
 
     clearInterval(timer);
     countdownNumber.textContent="AGORA.";
+    playSound("agora",.48);
 
     setTimeout(()=>{
       countdownScreen.classList.remove("show");
       startGame();
-    },1100);
-  },1250);
+    },TIMING.agoraNaTela);
+  },TIMING.passoContagem);
 }
 
 function getCharacter(id){
@@ -1104,6 +1214,7 @@ function shoot(px,py){
   flash.classList.add("on");
 
   if(hitIndex>=0){
+    playSound("tiro",.16);
     const t=targets[hitIndex];
 
     if(phaseHits[t.character.id]===undefined){
@@ -1185,6 +1296,7 @@ function finishPhase(){
 
 function showPhaseResult(c){
   running=false;
+  playSound("erro",.28);
 
   const fav=getCharacter(favoriteId);
   const favHits=phaseHits[favoriteId]||0;
@@ -1289,7 +1401,7 @@ nextStageBtn.addEventListener("click",()=>{
       transition=false;
       spawnTimer=.25;
     },
-    3300
+    TIMING.trocaDeFase
   );
 });
 
@@ -1314,7 +1426,7 @@ function restartRun(){
 
   setTimeout(()=>{
     running=true;
-  },900);
+  },TIMING.reinicioAposFavorito);
 }
 
 revealBtn.addEventListener("click",()=>{
@@ -1324,6 +1436,7 @@ revealBtn.addEventListener("click",()=>{
 
 function finishGame(){
   running=false;
+  playSound("acesso",.38);
   transition=true;
 
   const fav=getCharacter(favoriteId);
@@ -1352,6 +1465,7 @@ function finishGame(){
 
 function timeOut(){
   running=false;
+  playSound("erro",.42);
   transition=true;
   targets=[];
 
@@ -1386,7 +1500,7 @@ timeoutRetryBtn.addEventListener("click",()=>{
 
       briefingScreen.classList.add("show");
     },
-    2800
+    TIMING.novaTentativaHack
   );
 });
 
