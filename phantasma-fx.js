@@ -5,7 +5,7 @@
   /*
     ============================================================
     TEMPOS DAS TRANSIÇÕES
-    1000 = 1 segundo
+    3500 = 3,5 segundo
     ============================================================
   */
   const FX_TIMING = {
@@ -61,16 +61,21 @@
 
   /* ===== TRANSIÇÃO ENTRE PÁGINAS ===== */
   .ph-fx-exit{
-    position:fixed;
-    inset:0;
-    z-index:10001;
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    height:100dvh !important;
+    z-index:10001 !important;
     pointer-events:none;
-    display:grid;
-    place-items:center;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
     overflow:hidden;
     background:#000;
     opacity:0;
     transition:opacity .22s linear;
+    margin:0 !important;
+    padding:0 !important;
   }
 
   .ph-fx-exit.show{opacity:1}
@@ -95,26 +100,24 @@
     animation:phExitScan .11s steps(2) infinite;
   }
 
-  .ph-fx-exit-dump{
-    position:absolute;
-    inset:-5%;
-    z-index:0;
-    margin:0;
-    padding:5vh 5vw;
-    overflow:hidden;
-    white-space:pre-wrap;
-    color:rgba(105,255,150,.23);
-    font:11px/1.35 "Courier New",monospace;
-    text-shadow:
-      1px 0 rgba(255,64,88,.34),
-      -1px 0 rgba(49,230,255,.28);
-    animation:phExitDump .16s steps(2) infinite;
+  .ph-fx-exit-matrix{
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    z-index:0 !important;
+    pointer-events:none;
+    opacity:.52;
   }
 
   .ph-fx-exit-message{
-    position:relative;
-    z-index:3;
-    width:min(760px,88vw);
+    position:relative !important;
+    inset:auto !important;
+    z-index:3 !important;
+    width:min(760px,88vw) !important;
+    max-width:760px !important;
+    margin:0 auto !important;
+    transform-origin:center center;
     padding:clamp(28px,6vw,58px) clamp(22px,5vw,50px);
     border:1px solid rgba(105,255,150,.30);
     background:rgba(0,5,2,.86);
@@ -158,11 +161,6 @@
     50%{transform:translateY(3px)}
   }
 
-  @keyframes phExitDump{
-    0%,60%,100%{transform:scale(1.04) translate(0,0)}
-    62%{transform:scale(1.05) translate(6px,-2px)}
-    76%{transform:scale(1.04) translate(-5px,2px)}
-  }
 
   @keyframes phExitMessage{
     0%,76%,100%{transform:none;filter:none}
@@ -336,17 +334,8 @@
     const exit=document.createElement("div");
     exit.className="ph-fx-exit";
 
-    const randomDump=Array.from({length:30},()=>(
-      Array.from({
-        length:Math.min(
-          86,
-          Math.max(30,Math.floor(innerWidth/10))
-        )
-      },()=>glyphs[(Math.random()*glyphs.length)|0]).join("")
-    )).join("\n");
-
     exit.innerHTML=`
-      <pre class="ph-fx-exit-dump">${randomDump}</pre>
+      <canvas class="ph-fx-exit-matrix"></canvas>
 
       <div class="ph-fx-exit-message">
         ${message || "> RECONFIGURANDO ROTA..."}
@@ -359,15 +348,71 @@
 
     document.body.appendChild(exit);
 
+    const matrix=exit.querySelector(".ph-fx-exit-matrix");
+    const mctx=matrix.getContext("2d");
+    const mfs=16;
+    let mdrops=[];
+    let mw=0;
+    let mh=0;
+    let matrixRaf=0;
+
+    function resizeExitMatrix(){
+      const dpr=Math.min(window.devicePixelRatio || 1,2);
+      mw=window.innerWidth;
+      mh=window.innerHeight;
+
+      matrix.width=Math.floor(mw*dpr);
+      matrix.height=Math.floor(mh*dpr);
+      matrix.style.width=mw+"px";
+      matrix.style.height=mh+"px";
+
+      mctx.setTransform(dpr,0,0,dpr,0,0);
+
+      const columns=Math.ceil(mw/mfs);
+      mdrops=Array.from(
+        {length:columns},
+        (_,i)=>mdrops[i] ?? Math.random()*-55
+      );
+    }
+
+    function drawExitMatrix(){
+      mctx.fillStyle="rgba(0,0,0,.115)";
+      mctx.fillRect(0,0,mw,mh);
+      mctx.font=mfs+'px "Courier New", monospace';
+
+      for(let i=0;i<mdrops.length;i++){
+        const ch=glyphs[(Math.random()*glyphs.length)|0];
+        const x=i*mfs;
+        const y=mdrops[i]*mfs;
+
+        mctx.fillStyle=Math.random()>.965
+          ? "rgba(225,255,233,.78)"
+          : "rgba(105,255,150,.48)";
+
+        mctx.fillText(ch,x,y);
+
+        if(y>mh && Math.random()>.965){
+          mdrops[i]=Math.random()*-18;
+        }
+
+        mdrops[i]+=.68+Math.random()*.44;
+      }
+
+      matrixRaf=requestAnimationFrame(drawExitMatrix);
+    }
+
+    resizeExitMatrix();
+    drawExitMatrix();
+
     requestAnimationFrame(()=>{
       exit.classList.add("show");
     });
 
     setTimeout(()=>{
+      cancelAnimationFrame(matrixRaf);
       location.href=url;
     },FX_TIMING.transicaoPagina);
   }
-
   window.PhantasmaFX={transitionTo};
 
   document.addEventListener("click",e=>{
