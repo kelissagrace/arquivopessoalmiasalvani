@@ -19,6 +19,7 @@ body:before{
   background:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0 1px,transparent 2px 4px);
   opacity:.45
 }
+#matrixBg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;opacity:.20;z-index:0}
 .wrap{width:min(820px,100%);position:relative;z-index:2}
 .card{
   border:1px solid rgba(109,255,152,.24);
@@ -48,11 +49,12 @@ button{
 }
 button:hover{background:var(--g);color:#001407}
 .screen{display:none}
-.screen.show{display:block}
+.screen.show{display:block;animation:boot .8s steps(2) both}@keyframes boot{0%{opacity:0;transform:translateY(6px) scale(.99);filter:blur(3px)}35%{opacity:.6;transform:translateX(4px)}55%{transform:translateX(-3px)}100%{opacity:1;transform:none;filter:none}}
 @media(max-width:560px){body{display:block;padding:14px}.wrap{margin:14px auto}.card{padding:26px 20px}}
 </style>
 </head>
 <body>
+<canvas id="matrixBg"></canvas>
 <main class="wrap">
   <section class="card">
 
@@ -83,7 +85,7 @@ button:hover{background:var(--g);color:#001407}
       <p>...e os que resolvem as coisas de um jeito um pouco mais físico.</p>
       <p class="big">Vamos ver se você funciona bem com mais do que apenas o cérebro.</p>
       <p><strong>Os pensantes e os de força irracional. Não é, Killian?</strong></p>
-      <p class="small">Não precisa responder. Eu sei que dói quando ele tenta.</p>
+      <p class="small">Não precisa responder. Eu sei que dói quando você tenta.</p>
       <button id="next">INICIAR TESTE DE LEALDADE</button>
     </div>
 
@@ -91,20 +93,52 @@ button:hover{background:var(--g);color:#001407}
 </main>
 
 <script>
+
+const matrixBg=document.getElementById("matrixBg");
+const mctx=matrixBg.getContext("2d");
+const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/\\\\[]{}";
+const fs=15;
+let drops=[];
+
+function resizeMatrix(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  matrixBg.width=Math.floor(innerWidth*dpr);
+  matrixBg.height=Math.floor(innerHeight*dpr);
+  matrixBg.style.width=innerWidth+"px";
+  matrixBg.style.height=innerHeight+"px";
+  mctx.setTransform(dpr,0,0,dpr,0,0);
+  drops=Array.from({length:Math.ceil(innerWidth/fs)},(_,i)=>drops[i]??Math.random()*-45);
+}
+function matrixLoop(){
+  mctx.fillStyle="rgba(0,0,0,.095)";
+  mctx.fillRect(0,0,innerWidth,innerHeight);
+  mctx.font=fs+"px monospace";
+  for(let i=0;i<drops.length;i++){
+    mctx.fillStyle=Math.random()>.97?"rgba(220,255,228,.48)":"rgba(105,255,150,.30)";
+    mctx.fillText(glyphs[(Math.random()*glyphs.length)|0],i*fs,drops[i]*fs);
+    if(drops[i]*fs>innerHeight && Math.random()>.975)drops[i]=0;
+    drops[i]+=.27+Math.random()*.2;
+  }
+  requestAnimationFrame(matrixLoop);
+}
+resizeMatrix();
+addEventListener("resize",resizeMatrix,{passive:true});
+matrixLoop();
+
 const result=sessionStorage.getItem("phantasma_resultado");
 
 if(result!=="ok"){
-  setTimeout(()=>location.replace("erro.html"),2300);
+  setTimeout(()=>location.replace("erro.html"),3600);
 }else{
   setTimeout(()=>{
     document.getElementById("verify").classList.remove("show");
     document.getElementById("correct").classList.add("show");
-  },2300);
+  },3600);
 
   setTimeout(()=>{
     document.getElementById("correct").classList.remove("show");
     document.getElementById("trap").classList.add("show");
-  },4700);
+  },7600);
 }
 
 document.getElementById("next").addEventListener("click",()=>{
