@@ -443,7 +443,7 @@ button:hover{
       <div class="hack-center"><div id="hackText">&gt; RECONFIGURANDO TESTE...</div></div>
     </div>
 
-    <div class="overlay show" id="intro">
+    <div class="overlay" id="intro">
       <div class="panel">
         <h2 id="introTitle">ENTÃO VOCÊ ACEITOU.</h2>
         <div id="introCopy">
@@ -475,6 +475,20 @@ button:hover{
           &gt; TESTE RECONFIGURADO...
         </div>
         <p id="favoriteReveal"></p>
+      </div>
+    </div>
+
+
+    <div class="overlay" id="briefingScreen">
+      <div class="panel">
+        <h2>VAMOS DEVAGAR.</h2>
+        <p>Não quero que você se machuque tentando acompanhar.</p>
+        <div class="system-lines">
+          &gt; ALVOS CARREGADOS...<br>
+          &gt; TRANSMISSÃO SINCRONIZADA...<br>
+          &gt; AGUARDANDO SUA CONFIRMAÇÃO...
+        </div>
+        <button id="briefingBtn">CONTINUAR</button>
       </div>
     </div>
 
@@ -518,7 +532,7 @@ button:hover{
         <h2 class="bad">ACABOU.</h2>
         <p>A transmissão foi encerrada.</p>
         <p>PHANTASMA: “Eu disse que não seria fácil. Você que decidiu não acreditar.”</p>
-        <button onclick="location.reload()">TENTAR NOVAMENTE</button>
+        <button id="timeoutRetryBtn">ACEITAR OUTRA TENTATIVA</button>
       </div>
     </div>
   </div>
@@ -605,6 +619,8 @@ const favoriteGrid=document.getElementById("favoriteGrid");
 const revealScreen=document.getElementById("revealScreen");
 const favoriteReveal=document.getElementById("favoriteReveal");
 
+const briefingScreen=document.getElementById("briefingScreen");
+const briefingBtn=document.getElementById("briefingBtn");
 const countdownScreen=document.getElementById("countdownScreen");
 const countdownNumber=document.getElementById("countdownNumber");
 const stageScreen=document.getElementById("stageScreen");
@@ -619,6 +635,7 @@ const winTitle=document.getElementById("winTitle");
 const rewardMessage=document.getElementById("rewardMessage");
 const revealBtn=document.getElementById("revealBtn");
 const lose=document.getElementById("lose");
+const timeoutRetryBtn=document.getElementById("timeoutRetryBtn");
 
 const flash=document.getElementById("flash");
 const messageBanner=document.getElementById("messageBanner");
@@ -796,16 +813,17 @@ const introTitle = document.getElementById("introTitle");
 const introCopy = document.getElementById("introCopy");
 
 if(origem === "acerto"){
-  introTitle.textContent = "AINDA SE SENTINDO INTELIGENTE?";
-  introCopy.innerHTML = `
-    <p>Ótimo.</p>
-    <p>Confiança torna isso muito mais divertido.</p>
-    <p>Você resolveu a charada.</p>
-    <p>Agora quero ver se você funciona bem com algo além do cérebro.</p>
-    <p>Os Cisnes sempre tiveram os pensantes... e os de força irracional.</p>
-    <p><strong>Não é, Killian?</strong></p>
-    <p class="small-note">Não precisa responder. Eu sei que dói quando você tenta.</p>
-  `;
+  intro.classList.remove("show");
+
+  setTimeout(()=>{
+    playHackTransition(
+      "> TESTE DE LEALDADE CARREGADO // ESCOLHA SUA VARIÁVEL...",
+      ()=>{
+        favoriteScreen.classList.add("show");
+      },
+      2600
+    );
+  },450);
 }else{
   introTitle.textContent = "NÃO DESPERDICE MEU TEMPO.";
   introCopy.innerHTML = `
@@ -813,19 +831,18 @@ if(origem === "acerto"){
     <p><strong>Não se preocupe. Eu torço por você.</strong></p>
     <p class="small-note">Mentira.</p>
   `;
+  intro.classList.add("show");
 }
 
 document.getElementById("continueBtn").addEventListener("click",()=>{
   intro.classList.remove("show");
 
   playHackTransition(
-    origem==="acerto"
-      ? "> INTELIGÊNCIA CONFIRMADA // INICIANDO TESTE DE LEALDADE..."
-      : "> SEGUNDA CHANCE AUTORIZADA // NÃO ME DECEPCIONE...",
+    "> SEGUNDA CHANCE AUTORIZADA // NÃO ME FAÇA ME ARREPENDER...",
     ()=>{
       favoriteScreen.classList.add("show");
     },
-    3200
+    2800
   );
 });
 
@@ -845,12 +862,24 @@ function selectFavorite(id){
 
       setTimeout(()=>{
         revealScreen.classList.remove("show");
-        playHackTransition("> TESTE RECONFIGURADO // PREPARE-SE...", startCountdown, 2400);
-      },1800);
+
+        playHackTransition(
+          "> TESTE RECONFIGURADO // AGUARDANDO INÍCIO...",
+          ()=>{
+            briefingScreen.classList.add("show");
+          },
+          2600
+        );
+      },3400);
     },
     2600
   );
 }
+
+briefingBtn.addEventListener("click",()=>{
+  briefingScreen.classList.remove("show");
+  playHackTransition("> SINCRONIZANDO ALVOS...", startCountdown, 2100);
+});
 
 function startCountdown(){
   countdownScreen.classList.add("show");
@@ -872,8 +901,8 @@ function startCountdown(){
     setTimeout(()=>{
       countdownScreen.classList.remove("show");
       startGame();
-    },650);
-  },1000);
+    },1100);
+  },1250);
 }
 
 function getCharacter(id){
@@ -951,7 +980,6 @@ function startGame(){
   resetPhaseHits();
   updateHud();
 
-  showMessage(PHASES[0].intro);
 }
 
 function spawn(){
@@ -1226,6 +1254,7 @@ nextStageBtn.addEventListener("click",()=>{
     lose.querySelectorAll("p")[0].textContent="Você ficou sem segundas chances.";
     lose.querySelectorAll("p")[1].textContent=
       "PHANTASMA: “Da próxima vez, escolha alguém que você realmente queira salvar.”";
+    timeoutRetryBtn.style.display="none";
     lose.classList.add("show");
     return;
   }
@@ -1248,17 +1277,20 @@ nextStageBtn.addEventListener("click",()=>{
   resetPhaseHits();
   updateHud();
 
-  if(phaseIndex===PHASES.length-1){
-    showMessage("PROTOCOLO FINAL // " + PHASES[phaseIndex].intro);
-  }else{
-    showMessage(PHASES[phaseIndex].intro);
-  }
+  const nextIntro =
+    phaseIndex===PHASES.length-1
+      ? "PROTOCOLO FINAL // " + PHASES[phaseIndex].intro
+      : PHASES[phaseIndex].intro;
 
-  setTimeout(()=>{
-    running=true;
-    transition=false;
-    spawnTimer=.25;
-  },900);
+  playHackTransition(
+    "> " + nextIntro.toUpperCase(),
+    ()=>{
+      running=true;
+      transition=false;
+      spawnTimer=.25;
+    },
+    3300
+  );
 });
 
 function restartRun(){
@@ -1322,8 +1354,41 @@ function timeOut(){
   running=false;
   transition=true;
   targets=[];
+
+  lose.querySelector("h2").textContent="QUE PENA.";
+  lose.querySelectorAll("p")[0].textContent="O tempo acabou.";
+  lose.querySelectorAll("p")[1].textContent=
+    "PHANTASMA: “Estou me sentindo caridoso hoje. Não se acostume.”";
+
+  timeoutRetryBtn.textContent="ACEITAR OUTRA TENTATIVA";
+  timeoutRetryBtn.style.display="";
   lose.classList.add("show");
 }
+
+timeoutRetryBtn.addEventListener("click",()=>{
+  lose.classList.remove("show");
+
+  playHackTransition(
+    "> CARIDADE AUTORIZADA // +60 SEGUNDOS...",
+    ()=>{
+      phaseIndex=0;
+      phaseKills=0;
+      totalFavoriteHits=0;
+      eliminated.clear();
+      targets=[];
+      particles=[];
+      timeLeft=TOTAL_TIME;
+      timerAcc=0;
+      spawnTimer=.25;
+      transition=false;
+      resetPhaseHits();
+      updateHud();
+
+      briefingScreen.classList.add("show");
+    },
+    2800
+  );
+});
 
 function update(dt){
   if(!running) return;
