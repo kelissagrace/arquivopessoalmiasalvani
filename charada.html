@@ -129,7 +129,7 @@ const CHARADAS=[
 ];
 function n(t){return t.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g,"").replace(/\s+/g," ")}
 let i=Number(sessionStorage.getItem("charada_idx"));if(!Number.isInteger(i)||i<0||i>=CHARADAS.length){i=Math.floor(Math.random()*CHARADAS.length);sessionStorage.setItem("charada_idx",i)}const atual=CHARADAS[i];document.getElementById("charada").innerHTML=atual.texto;
-document.getElementById("form").onsubmit=e=>{e.preventDefault();if(window.PhantasmaAudio)PhantasmaAudio.play("acesso",.28);const ok=atual.respostas.map(n).includes(n(document.getElementById("resposta").value));sessionStorage.setItem("phantasma_resultado",ok?"ok":"erro");if(window.PhantasmaFX){PhantasmaFX.transitionTo("loading.html","> RESPOSTA CAPTURADA // VALIDANDO...")}else{location.href="loading.html"}};
+document.getElementById("form").onsubmit=e=>{e.preventDefault();if(window.PhantasmaAudio)PhantasmaAudio.play("acesso",.28);const ok=atual.respostas.map(n).includes(n(document.getElementById("resposta").value));sessionStorage.setItem("phantasma_resultado",ok?"ok":"erro");if(window.PhantasmaFX){PhantasmaFX.transitionTo("loading.html","> RESPOSTA CAPTURADA.")}else{location.href="loading.html"}};
 setInterval(()=>{loss.textContent=(8+Math.floor(Math.random()*27))+"%";if(Math.random()>.6){document.querySelector(".card").style.transform=`translate(${Math.random()*6-3}px,${Math.random()*3-1.5}px)`;setTimeout(()=>document.querySelector(".card").style.transform="",90)}},800);
 </script>
 <script>
