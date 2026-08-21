@@ -102,6 +102,47 @@ canvas{
 
 .overlay.show{display:grid}
 
+
+/* ===== MATRIX AMBIENTE EM TODAS AS TELAS ===== */
+.ambient-matrix{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  pointer-events:none;
+  opacity:.18;
+  filter:blur(.15px);
+}
+.shell > *:not(.ambient-matrix){
+  position:relative;
+  z-index:1;
+}
+.overlay.show .panel{
+  animation:screenBoot .75s steps(2) both, panelFlicker 4.8s infinite 1s;
+}
+@keyframes screenBoot{
+  0%{opacity:0;transform:scale(.985) translateY(8px);filter:blur(3px) contrast(1.7)}
+  22%{opacity:.25;transform:translateX(5px);filter:blur(1px) contrast(1.8)}
+  38%{opacity:.7;transform:translateX(-4px)}
+  58%{opacity:.92;transform:translateX(2px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+@keyframes panelFlicker{
+  0%,91%,94%,100%{opacity:1;filter:none}
+  92%{opacity:.78;filter:contrast(1.45)}
+  93%{opacity:.94;transform:translateX(1px)}
+}
+.overlay.show h2{
+  animation:titleGlitch 3.1s steps(2) infinite;
+}
+@keyframes titleGlitch{
+  0%,86%,100%{transform:none;text-shadow:2px 0 var(--r),-2px 0 var(--cyan)}
+  87%{transform:translateX(4px);text-shadow:5px 0 var(--r),-4px 0 var(--cyan)}
+  89%{transform:translateX(-3px)}
+  91%{transform:none}
+}
+
 /* ===== TRANSIÇÃO PHANTASMA / MATRIX ===== */
 .hack-transition{
   position:absolute;
@@ -365,6 +406,7 @@ button:hover{
   </div>
 
   <div class="shell">
+    <canvas id="ambientMatrixCanvas" class="ambient-matrix" aria-hidden="true"></canvas>
     <canvas id="game"></canvas>
 
     <div class="flash" id="flash"></div>
@@ -558,6 +600,8 @@ const hackTransition=document.getElementById("hackTransition");
 const matrixCanvas=document.getElementById("matrixCanvas");
 const matrixCtx=matrixCanvas.getContext("2d");
 const hackText=document.getElementById("hackText");
+const ambientMatrixCanvas=document.getElementById("ambientMatrixCanvas");
+const ambientMatrixCtx=ambientMatrixCanvas.getContext("2d");
 const timeHud=document.getElementById("timeHud");
 const signalHud=document.getElementById("signalHud");
 const progressBar=document.getElementById("progressBar");
@@ -584,9 +628,60 @@ let timerAcc=0;
 let last=performance.now();
 
 
+
+let ambientAnim=null;
+
+function startAmbientMatrix(){
+  const canvas=ambientMatrixCanvas;
+  const ctx=ambientMatrixCtx;
+  const shell=document.querySelector(".shell");
+  const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/\\\\[]{}";
+  const fontSize=15;
+  let drops=[];
+
+  function resizeAmbient(){
+    const rect=shell.getBoundingClientRect();
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=Math.max(1,Math.floor(rect.width*dpr));
+    canvas.height=Math.max(1,Math.floor(rect.height*dpr));
+    canvas.style.width=rect.width+"px";
+    canvas.style.height=rect.height+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const cols=Math.ceil(rect.width/fontSize);
+    drops=Array.from({length:cols},(_,i)=>drops[i] ?? Math.random()*-45);
+  }
+
+  function frame(){
+    const rect=shell.getBoundingClientRect();
+    ctx.fillStyle="rgba(0,0,0,.09)";
+    ctx.fillRect(0,0,rect.width,rect.height);
+    ctx.font=`${fontSize}px monospace`;
+
+    for(let i=0;i<drops.length;i++){
+      const x=i*fontSize;
+      const y=drops[i]*fontSize;
+      const ch=glyphs[(Math.random()*glyphs.length)|0];
+
+      ctx.fillStyle=Math.random()>.965
+        ? "rgba(210,255,224,.44)"
+        : "rgba(105,255,150,.28)";
+      ctx.fillText(ch,x,y);
+
+      if(y>rect.height && Math.random()>.975) drops[i]=0;
+      drops[i]+=.26+Math.random()*.22;
+    }
+    ambientAnim=requestAnimationFrame(frame);
+  }
+
+  resizeAmbient();
+  window.addEventListener("resize",resizeAmbient,{passive:true});
+  cancelAnimationFrame(ambientAnim);
+  frame();
+}
+
 let matrixAnim=null;
 
-function playHackTransition(message, callback, duration=1450){
+function playHackTransition(message, callback, duration=2800){
   hackText.textContent=message || "> ACESSANDO...";
   hackTransition.classList.add("show");
 
@@ -668,6 +763,8 @@ function buildFavoriteGrid(){
 buildFavoriteGrid();
 
 
+startAmbientMatrix();
+
 const origem = new URLSearchParams(window.location.search).get("origem") || "erro";
 const introTitle = document.getElementById("introTitle");
 const introCopy = document.getElementById("introCopy");
@@ -702,7 +799,7 @@ document.getElementById("continueBtn").addEventListener("click",()=>{
     ()=>{
       favoriteScreen.classList.add("show");
     },
-    1650
+    3200
   );
 });
 
@@ -722,10 +819,10 @@ function selectFavorite(id){
 
       setTimeout(()=>{
         revealScreen.classList.remove("show");
-        playHackTransition("> TESTE RECONFIGURADO // PREPARE-SE...", startCountdown, 1250);
+        playHackTransition("> TESTE RECONFIGURADO // PREPARE-SE...", startCountdown, 2400);
       },1800);
     },
-    1350
+    2600
   );
 }
 
