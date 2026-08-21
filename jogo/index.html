@@ -104,19 +104,45 @@ canvas{
 
 
 /* ===== MATRIX AMBIENTE EM TODAS AS TELAS ===== */
-.ambient-matrix{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  z-index:0;
-  pointer-events:none;
-  opacity:.18;
-  filter:blur(.15px);
+.shell{
+  isolation:isolate;
 }
-.shell > *:not(.ambient-matrix){
+
+.ambient-matrix{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  aspect-ratio:auto !important;
+  z-index:4;
+  pointer-events:none;
+  opacity:.15;
+  filter:blur(.15px);
+  cursor:default;
+}
+
+/* O canvas do jogo continua no lugar normal */
+.shell > canvas:not(.ambient-matrix){
   position:relative;
   z-index:1;
+}
+
+/* As telas voltam a ocupar exatamente a área do jogo */
+.shell > .overlay{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:10;
+}
+
+/* A transição hacker continua por cima de tudo */
+.shell > .hack-transition{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:60;
+}
+
+.shell > .message-banner{
+  z-index:70;
 }
 .overlay.show .panel{
   animation:screenBoot .75s steps(2) both, panelFlicker 4.8s infinite 1s;
