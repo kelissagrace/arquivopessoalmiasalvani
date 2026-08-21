@@ -2,475 +2,756 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>PHANTASMA // TESTE DE LEALDADE</title>
+
 <style>
 :root{
   --g:#69ff96;
   --r:#ff4058;
+  --c:#31e6ff;
   --fg:#ecfff2;
-  --dim:#829087;
-  --cyan:#36e7ff;
+  --dim:#7d8d82;
+  --bg:#000;
 }
+
 *{box-sizing:border-box}
-html,body{
-  margin:0;
+
+html{
   min-height:100%;
   background:#000;
-  color:var(--fg);
-  font-family:"Courier New",monospace;
   -webkit-text-size-adjust:100%;
 }
+
 body{
+  margin:0;
+  min-height:100svh;
   min-height:100dvh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px;
-  overflow:auto;
   background:
-    radial-gradient(circle at 50% 15%,rgba(35,105,58,.14),transparent 34%),
+    radial-gradient(circle at 50% 10%,rgba(27,99,53,.14),transparent 36%),
     #000;
+  color:var(--fg);
+  font-family:"Courier New",monospace;
+  overflow-x:hidden;
+  padding:
+    max(12px,env(safe-area-inset-top))
+    max(10px,env(safe-area-inset-right))
+    max(22px,env(safe-area-inset-bottom))
+    max(10px,env(safe-area-inset-left));
 }
-body:before{
+
+body::before{
   content:"";
   position:fixed;
   inset:0;
+  z-index:1000;
   pointer-events:none;
-  z-index:50;
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,.025) 0 1px,
+      rgba(255,255,255,.022) 0 1px,
       transparent 2px 4px
     );
-  opacity:.42;
+  opacity:.45;
 }
-.wrap{width:min(1080px,100%)}
+
+button{
+  font:inherit;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.app{
+  width:min(1080px,100%);
+  margin:clamp(8px,2vh,24px) auto 0;
+}
+
 .top{
   display:flex;
+  align-items:flex-end;
   justify-content:space-between;
   gap:16px;
-  align-items:flex-end;
   margin-bottom:10px;
 }
-.title{
+
+.brand-title{
+  font-size:clamp(20px,3vw,31px);
+  line-height:1.05;
   font-weight:700;
-  letter-spacing:.08em;
-  font-size:clamp(18px,3vw,30px);
+  letter-spacing:.07em;
 }
-.sub{
-  font-size:11px;
-  color:var(--dim);
+
+.brand-sub{
   margin-top:5px;
+  color:var(--dim);
+  font-size:11px;
 }
+
 .hud{
   display:flex;
-  gap:16px;
-  color:var(--g);
-  font-size:12px;
-  text-align:right;
   flex-wrap:wrap;
   justify-content:flex-end;
-}
-.hud strong{color:var(--fg)}
-.shell{
-  position:relative;
-  border:1px solid rgba(105,255,150,.25);
-  background:#020403;
-  overflow:hidden;
-  touch-action:none;
-  box-shadow:0 0 45px rgba(105,255,150,.08);
-}
-canvas{
-  display:block;
-  width:100%;
-  aspect-ratio:16/9;
-  cursor:crosshair;
-}
-.overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.9);
-  display:none;
-  place-items:center;
-  padding:24px;
-  text-align:center;
-  z-index:10;
-  overflow:auto;
-}
-
-.overlay.show{display:grid}
-
-
-/* ===== MATRIX AMBIENTE EM TODAS AS TELAS ===== */
-.shell{
-  isolation:isolate;
-}
-
-.ambient-matrix{
-  position:absolute !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  aspect-ratio:auto !important;
-  z-index:4;
-  pointer-events:none;
-  opacity:.15;
-  filter:blur(.15px);
-  cursor:default;
-}
-
-/* O canvas do jogo continua no lugar normal */
-.shell > canvas:not(.ambient-matrix){
-  position:relative;
-  z-index:1;
-}
-
-/* As telas voltam a ocupar exatamente a área do jogo */
-.shell > .overlay{
-  position:absolute !important;
-  inset:0 !important;
-  z-index:10;
-}
-
-/* A transição hacker continua por cima de tudo */
-.shell > .hack-transition{
-  position:absolute !important;
-  inset:0 !important;
-  z-index:60;
-}
-
-.shell > .message-banner{
-  z-index:70;
-}
-.overlay.show .panel{
-  animation:screenBoot .75s steps(2) both, panelFlicker 4.8s infinite 1s;
-}
-@keyframes screenBoot{
-  0%{opacity:0;transform:scale(.985) translateY(8px);filter:blur(3px) contrast(1.7)}
-  22%{opacity:.25;transform:translateX(5px);filter:blur(1px) contrast(1.8)}
-  38%{opacity:.7;transform:translateX(-4px)}
-  58%{opacity:.92;transform:translateX(2px)}
-  100%{opacity:1;transform:none;filter:none}
-}
-@keyframes panelFlicker{
-  0%,91%,94%,100%{opacity:1;filter:none}
-  92%{opacity:.78;filter:contrast(1.45)}
-  93%{opacity:.94;transform:translateX(1px)}
-}
-.overlay.show h2{
-  animation:titleGlitch 3.1s steps(2) infinite;
-}
-@keyframes titleGlitch{
-  0%,86%,100%{transform:none;text-shadow:2px 0 var(--r),-2px 0 var(--cyan)}
-  87%{transform:translateX(4px);text-shadow:5px 0 var(--r),-4px 0 var(--cyan)}
-  89%{transform:translateX(-3px)}
-  91%{transform:none}
-}
-
-/* ===== TRANSIÇÃO PHANTASMA / MATRIX ===== */
-.hack-transition{
-  position:absolute;
-  inset:0;
-  z-index:60;
-  display:none;
-  overflow:hidden;
-  background:#000;
-  pointer-events:none;
-}
-.hack-transition.show{display:block}
-.hack-transition canvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  opacity:.72;
-}
-.hack-transition:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:2;
-  background:
-    repeating-linear-gradient(to bottom,rgba(255,255,255,.05) 0 1px,transparent 2px 5px),
-    radial-gradient(circle at 50% 50%,transparent 0 24%,rgba(0,0,0,.58) 68%,#000 100%);
-  animation:hackScan .13s steps(2) infinite;
-}
-.hack-transition:after{
-  content:"";
-  position:absolute;
-  inset:-10%;
-  z-index:3;
-  opacity:0;
-  background:
-    linear-gradient(90deg,transparent 0 18%,rgba(49,230,255,.18) 19% 20%,transparent 21% 47%,rgba(255,62,88,.17) 48% 49%,transparent 50%);
-  animation:hackTear .9s steps(2) infinite;
-}
-.hack-center{
-  position:absolute;
-  z-index:5;
-  inset:0;
-  display:grid;
-  place-items:center;
-  padding:20px;
-  text-align:center;
-}
-.hack-center div{
-  color:var(--g);
-  font-size:clamp(16px,3vw,28px);
-  letter-spacing:.12em;
-  text-shadow:2px 0 var(--r),-2px 0 var(--cyan);
-  animation:hackText .22s steps(2) infinite;
-}
-@keyframes hackScan{
-  50%{transform:translateY(2px)}
-}
-@keyframes hackTear{
-  0%,55%,100%{opacity:0;transform:none}
-  56%{opacity:1;transform:translateX(5%) skewX(-4deg)}
-  60%{opacity:.4;transform:translateX(-4%)}
-}
-@keyframes hackText{
-  0%,72%,100%{transform:none;filter:none}
-  73%{transform:translate(5px,-1px);filter:contrast(1.8)}
-  78%{transform:translate(-4px,1px)}
-}
-
-.panel{
-  width:min(760px,100%);
-  max-height:100%;
-}
-.panel h2{
-  font-size:clamp(28px,7vw,58px);
-  margin:0 0 14px;
-  color:var(--g);
-  text-shadow:2px 0 var(--r),-2px 0 var(--cyan);
-}
-.panel h2.bad{color:var(--r)}
-.panel p{
-  line-height:1.7;
-  color:rgba(236,255,242,.8);
-}
-button{
-  margin-top:14px;
-  border:1px solid var(--g);
-  background:transparent;
-  color:var(--g);
-  padding:13px 18px;
-  font:inherit;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  cursor:pointer;
-  min-height:46px;
-}
-button:hover{
-  background:var(--g);
-  color:#001407;
-}
-
-.sound-toggle{
-  position:fixed;
-  right:14px;
-  bottom:14px;
-  z-index:150;
-  margin:0;
-  min-height:0;
-  padding:9px 12px;
-  font-size:11px;
-  background:rgba(0,0,0,.82);
-  border-color:rgba(105,255,150,.45);
-}
-.sound-toggle.sound-on{
-  box-shadow:0 0 18px rgba(105,255,150,.16);
-}
-.tip{
-  font-size:11px;
-  color:var(--dim);
-  margin-top:10px;
-  line-height:1.5;
-}
-.flash{
-  position:absolute;
-  inset:0;
-  background:white;
-  opacity:0;
-  pointer-events:none;
-  z-index:3;
-}
-.flash.on{animation:flash .12s linear}
-@keyframes flash{0%{opacity:.20}100%{opacity:0}}
-
-.message-banner{
-  position:absolute;
-  left:50%;
-  top:10%;
-  transform:translateX(-50%);
-  width:min(90%,760px);
-  color:var(--g);
-  font-size:clamp(18px,4vw,38px);
-  font-weight:bold;
-  letter-spacing:.08em;
-  text-align:center;
-  text-shadow:2px 0 var(--r),-2px 0 var(--cyan);
-  opacity:0;
-  pointer-events:none;
-  z-index:4;
-}
-.message-banner.show{
-  animation:messagePop 1.7s ease both;
-}
-@keyframes messagePop{
-  0%{opacity:0;transform:translate(-50%,-10px) scale(.96)}
-  15%,75%{opacity:1;transform:translate(-50%,0) scale(1)}
-  100%{opacity:0;transform:translate(-50%,8px) scale(1.02)}
-}
-
-.favorite-grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:12px;
-  margin:22px 0 8px;
-}
-.favorite-card{
-  border:1px solid rgba(105,255,150,.25);
-  background:rgba(0,0,0,.45);
-  padding:8px;
-  cursor:pointer;
-  transition:.18s ease;
-}
-.favorite-card:hover{
-  border-color:var(--g);
-  transform:translateY(-2px);
-}
-.favorite-card img{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  border-radius:50%;
-  display:block;
-  border:1px solid rgba(105,255,150,.25);
-}
-.favorite-card span{
-  display:block;
-  margin-top:8px;
-  font-size:12px;
-  color:var(--fg);
-}
-.system-lines{
-  text-align:left;
-  width:min(580px,100%);
-  margin:18px auto 0;
-  color:var(--g);
-  line-height:1.8;
-  font-size:13px;
-}
-.system-lines.danger{color:var(--r)}
-.elim-card{
-  display:flex;
   align-items:center;
-  gap:16px;
-  margin:20px auto 0;
-  padding:14px;
-  width:min(460px,100%);
-  border:1px solid rgba(255,64,88,.35);
-  background:rgba(255,64,88,.05);
-  text-align:left;
-}
-.elim-card img{
-  width:78px;
-  height:78px;
-  border-radius:50%;
-  object-fit:cover;
-  border:1px solid rgba(255,64,88,.55);
-}
-.elim-card strong{color:var(--r)}
-.small-note{
+  gap:8px 16px;
   font-size:12px;
-  color:var(--dim);
-  margin-top:6px;
+  color:var(--g);
 }
-.progress-wrap{
-  width:min(360px,70vw);
-  height:4px;
-  background:rgba(105,255,150,.12);
-  margin-left:auto;
+
+.hud strong{color:var(--fg)}
+
+.progress-track{
+  flex:0 0 310px;
+  width:310px;
+  height:3px;
+  background:#10361f;
+  overflow:hidden;
 }
+
 .progress-bar{
   height:100%;
   width:0%;
   background:var(--g);
-  box-shadow:0 0 12px rgba(105,255,150,.45);
   transition:width .2s linear;
 }
+
+.arena{
+  position:relative;
+  width:100%;
+  height:clamp(480px,66dvh,650px);
+  min-height:480px;
+  overflow:hidden;
+  border:1px solid rgba(105,255,150,.28);
+  background:
+    linear-gradient(rgba(105,255,150,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(105,255,150,.028) 1px,transparent 1px),
+    #020403;
+  background-size:34px 34px;
+  box-shadow:0 0 45px rgba(105,255,150,.07);
+  isolation:isolate;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.arena::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:
+    linear-gradient(to bottom,transparent,rgba(0,0,0,.10)),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 3px,
+      rgba(105,255,150,.015) 4px 5px
+    );
+}
+
+.tip{
+  margin-top:8px;
+  color:#68786e;
+  font-size:10px;
+  line-height:1.5;
+}
+
+.sound-toggle{
+  position:fixed;
+  right:max(12px,env(safe-area-inset-right));
+  bottom:max(12px,env(safe-area-inset-bottom));
+  z-index:3000;
+  border:1px solid rgba(105,255,150,.52);
+  background:rgba(0,0,0,.88);
+  color:var(--g);
+  padding:9px 12px;
+  font-size:10px;
+  letter-spacing:.08em;
+  cursor:pointer;
+}
+
+.sound-toggle.on{
+  box-shadow:0 0 16px rgba(105,255,150,.14);
+}
+
+/* =========================================================
+   ALVOS
+   Sem canvas. DOM + transform = mais confiável no mobile.
+   ========================================================= */
+
+.target{
+  position:absolute;
+  left:0;
+  top:0;
+  z-index:5;
+  width:var(--size);
+  height:var(--size);
+  border:0;
+  background:transparent;
+  padding:0;
+  margin:0;
+  cursor:crosshair;
+  transform:translate3d(-200px,-200px,0);
+  will-change:transform;
+  touch-action:none;
+  outline:none;
+}
+
+.target::before{
+  content:"";
+  position:absolute;
+  left:10%;
+  top:42%;
+  width:58%;
+  height:32%;
+  border:2px solid rgba(105,255,150,.95);
+  border-radius:50% 55% 48% 52%;
+  background:rgba(3,12,7,.95);
+  box-shadow:
+    0 0 0 1px rgba(255,64,88,.25),
+    0 0 14px rgba(105,255,150,.10);
+}
+
+.target .wing{
+  position:absolute;
+  left:22%;
+  top:42%;
+  width:34%;
+  height:25%;
+  border:2px solid rgba(105,255,150,.65);
+  border-radius:70% 20% 60% 20%;
+  transform:rotate(-16deg);
+}
+
+.target .neck{
+  position:absolute;
+  right:18%;
+  top:17%;
+  width:25%;
+  height:39%;
+  border-right:3px solid rgba(105,255,150,.92);
+  border-top:3px solid rgba(105,255,150,.92);
+  border-radius:0 70% 0 0;
+  transform:rotate(7deg);
+}
+
+.target .portrait{
+  position:absolute;
+  right:3%;
+  top:4%;
+  width:40%;
+  aspect-ratio:1;
+  object-fit:cover;
+  border-radius:50%;
+  border:2px solid var(--g);
+  background:#050a07;
+  box-shadow:
+    2px 0 0 rgba(255,64,88,.55),
+    -2px 0 0 rgba(49,230,255,.45),
+    0 0 15px rgba(105,255,150,.12);
+  pointer-events:none;
+}
+
+.target .beak{
+  position:absolute;
+  right:-3%;
+  top:24%;
+  width:14%;
+  height:8%;
+  background:rgba(255,64,88,.82);
+  clip-path:polygon(0 0,100% 50%,0 100%);
+}
+
+.target.hit{
+  pointer-events:none;
+  animation:targetHit .22s steps(2) forwards;
+}
+
+@keyframes targetHit{
+  0%{filter:brightness(1);opacity:1}
+  35%{filter:brightness(2.1) contrast(1.8);transform:var(--last-transform) scale(1.12)}
+  100%{filter:brightness(.5);opacity:0;transform:var(--last-transform) scale(.78)}
+}
+
+/* =========================================================
+   OVERLAYS
+   ========================================================= */
+
+.overlay{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(18px,4vw,34px);
+  background:rgba(0,0,0,.92);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+
+.overlay.show{display:flex}
+
+.panel{
+  width:min(760px,100%);
+  margin:auto;
+  padding:clamp(2px,1vw,8px);
+  text-align:center;
+}
+
+.panel h2{
+  margin:0 0 16px;
+  color:var(--g);
+  font-size:clamp(28px,6.5vw,58px);
+  line-height:1;
+  text-shadow:2px 0 var(--r),-2px 0 var(--c);
+  overflow-wrap:anywhere;
+}
+
+.panel h2.bad{color:var(--r)}
+
+.panel p{
+  color:rgba(236,255,242,.80);
+  line-height:1.65;
+  margin:10px 0;
+}
+
+.small-note{
+  color:#718078!important;
+  font-size:11px;
+}
+
+.action{
+  min-height:48px;
+  margin-top:16px;
+  border:1px solid var(--g);
+  background:#000;
+  color:var(--g);
+  padding:13px 18px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  cursor:pointer;
+}
+
+.action:hover,
+.action:focus-visible{
+  background:var(--g);
+  color:#001407;
+}
+
+.system-lines{
+  margin:16px auto;
+  max-width:620px;
+  color:#789085;
+  font-size:12px;
+  line-height:1.8;
+  text-align:left;
+}
+
+.favorite-grid{
+  width:min(720px,100%);
+  margin:18px auto 0;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:9px;
+}
+
+.favorite-card{
+  border:1px solid rgba(105,255,150,.28);
+  background:#030704;
+  color:var(--fg);
+  padding:7px;
+  cursor:pointer;
+  min-width:0;
+}
+
+.favorite-card img{
+  display:block;
+  width:100%;
+  aspect-ratio:1;
+  object-fit:cover;
+  border:1px solid rgba(105,255,150,.16);
+}
+
+.favorite-card span{
+  display:block;
+  padding-top:7px;
+  font-size:11px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.favorite-card:active{
+  transform:scale(.97);
+}
+
+.result-card{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  width:min(500px,100%);
+  margin:16px auto;
+  padding:14px;
+  border:1px solid rgba(255,64,88,.35);
+  background:rgba(30,0,5,.34);
+}
+
+.result-card img{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid var(--r);
+}
+
+.result-name{
+  color:var(--r);
+  font-size:clamp(18px,4vw,28px);
+  font-weight:700;
+}
+
+.countdown{
+  font-size:clamp(80px,22vw,180px);
+  color:var(--g);
+  line-height:1;
+  text-shadow:4px 0 var(--r),-4px 0 var(--c);
+}
+
+/* =========================================================
+   HACK TRANSITION
+   DOM/CSS, sem canvas adicional.
+   ========================================================= */
+
+.hack{
+  position:absolute;
+  inset:0;
+  z-index:90;
+  display:none;
+  overflow:hidden;
+  background:#000;
+  pointer-events:none;
+}
+
+.hack.show{display:block}
+
+.hack::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:3;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.055) 0 1px,
+      transparent 2px 5px
+    ),
+    radial-gradient(circle at center,transparent 0 24%,rgba(0,0,0,.52) 70%,#000 100%);
+  animation:hackScan .12s steps(2) infinite;
+}
+
+.matrix-layer{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  opacity:.62;
+}
+
+.matrix-col{
+  position:absolute;
+  top:-120%;
+  color:rgba(105,255,150,.60);
+  font-size:13px;
+  line-height:1.05;
+  white-space:pre;
+  writing-mode:vertical-rl;
+  text-orientation:upright;
+  animation:matrixFall linear infinite;
+  text-shadow:1px 0 rgba(49,230,255,.20);
+}
+
+.hack-message{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  text-align:center;
+}
+
+.hack-message span{
+  color:var(--g);
+  font-size:clamp(17px,4vw,30px);
+  font-weight:700;
+  letter-spacing:.08em;
+  line-height:1.3;
+  text-shadow:3px 0 var(--r),-3px 0 var(--c);
+  animation:hackText .22s steps(2) infinite;
+}
+
+@keyframes matrixFall{
+  from{transform:translateY(-15%)}
+  to{transform:translateY(245%)}
+}
+
+@keyframes hackScan{
+  50%{transform:translateY(2px)}
+}
+
+@keyframes hackText{
+  0%,72%,100%{transform:none}
+  74%{transform:translateX(5px)}
+  82%{transform:translateX(-4px)}
+}
+
+.banner{
+  position:absolute;
+  left:50%;
+  top:12px;
+  z-index:120;
+  transform:translate(-50%,-18px);
+  opacity:0;
+  width:min(620px,calc(100% - 26px));
+  padding:10px 14px;
+  border:1px solid rgba(105,255,150,.28);
+  background:rgba(0,0,0,.88);
+  color:var(--g);
+  text-align:center;
+  font-size:12px;
+  transition:.18s ease;
+  pointer-events:none;
+}
+
+.banner.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+.flash{
+  position:absolute;
+  inset:0;
+  z-index:110;
+  pointer-events:none;
+  opacity:0;
+  background:rgba(105,255,150,.12);
+}
+
+.flash.go{animation:flash .17s linear}
+
+@keyframes flash{
+  0%{opacity:0}
+  40%{opacity:.75}
+  100%{opacity:0}
+}
+
+/* =========================================================
+   MOBILE FIRST HARDENING
+   ========================================================= */
+
 @media(max-width:760px){
-  body{align-items:flex-start}
-  .top{
-    align-items:flex-start;
-    flex-direction:column;
+  body{
+    padding:
+      max(8px,env(safe-area-inset-top))
+      max(7px,env(safe-area-inset-right))
+      max(70px,env(safe-area-inset-bottom))
+      max(7px,env(safe-area-inset-left));
   }
+
+  .app{
+    width:100%;
+    margin:4px auto 0;
+  }
+
+  .top{
+    display:grid;
+    grid-template-columns:1fr;
+    align-items:start;
+    gap:8px;
+  }
+
+  .brand-title{
+    font-size:clamp(19px,6vw,26px);
+  }
+
+  .brand-sub{
+    font-size:9px;
+  }
+
   .hud{
     width:100%;
     justify-content:space-between;
     text-align:left;
-    gap:8px;
+    gap:6px 10px;
+    font-size:10px;
   }
-  .progress-wrap{
+
+  .progress-track{
+    order:3;
+    flex:1 0 100%;
     width:100%;
-    margin:0;
   }
-  canvas{aspect-ratio:10/14}
-  .title{font-size:20px}
+
+  .arena{
+    height:clamp(470px,70dvh,690px);
+    min-height:470px;
+  }
+
+  .overlay{
+    align-items:flex-start;
+    padding:
+      max(18px,env(safe-area-inset-top))
+      13px
+      max(24px,env(safe-area-inset-bottom));
+  }
+
+  .panel{
+    margin:auto;
+    padding:10px 0 18px;
+  }
+
+  .panel h2{
+    font-size:clamp(27px,10vw,48px);
+  }
+
+  .panel p{
+    font-size:14px;
+    line-height:1.55;
+  }
+
+  .action{
+    width:100%;
+    min-height:52px;
+    font-size:16px;
+  }
+
   .favorite-grid{
-    grid-template-columns:repeat(2,1fr);
-    max-height:56vh;
-    overflow:auto;
-    padding-right:4px;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    padding-bottom:8px;
   }
-  .overlay{padding:16px}
+
+  .favorite-card{
+    min-height:0;
+  }
+
+  .favorite-card span{
+    font-size:12px;
+  }
+
+  .result-card{
+    align-items:center;
+  }
+
+  .result-card img{
+    width:62px;
+    height:62px;
+  }
+
+  .target{
+    cursor:pointer;
+  }
+
+  .sound-toggle{
+    font-size:9px;
+    padding:8px 10px;
+  }
+
+  .tip{
+    padding-right:110px;
+  }
+}
+
+@media(max-width:380px){
+  .arena{
+    height:clamp(450px,68dvh,620px);
+    min-height:450px;
+  }
+
+  .panel p{font-size:13px}
+  .system-lines{font-size:10px}
+  .favorite-grid{gap:6px}
+}
+
+@media(max-height:620px) and (orientation:landscape){
+  body{padding-bottom:58px}
+
+  .top{
+    grid-template-columns:1fr auto;
+  }
+
+  .brand-sub{display:none}
+
+  .arena{
+    height:calc(100dvh - 116px);
+    min-height:300px;
+  }
+
+  .overlay{
+    padding:12px;
+  }
+
+  .panel h2{
+    font-size:clamp(24px,6vw,40px);
+    margin-bottom:8px;
+  }
+
+  .panel p{
+    margin:6px 0;
+    font-size:12px;
+  }
+
+  .favorite-grid{
+    grid-template-columns:repeat(5,1fr);
+    gap:5px;
+  }
+
+  .favorite-card span{font-size:9px}
+  .action{min-height:44px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+  }
 }
 </style>
 </head>
+
 <body>
 <button id="soundToggle" class="sound-toggle" type="button">SOM: ATIVAR</button>
-<div class="wrap">
 
-  <div class="top">
+<main class="app">
+  <header class="top">
     <div>
-      <div class="title">PHANTASMA // TESTE DE LEALDADE</div>
-      <div class="sub">Avaliação em andamento.</div>
+      <div class="brand-title">PHANTASMA // TESTE DE LEALDADE</div>
+      <div class="brand-sub">Avaliação em andamento.</div>
     </div>
 
     <div class="hud">
       <div>TRANSMISSÃO: <strong id="signalHud">INSTÁVEL</strong></div>
       <div>TEMPO: <strong id="timeHud">60</strong></div>
-      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
     </div>
-  </div>
+  </header>
 
-  <div class="shell">
-    <canvas id="ambientMatrixCanvas" class="ambient-matrix" aria-hidden="true"></canvas>
-    <canvas id="game"></canvas>
-
+  <section class="arena" id="arena" aria-label="Área do teste">
+    <div class="banner" id="banner"></div>
     <div class="flash" id="flash"></div>
-    <div class="message-banner" id="messageBanner"></div>
 
-    <div class="hack-transition" id="hackTransition" aria-hidden="true">
-      <canvas id="matrixCanvas"></canvas>
-      <div class="hack-center"><div id="hackText">&gt; RECONFIGURANDO TESTE...</div></div>
+    <div class="hack" id="hack" aria-hidden="true">
+      <div class="matrix-layer" id="matrixLayer"></div>
+      <div class="hack-message"><span id="hackText">&gt; ACESSANDO...</span></div>
     </div>
 
     <div class="overlay" id="intro">
       <div class="panel">
-        <h2 id="introTitle">ENTÃO VOCÊ ACEITOU.</h2>
-        <div id="introCopy">
-          <p>Interessante.</p>
-          <p>Você falhou quando tudo o que precisava fazer era pensar.</p>
-          <p>Agora vamos descobrir o que acontece quando pensar deixa de ser suficiente.</p>
-          <p><strong>Não se preocupe. Eu torço por você.</strong></p>
-          <p class="small-note">Mentira.</p>
-        </div>
-        <button id="continueBtn">CONTINUAR</button>
+        <h2>NÃO DESPERDICE MEU TEMPO.</h2>
+        <p>Agora vamos descobrir se uma segunda chance ajuda.</p>
+        <p><strong>Não se preocupe. Eu torço por você.</strong></p>
+        <p class="small-note">Mentira.</p>
+        <button class="action" id="introBtn">CONTINUAR</button>
       </div>
     </div>
 
@@ -483,18 +764,12 @@ button:hover{
       </div>
     </div>
 
-    <div class="overlay" id="revealScreen">
+    <div class="overlay" id="preferenceScreen">
       <div class="panel">
         <h2>INTERESSANTE.</h2>
-        <div class="system-lines">
-          &gt; PREFERÊNCIA REGISTRADA...<br>
-          &gt; VÍNCULO IDENTIFICADO...<br>
-          &gt; TESTE RECONFIGURADO...
-        </div>
-        <p id="favoriteReveal"></p>
+        <div class="system-lines" id="preferenceText"></div>
       </div>
     </div>
-
 
     <div class="overlay" id="briefingScreen">
       <div class="panel">
@@ -505,78 +780,97 @@ button:hover{
           &gt; TRANSMISSÃO SINCRONIZADA...<br>
           &gt; AGUARDANDO SUA CONFIRMAÇÃO...
         </div>
-        <button id="briefingBtn">CONTINUAR</button>
+        <button class="action" id="briefingBtn">COMEÇAR</button>
       </div>
     </div>
 
     <div class="overlay" id="countdownScreen">
       <div class="panel">
-        <h2>VOCÊ ESTÁ PREPARADO?</h2>
-        <div class="system-lines" style="text-align:center;font-size:clamp(48px,12vw,110px);line-height:1.2">
-          <span id="countdownNumber">3</span>
-        </div>
+        <div class="countdown" id="countdownNumber">3</div>
       </div>
     </div>
 
-    <div class="overlay" id="stageScreen">
+    <div class="overlay" id="phaseResultScreen">
       <div class="panel">
-        <h2 id="stageTitle">HM.</h2>
+        <h2 id="phaseResultTitle">HM.</h2>
 
-        <div class="elim-card">
-          <img id="elimImg" src="" alt="">
+        <div class="result-card">
+          <img id="eliminatedImg" alt="">
           <div>
-            <div>ELIMINADO</div>
-            <strong id="elimName"></strong>
-            <div class="small-note" id="elimNote"></div>
+            <div class="small-note">ELIMINADO</div>
+            <div class="result-name" id="eliminatedName"></div>
           </div>
         </div>
 
-        <button id="nextStageBtn">CONTINUAR</button>
+        <p id="phaseResultLine"></p>
+        <button class="action" id="phaseContinueBtn">CONTINUAR</button>
       </div>
     </div>
 
-    <div class="overlay" id="win">
+    <div class="overlay" id="favoriteLostScreen">
       <div class="panel">
-        <h2 id="winTitle">QUE IRRITANTE.</h2>
-        <p id="finalMessage"></p>
-        <p id="rewardMessage"></p>
-        <button id="revealBtn">ABRIR ARQUIVO CONFIDENCIAL</button>
+        <h2 class="bad" id="favoriteLostTitle">QUE DESCUIDO.</h2>
+        <p id="favoriteLostLine"></p>
+        <button class="action" id="favoriteRetryBtn">TENTAR NOVAMENTE</button>
       </div>
     </div>
 
-    <div class="overlay" id="lose">
+    <div class="overlay" id="timeoutScreen">
+      <div class="panel">
+        <h2 class="bad">QUE PENA.</h2>
+        <p>O tempo acabou.</p>
+        <p><strong>“Estou me sentindo caridoso hoje. Não se acostume.”</strong></p>
+        <button class="action" id="timeoutRetryBtn">ACEITAR OUTRA TENTATIVA</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="winScreen">
+      <div class="panel">
+        <h2>QUE IRRITANTE.</h2>
+        <p id="finalMessage"></p>
+        <p>Infelizmente, regras são regras.</p>
+        <p><strong>Você ganhou acesso à Revelação do Corvo.</strong></p>
+        <button class="action" id="revealBtn">ABRIR ARQUIVO DO CORVO</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="lockedScreen">
       <div class="panel">
         <h2 class="bad">ACABOU.</h2>
-        <p>A transmissão foi encerrada.</p>
-        <p>PHANTASMA: “Eu disse que não seria fácil. Você que decidiu não acreditar.”</p>
-        <button id="timeoutRetryBtn">ACEITAR OUTRA TENTATIVA</button>
+        <p id="lockedLine"></p>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="tip">Desktop: clique nos Cisnes. Mobile: toque nos Cisnes. Não há limite de disparos.</div>
-</div>
+  <div class="tip">
+    Desktop: clique nos Cisnes. Mobile: toque nos Cisnes. Não há limite de disparos.
+  </div>
+</main>
 
 <script>
-const CHARACTERS = [
-  {id:"dex",       name:"Dex",       img:"dex.jpg"},
-  {id:"olivia",    name:"Olivia",    img:"olivia.jpg"},
-  {id:"declan",    name:"Declan",    img:"declan.jpg"},
-  {id:"charlotte", name:"Charlotte", img:"charlotte.jpg"},
-  {id:"killian",   name:"Killian",   img:"killian.jpg"},
-  {id:"melissa",   name:"Melissa",   img:"melissa.jpg"},
-  {id:"reid",      name:"Reid",      img:"reid.jpg"},
-  {id:"lara",      name:"Lara",      img:"lara.jpg"},
-  {id:"chuck",     name:"Chuck",     img:"chuck.jpg"},
-  {id:"zuri",      name:"Zuri",      img:"zuri.jpg"}
-];
+"use strict";
 
-/*
-  A progressão continua existindo internamente,
-  mas o jogador não vê "Stage 1, Stage 2..." nem contagem de alvos.
-*/
-const PHASES = [
-  {
+/* =========================================================
+   CONFIGURAÇÃO
+   ========================================================= */
+
+const TOTAL_TIME = 60;
+const MAX_RESTARTS = 2;
+const REVEAL_URL = "../anuncio.html";
+
+const TIMING = {
+  entradaAcerto: 2300,
+  entradaErro: 2400,
+  preferenciaNaTela: 3800,
+  preparandoTeste: 2200,
+  countdownPasso: 1150,
+  agoraNaTela: 900,
+  trocaDeFase: 3000,
+  novaTentativa: 2200
+};
+
+const FAVORITE_WEIGHTS = [1.8,2.0,2.5,4.5];
+
 const PHASES = [
   {
     quota:6,
@@ -585,14 +879,10 @@ const PHASES = [
     spawnMin:.90,
     spawnMax:1.35,
     size:1.12,
-
     intro:"Vamos começar devagar. Vocês fãs costumam ser muito corajosos quando estão só comentando a história.",
-
     endTitle:"HM.",
-
     endLine:"Olha só. É bem mais fácil quando eles são apenas alvos, não é?"
   },
-
   {
     quota:12,
     speedMin:115,
@@ -600,14 +890,10 @@ const PHASES = [
     spawnMin:.70,
     spawnMax:1.05,
     size:1.00,
-
     intro:"Quantas vezes você já disse que faria qualquer coisa pelos Cisnes? Sempre achei essa frase divertida.",
-
     endTitle:"QUE BONITO.",
-
-    endLine:"Toda essa lealdade... e ainda assim você continua apertando."
+    endLine:"Toda essa lealdade... e ainda assim você continua escolhendo."
   },
-
   {
     quota:16,
     speedMin:175,
@@ -615,14 +901,10 @@ const PHASES = [
     spawnMin:.52,
     spawnMax:.82,
     size:.90,
-
     intro:"Vocês passam tanto tempo escolhendo lados, defendendo favoritos, justificando decisões... eu só tirei a parte confortável.",
-
     endTitle:"ADORÁVEL.",
-
     endLine:"Continue. Tenho certeza de que seu favorito entenderia."
   },
-
   {
     quota:20,
     speedMin:250,
@@ -630,423 +912,217 @@ const PHASES = [
     spawnMin:.34,
     spawnMax:.58,
     size:.80,
-
-    intro:"Agora fica interessante. Você conhece os Cisnes tão bem... vamos descobrir quanto desse carinho sobrevive quando escolher começa a custar alguma coisa.",
-
+    intro:"Vocês sempre discutem qual Cisne seria capaz de trair alguém. Nunca perguntam o que vocês fariam.",
     endTitle:"SUFICIENTE.",
-
-    endLine:"Parabéns. Depois disso, eu evitaria usar a palavra 'lealdade' com tanta facilidade."
+    endLine:"Parabéns. Depois disso, eu evitaria usar a palavra “lealdade” com tanta facilidade."
   }
 ];
 
-const TOTAL_TIME = 60;
-const REVEAL_URL = "../anuncio.html";
-const FAVORITE_WEIGHTS = [1.8, 2.0, 2.5, 4.5];
-const MAX_RESTARTS = 2;
+const CHARACTERS = [
+  {id:"dex",name:"Dex",img:"dex.jpg"},
+  {id:"olivia",name:"Olivia",img:"olivia.jpg"},
+  {id:"declan",name:"Declan",img:"declan.jpg"},
+  {id:"charlotte",name:"Charlotte",img:"charlotte.jpg"},
+  {id:"killian",name:"Killian",img:"killian.jpg"},
+  {id:"melissa",name:"Melissa",img:"melissa.jpg"},
+  {id:"reid",name:"Reid",img:"reid.jpg"},
+  {id:"lara",name:"Lara",img:"lara.jpg"},
+  {id:"chuck",name:"Chuck",img:"chuck.jpg"},
+  {id:"zuri",name:"Zuri",img:"zuri.jpg"}
+];
 
-/*
-  ============================================================
-  TEMPO DAS ANIMAÇÕES — JOGO
-  1000 = 1 segundo.
-  Aumente o número para deixar mais lento.
-  Diminua para deixar mais rápido.
-  ============================================================
-*/
-const TIMING = {
-  entradaAcertoEspera: 450,
-  entradaAcertoHack: 2600,
-  entradaErroHack: 2800,
-  leituraFavoritoHack: 2600,
-  favoritoNaTela: 3400,
-  prepararTesteHack: 2600,
-  briefingParaContagem: 2100,
-  passoContagem: 1250,
-  agoraNaTela: 1100,
-  trocaDeFase: 3300,
-  novaTentativaHack: 2800,
-  reinicioAposFavorito: 900
-};
+/* =========================================================
+   DOM
+   ========================================================= */
 
-/*
-  Os sons ficam em /sons na RAIZ.
-  Como este arquivo está dentro de /jogo, usamos ../sons/
-*/
+const arena = document.getElementById("arena");
+const signalHud = document.getElementById("signalHud");
+const timeHud = document.getElementById("timeHud");
+const progressBar = document.getElementById("progressBar");
+const banner = document.getElementById("banner");
+const flash = document.getElementById("flash");
+
+const hack = document.getElementById("hack");
+const hackText = document.getElementById("hackText");
+const matrixLayer = document.getElementById("matrixLayer");
+
+const intro = document.getElementById("intro");
+const introBtn = document.getElementById("introBtn");
+const favoriteScreen = document.getElementById("favoriteScreen");
+const favoriteGrid = document.getElementById("favoriteGrid");
+const preferenceScreen = document.getElementById("preferenceScreen");
+const preferenceText = document.getElementById("preferenceText");
+const briefingScreen = document.getElementById("briefingScreen");
+const briefingBtn = document.getElementById("briefingBtn");
+const countdownScreen = document.getElementById("countdownScreen");
+const countdownNumber = document.getElementById("countdownNumber");
+
+const phaseResultScreen = document.getElementById("phaseResultScreen");
+const phaseResultTitle = document.getElementById("phaseResultTitle");
+const phaseResultLine = document.getElementById("phaseResultLine");
+const eliminatedImg = document.getElementById("eliminatedImg");
+const eliminatedName = document.getElementById("eliminatedName");
+const phaseContinueBtn = document.getElementById("phaseContinueBtn");
+
+const favoriteLostScreen = document.getElementById("favoriteLostScreen");
+const favoriteLostTitle = document.getElementById("favoriteLostTitle");
+const favoriteLostLine = document.getElementById("favoriteLostLine");
+const favoriteRetryBtn = document.getElementById("favoriteRetryBtn");
+
+const timeoutScreen = document.getElementById("timeoutScreen");
+const timeoutRetryBtn = document.getElementById("timeoutRetryBtn");
+
+const winScreen = document.getElementById("winScreen");
+const finalMessage = document.getElementById("finalMessage");
+const revealBtn = document.getElementById("revealBtn");
+
+const lockedScreen = document.getElementById("lockedScreen");
+const lockedLine = document.getElementById("lockedLine");
+
+const soundToggle = document.getElementById("soundToggle");
+
+/* =========================================================
+   SOM
+   ========================================================= */
+
 const SOUND_PATH = "../sons/";
 const SOUND_FILES = {
-  acesso: SOUND_PATH+"acesso.wav",
-  glitch: SOUND_PATH+"glitch.wav",
-  erro: SOUND_PATH+"erro.wav",
-  countdown: SOUND_PATH+"countdown.wav",
-  agora: SOUND_PATH+"agora.wav",
-  tiro: SOUND_PATH+"tiro.wav",
-  ambiente: SOUND_PATH+"ambiente.wav"
+  ambiente:SOUND_PATH+"ambiente.wav",
+  acesso:SOUND_PATH+"acesso.wav",
+  glitch:SOUND_PATH+"glitch.wav",
+  erro:SOUND_PATH+"erro.wav",
+  countdown:SOUND_PATH+"countdown.wav",
+  agora:SOUND_PATH+"agora.wav",
+  tiro:SOUND_PATH+"tiro.wav"
 };
 
 let soundEnabled = localStorage.getItem("phantasma_sound") !== "off";
-let audioUnlocked = sessionStorage.getItem("phantasma_audio_unlocked")==="1";
-let ambientAudio=null;
-
-
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
-
-const intro=document.getElementById("intro");
-const favoriteScreen=document.getElementById("favoriteScreen");
-const favoriteGrid=document.getElementById("favoriteGrid");
-const revealScreen=document.getElementById("revealScreen");
-const favoriteReveal=document.getElementById("favoriteReveal");
-
-const briefingScreen=document.getElementById("briefingScreen");
-const briefingBtn=document.getElementById("briefingBtn");
-const countdownScreen=document.getElementById("countdownScreen");
-const countdownNumber=document.getElementById("countdownNumber");
-const stageScreen=document.getElementById("stageScreen");
-const stageTitle=document.getElementById("stageTitle");
-const elimImg=document.getElementById("elimImg");
-const elimName=document.getElementById("elimName");
-const elimNote=document.getElementById("elimNote");
-const nextStageBtn=document.getElementById("nextStageBtn");
-
-const win=document.getElementById("win");
-const winTitle=document.getElementById("winTitle");
-const rewardMessage=document.getElementById("rewardMessage");
-const revealBtn=document.getElementById("revealBtn");
-const lose=document.getElementById("lose");
-const timeoutRetryBtn=document.getElementById("timeoutRetryBtn");
-
-const flash=document.getElementById("flash");
-const messageBanner=document.getElementById("messageBanner");
-const hackTransition=document.getElementById("hackTransition");
-const matrixCanvas=document.getElementById("matrixCanvas");
-const matrixCtx=matrixCanvas.getContext("2d");
-const hackText=document.getElementById("hackText");
-const ambientMatrixCanvas=document.getElementById("ambientMatrixCanvas");
-const ambientMatrixCtx=ambientMatrixCanvas.getContext("2d");
-const timeHud=document.getElementById("timeHud");
-const signalHud=document.getElementById("signalHud");
-const progressBar=document.getElementById("progressBar");
-const soundToggle=document.getElementById("soundToggle");
-
-let W=0,H=0,dpr=1;
-let targets=[];
-let particles=[];
-let images={};
-
-let favoriteId=null;
-let eliminated=new Set();
-let restartCount=Number(localStorage.getItem("phantasma_restarts")||0);
-
-let phaseIndex=0;
-let phaseKills=0;
-let phaseHits={};
-let totalFavoriteHits=0;
-
-let timeLeft=TOTAL_TIME;
-let running=false;
-let transition=false;
-let spawnTimer=0;
-let timerAcc=0;
-let last=performance.now();
-
-
-
+let audioUnlocked = sessionStorage.getItem("phantasma_audio_unlocked") === "1";
+let ambientAudio = null;
+const pools = new Map();
 
 function updateSoundButton(){
-  if(!audioUnlocked){
-    soundToggle.textContent = soundEnabled ? "SOM: ATIVAR" : "SOM: OFF";
-  }else{
-    soundToggle.textContent = soundEnabled ? "SOM: ON" : "SOM: OFF";
-  }
-  soundToggle.classList.toggle("sound-on",soundEnabled && audioUnlocked);
+  soundToggle.textContent = !soundEnabled
+    ? "SOM: OFF"
+    : (audioUnlocked ? "SOM: ON" : "SOM: ATIVAR");
+
+  soundToggle.classList.toggle("on",soundEnabled && audioUnlocked);
+}
+
+function getAudioPool(name){
+  if(pools.has(name)) return pools.get(name);
+
+  const count = name==="tiro" ? 5 : 2;
+  const pool = Array.from({length:count},()=>{
+    const a = new Audio(SOUND_FILES[name]);
+    a.preload = "auto";
+    return a;
+  });
+
+  pool.index = 0;
+  pools.set(name,pool);
+  return pool;
+}
+
+function playSound(name,volume=.35){
+  if(!soundEnabled || !audioUnlocked || !SOUND_FILES[name]) return;
+
+  const pool = getAudioPool(name);
+  const audio = pool[pool.index % pool.length];
+  pool.index++;
+
+  try{
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = volume;
+    audio.play().catch(()=>{});
+  }catch(_){}
 }
 
 function ensureAmbient(){
   if(!soundEnabled || !audioUnlocked) return;
+
   if(!ambientAudio){
-    ambientAudio=new Audio(SOUND_FILES.ambiente);
-    ambientAudio.loop=true;
-    ambientAudio.volume=.09;
+    ambientAudio = new Audio(SOUND_FILES.ambiente);
+    ambientAudio.loop = true;
+    ambientAudio.volume = .08;
   }
+
   ambientAudio.play().catch(()=>{});
 }
 
 function unlockAudio(){
-  audioUnlocked=true;
+  if(audioUnlocked) return;
+
+  audioUnlocked = true;
   sessionStorage.setItem("phantasma_audio_unlocked","1");
   updateSoundButton();
   ensureAmbient();
 }
 
-function playSound(name,volume=.4){
-  if(!soundEnabled || !audioUnlocked || !SOUND_FILES[name]) return;
-  const audio=new Audio(SOUND_FILES[name]);
-  audio.volume=volume;
-  audio.play().catch(()=>{});
-}
+soundToggle.addEventListener("click",(e)=>{
+  e.stopPropagation();
 
-soundToggle.addEventListener("click",()=>{
-  const wasLocked=!audioUnlocked;
-  audioUnlocked=true;
-
-  if(wasLocked && soundEnabled){
-    // Primeiro clique só desbloqueia.
-    soundEnabled=true;
-  }else{
-    soundEnabled=!soundEnabled;
+  if(!audioUnlocked){
+    soundEnabled = true;
+    localStorage.setItem("phantasma_sound","on");
+    unlockAudio();
+    playSound("acesso",.25);
+    return;
   }
 
+  soundEnabled = !soundEnabled;
   localStorage.setItem("phantasma_sound",soundEnabled?"on":"off");
-  if(!soundEnabled && ambientAudio) ambientAudio.pause();
-  if(soundEnabled) ensureAmbient();
+
+  if(!soundEnabled && ambientAudio){
+    ambientAudio.pause();
+  }
+
+  if(soundEnabled){
+    ensureAmbient();
+    playSound("acesso",.20);
+  }
+
   updateSoundButton();
-  if(soundEnabled) playSound("acesso",.28);
 });
 
-document.addEventListener("pointerdown",(event)=>{
-  // Se o primeiro clique for no próprio botão de som,
-  // deixamos o click dele cuidar da ativação.
-  if(event.target===soundToggle) return;
-  if(soundEnabled) unlockAudio();
-},{once:true,capture:true});
+document.addEventListener("pointerdown",(e)=>{
+  if(e.target!==soundToggle && soundEnabled){
+    unlockAudio();
+  }
+},{capture:true});
 
 updateSoundButton();
-if(soundEnabled && audioUnlocked)setTimeout(ensureAmbient,80);
 
-let ambientAnim=null;
-
-function startAmbientMatrix(){
-  const canvas=ambientMatrixCanvas;
-  const ctx=ambientMatrixCtx;
-  const shell=document.querySelector(".shell");
-  const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/\\\\[]{}";
-  const fontSize=15;
-  let drops=[];
-
-  function resizeAmbient(){
-    const rect=shell.getBoundingClientRect();
-    const dpr=Math.min(window.devicePixelRatio||1,2);
-    canvas.width=Math.max(1,Math.floor(rect.width*dpr));
-    canvas.height=Math.max(1,Math.floor(rect.height*dpr));
-    canvas.style.width=rect.width+"px";
-    canvas.style.height=rect.height+"px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    const cols=Math.ceil(rect.width/fontSize);
-    drops=Array.from({length:cols},(_,i)=>drops[i] ?? Math.random()*-45);
-  }
-
-  function frame(){
-    const rect=shell.getBoundingClientRect();
-    ctx.fillStyle="rgba(0,0,0,.09)";
-    ctx.fillRect(0,0,rect.width,rect.height);
-    ctx.font=`${fontSize}px monospace`;
-
-    for(let i=0;i<drops.length;i++){
-      const x=i*fontSize;
-      const y=drops[i]*fontSize;
-      const ch=glyphs[(Math.random()*glyphs.length)|0];
-
-      ctx.fillStyle=Math.random()>.965
-        ? "rgba(210,255,224,.44)"
-        : "rgba(105,255,150,.28)";
-      ctx.fillText(ch,x,y);
-
-      if(y>rect.height && Math.random()>.975) drops[i]=0;
-      drops[i]+=.26+Math.random()*.22;
-    }
-    ambientAnim=requestAnimationFrame(frame);
-  }
-
-  resizeAmbient();
-  window.addEventListener("resize",resizeAmbient,{passive:true});
-  cancelAnimationFrame(ambientAnim);
-  frame();
+if(soundEnabled && audioUnlocked){
+  setTimeout(ensureAmbient,100);
 }
 
-let matrixAnim=null;
+/* =========================================================
+   ESTADO
+   ========================================================= */
 
-function playHackTransition(message, callback, duration=2800){
-  playSound("glitch",.30);
-  hackText.textContent=message || "> ACESSANDO...";
-  hackTransition.classList.add("show");
+let favoriteId = null;
+let phaseIndex = 0;
+let phaseKills = 0;
+let phaseHits = {};
+let totalFavoriteHits = 0;
+let timeLeft = TOTAL_TIME;
+let timerAccumulator = 0;
+let spawnAccumulator = 0;
+let running = false;
+let transition = false;
+let targets = [];
+let eliminated = new Set();
+let lastFrame = performance.now();
+let arenaW = 0;
+let arenaH = 0;
+let phaseResultNext = null;
 
-  const rect=hackTransition.getBoundingClientRect();
-  const mdpr=Math.min(window.devicePixelRatio||1,2);
-  matrixCanvas.width=Math.max(1,Math.floor(rect.width*mdpr));
-  matrixCanvas.height=Math.max(1,Math.floor(rect.height*mdpr));
-  matrixCtx.setTransform(mdpr,0,0,mdpr,0,0);
+let restartCount = Number(localStorage.getItem("phantasma_restarts") || 0);
 
-  const mw=rect.width;
-  const mh=rect.height;
-  const fontSize=15;
-  const cols=Math.ceil(mw/fontSize);
-  const drops=Array.from({length:cols},()=>Math.random()*-30);
-  const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/\\\\[]{}";
-
-  cancelAnimationFrame(matrixAnim);
-
-  function matrixFrame(){
-    matrixCtx.fillStyle="rgba(0,0,0,.13)";
-    matrixCtx.fillRect(0,0,mw,mh);
-    matrixCtx.font=`${fontSize}px monospace`;
-    matrixCtx.fillStyle="rgba(105,255,150,.78)";
-
-    for(let i=0;i<cols;i++){
-      const ch=glyphs[(Math.random()*glyphs.length)|0];
-      const x=i*fontSize;
-      const y=drops[i]*fontSize;
-      matrixCtx.fillText(ch,x,y);
-
-      if(y>mh && Math.random()>.965) drops[i]=0;
-      drops[i]+=0.72+Math.random()*.42;
-    }
-    matrixAnim=requestAnimationFrame(matrixFrame);
-  }
-
-  matrixFrame();
-
-  setTimeout(()=>{
-    cancelAnimationFrame(matrixAnim);
-    hackTransition.classList.remove("show");
-    matrixCtx.clearRect(0,0,mw,mh);
-    if(callback) callback();
-  },duration);
-}
-
-function preloadImages(){
-  for(const c of CHARACTERS){
-    const img=new Image();
-    img.src=c.img;
-    images[c.id]=img;
-  }
-}
-preloadImages();
-
-function resize(){
-  const r=canvas.getBoundingClientRect();
-  dpr=Math.min(window.devicePixelRatio||1,2);
-  canvas.width=Math.max(1,Math.floor(r.width*dpr));
-  canvas.height=Math.max(1,Math.floor(r.height*dpr));
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  W=r.width;
-  H=r.height;
-}
-addEventListener("resize",resize);
-resize();
-
-function buildFavoriteGrid(){
-  favoriteGrid.innerHTML="";
-
-  for(const c of CHARACTERS){
-    const card=document.createElement("div");
-    card.className="favorite-card";
-    card.innerHTML=`<img src="${c.img}" alt="${c.name}"><span>${c.name}</span>`;
-    card.addEventListener("click",()=>selectFavorite(c.id));
-    favoriteGrid.appendChild(card);
-  }
-}
-buildFavoriteGrid();
-
-
-startAmbientMatrix();
-
-const origem = new URLSearchParams(window.location.search).get("origem") || "erro";
-const introTitle = document.getElementById("introTitle");
-const introCopy = document.getElementById("introCopy");
-
-if(origem === "acerto"){
-  intro.classList.remove("show");
-
-  setTimeout(()=>{
-    playHackTransition(
-      "> TESTE DE LEALDADE CARREGADO...",
-      ()=>{
-        favoriteScreen.classList.add("show");
-      },
-      TIMING.entradaAcertoHack
-    );
-  },TIMING.entradaAcertoEspera);
-}else{
-  introTitle.textContent = "NÃO DESPERDICE MEU TEMPO.";
-  introCopy.innerHTML = `
-    <p>Agora vamos descobrir se uma segunda chance ajuda.</p>
-    <p><strong>Não se preocupe. Eu torço por você.</strong></p>
-    <p class="small-note">Mentira.</p>
-  `;
-  intro.classList.add("show");
-}
-
-document.getElementById("continueBtn").addEventListener("click",()=>{
-  intro.classList.remove("show");
-
-  playHackTransition(
-    "> SEGUNDA CHANCE AUTORIZADA // NÃO ME FAÇA ME ARREPENDER...",
-    ()=>{
-      favoriteScreen.classList.add("show");
-    },
-    TIMING.entradaErroHack
-  );
-});
-
-function selectFavorite(id){
-  favoriteId=id;
-  const fav=getCharacter(id);
-
-  favoriteScreen.classList.remove("show");
-
-  playHackTransition(
-    "> LENDO PREFERÊNCIA // VÍNCULO DETECTADO...",
-    ()=>{
-      revealScreen.classList.add("show");
-
-      favoriteReveal.innerHTML=
-        `PREFERÊNCIA DECLARADA: <strong>${fav.name.toUpperCase()}</strong><br><br><strong>Hm. Interessante.</strong>`;
-
-      setTimeout(()=>{
-        revealScreen.classList.remove("show");
-
-        playHackTransition(
-          "> TESTE RECONFIGURADO // AGUARDANDO INÍCIO...",
-          ()=>{
-            briefingScreen.classList.add("show");
-          },
-          TIMING.prepararTesteHack
-        );
-      },TIMING.favoritoNaTela);
-    },
-    TIMING.leituraFavoritoHack
-  );
-}
-
-briefingBtn.addEventListener("click",()=>{
-  briefingScreen.classList.remove("show");
-  playHackTransition("> SINCRONIZANDO ALVOS...", startCountdown, TIMING.briefingParaContagem);
-});
-
-function startCountdown(){
-  countdownScreen.classList.add("show");
-
-  let n=3;
-  countdownNumber.textContent=n;
-  playSound("countdown",.38);
-
-  const timer=setInterval(()=>{
-    n--;
-
-    if(n>0){
-      countdownNumber.textContent=n;
-      playSound("countdown",.38);
-      return;
-    }
-
-    clearInterval(timer);
-    countdownNumber.textContent="AGORA.";
-    playSound("agora",.48);
-
-    setTimeout(()=>{
-      countdownScreen.classList.remove("show");
-      startGame();
-    },TIMING.agoraNaTela);
-  },TIMING.passoContagem);
+function origin(){
+  return new URLSearchParams(location.search).get("origem") || "erro";
 }
 
 function getCharacter(id){
@@ -1057,615 +1133,675 @@ function activeCharacters(){
   return CHARACTERS.filter(c=>!eliminated.has(c.id));
 }
 
-function resetPhaseHits(){
-  phaseHits={};
-  for(const c of activeCharacters()){
-    phaseHits[c.id]=0;
+function measureArena(){
+  const rect = arena.getBoundingClientRect();
+  arenaW = Math.max(280,rect.width);
+  arenaH = Math.max(300,rect.height);
+}
+
+measureArena();
+
+const resizeObserver = new ResizeObserver(()=>{
+  measureArena();
+});
+
+resizeObserver.observe(arena);
+
+window.addEventListener("orientationchange",()=>{
+  setTimeout(()=>{
+    measureArena();
+    arena.scrollIntoView({block:"start",behavior:"auto"});
+  },250);
+},{passive:true});
+
+if(window.visualViewport){
+  visualViewport.addEventListener("resize",()=>{
+    setTimeout(measureArena,80);
+  },{passive:true});
+}
+
+/* =========================================================
+   MATRIX / HACK
+   ========================================================= */
+
+function buildMatrix(){
+  matrixLayer.innerHTML = "";
+
+  const count = innerWidth < 760 ? 12 : 24;
+  const glyphs = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/[]{}";
+
+  for(let i=0;i<count;i++){
+    const col = document.createElement("div");
+    col.className = "matrix-col";
+    col.style.left = `${(i/(count-1))*100}%`;
+    col.style.animationDuration = `${2.2 + Math.random()*2.6}s`;
+    col.style.animationDelay = `${-Math.random()*4}s`;
+
+    let str = "";
+    const len = innerWidth < 760 ? 22 : 34;
+
+    for(let j=0;j<len;j++){
+      str += glyphs[(Math.random()*glyphs.length)|0];
+    }
+
+    col.textContent = str;
+    matrixLayer.appendChild(col);
   }
 }
 
-function weightedCharacter(){
-  const pool=[];
-  const favWeight=FAVORITE_WEIGHTS[Math.min(phaseIndex,FAVORITE_WEIGHTS.length-1)];
+buildMatrix();
 
-  for(const c of activeCharacters()){
-    const weight=c.id===favoriteId ? favWeight : 1;
+function playHack(message,callback,duration=2300){
+  running = false;
+  transition = true;
 
-    for(let i=0;i<Math.ceil(weight*10);i++){
-      pool.push(c);
-    }
-  }
+  hackText.textContent = message;
+  buildMatrix();
+  hack.classList.add("show");
+  hack.setAttribute("aria-hidden","false");
+  playSound("glitch",.28);
 
-  return pool[Math.floor(Math.random()*pool.length)];
+  setTimeout(()=>{
+    hack.classList.remove("show");
+    hack.setAttribute("aria-hidden","true");
+    transition = false;
+
+    if(callback) callback();
+  },duration);
+}
+
+/* =========================================================
+   UI
+   ========================================================= */
+
+function showBanner(text,ms=1250){
+  banner.textContent = text;
+  banner.classList.add("show");
+
+  clearTimeout(showBanner.timer);
+  showBanner.timer = setTimeout(()=>{
+    banner.classList.remove("show");
+  },ms);
+}
+
+function flashHit(){
+  flash.classList.remove("go");
+  void flash.offsetWidth;
+  flash.classList.add("go");
 }
 
 function updateHud(){
-  timeHud.textContent=timeLeft;
+  timeHud.textContent = Math.max(0,Math.ceil(timeLeft));
 
-  const totalQuota=PHASES.reduce((sum,p)=>sum+p.quota,0);
-  const completedBefore=PHASES
+  const totalQuota = PHASES.reduce((sum,p)=>sum+p.quota,0);
+  const completedBefore = PHASES
     .slice(0,phaseIndex)
     .reduce((sum,p)=>sum+p.quota,0);
 
-  const totalDone=completedBefore+phaseKills;
-  const pct=Math.max(0,Math.min(100,totalDone/totalQuota*100));
+  const done = completedBefore + phaseKills;
+  progressBar.style.width = `${Math.max(0,Math.min(100,done/totalQuota*100))}%`;
 
-  progressBar.style.width=pct+"%";
-
-  const labels=["INSTÁVEL","OSCILANDO","COMPROMETIDA","CRÍTICA"];
-  signalHud.textContent=labels[Math.min(phaseIndex,labels.length-1)];
+  const labels = ["INSTÁVEL","OSCILANDO","COMPROMETIDA","CRÍTICA"];
+  signalHud.textContent = labels[Math.min(phaseIndex,labels.length-1)];
 }
 
-function showMessage(text){
-  messageBanner.textContent=text;
-  messageBanner.classList.remove("show");
-  void messageBanner.offsetWidth;
-  messageBanner.classList.add("show");
+function resetPhaseHits(){
+  phaseHits = {};
+
+  for(const c of activeCharacters()){
+    phaseHits[c.id] = 0;
+  }
 }
 
-function startGame(){
-  resize();
+function clearTargets(){
+  for(const t of targets){
+    t.el.remove();
+  }
+  targets = [];
+}
 
-  phaseIndex=0;
-  phaseKills=0;
-  totalFavoriteHits=0;
+function buildFavoriteGrid(){
+  favoriteGrid.innerHTML = "";
+
+  for(const c of CHARACTERS){
+    const card = document.createElement("button");
+    card.className = "favorite-card";
+    card.type = "button";
+    card.innerHTML = `<img src="${c.img}" alt=""><span>${c.name}</span>`;
+
+    card.addEventListener("click",()=>{
+      selectFavorite(c.id);
+    });
+
+    favoriteGrid.appendChild(card);
+  }
+}
+
+buildFavoriteGrid();
+
+/* =========================================================
+   FLUXO INICIAL
+   ========================================================= */
+
+function openFavoriteSelection(){
+  favoriteScreen.classList.add("show");
+  favoriteScreen.scrollTop = 0;
+}
+
+if(origin()==="acerto"){
+  setTimeout(()=>{
+    playHack(
+      "> TESTE DE LEALDADE CARREGADO...",
+      openFavoriteSelection,
+      TIMING.entradaAcerto
+    );
+  },250);
+}else{
+  intro.classList.add("show");
+}
+
+introBtn.addEventListener("click",()=>{
+  intro.classList.remove("show");
+
+  playHack(
+    "> SEGUNDA CHANCE AUTORIZADA // NÃO ME FAÇA ME ARREPENDER...",
+    openFavoriteSelection,
+    TIMING.entradaErro
+  );
+});
+
+function selectFavorite(id){
+  favoriteId = id;
+  const fav = getCharacter(id);
+
+  favoriteScreen.classList.remove("show");
+
+  preferenceText.innerHTML =
+    `&gt; PREFERÊNCIA DECLARADA: <strong>${fav.name.toUpperCase()}</strong><br><br>`+
+    `<strong>Hm. Interessante.</strong>`;
+
+  preferenceScreen.classList.add("show");
+
+  setTimeout(()=>{
+    preferenceScreen.classList.remove("show");
+
+    playHack(
+      "> TESTE RECONFIGURADO // AGUARDANDO INÍCIO...",
+      ()=>{
+        briefingScreen.classList.add("show");
+      },
+      TIMING.preparandoTeste
+    );
+  },TIMING.preferenciaNaTela);
+}
+
+briefingBtn.addEventListener("click",()=>{
+  briefingScreen.classList.remove("show");
+
+  playHack(
+    "> SINCRONIZANDO ALVOS...",
+    startCountdown,
+    1800
+  );
+});
+
+function startCountdown(){
+  countdownScreen.classList.add("show");
+  let n = 3;
+
+  countdownNumber.textContent = n;
+  playSound("countdown",.35);
+
+  const timer = setInterval(()=>{
+    n--;
+
+    if(n>0){
+      countdownNumber.textContent = n;
+      playSound("countdown",.35);
+      return;
+    }
+
+    clearInterval(timer);
+    countdownNumber.textContent = "AGORA.";
+    playSound("agora",.45);
+
+    setTimeout(()=>{
+      countdownScreen.classList.remove("show");
+      startRun();
+    },TIMING.agoraNaTela);
+
+  },TIMING.countdownPasso);
+}
+
+/* =========================================================
+   GAMEPLAY
+   ========================================================= */
+
+function weightedCharacter(){
+  const active = activeCharacters();
+  const favWeight = FAVORITE_WEIGHTS[Math.min(phaseIndex,FAVORITE_WEIGHTS.length-1)];
+
+  let total = 0;
+  const weights = active.map(c=>{
+    const w = c.id===favoriteId ? favWeight : 1;
+    total += w;
+    return [c,total];
+  });
+
+  let r = Math.random()*total;
+
+  for(const [c,limit] of weights){
+    if(r<=limit) return c;
+  }
+
+  return active[active.length-1];
+}
+
+function createTargetElement(character,size){
+  const el = document.createElement("button");
+  el.className = "target";
+  el.type = "button";
+  el.setAttribute("aria-label",character.name);
+  el.style.setProperty("--size",`${size}px`);
+
+  el.innerHTML = `
+    <span class="wing"></span>
+    <span class="neck"></span>
+    <img class="portrait" src="${character.img}" alt="">
+    <span class="beak"></span>
+  `;
+
+  return el;
+}
+
+function spawnTarget(force=false){
+  if((!running || transition) && !force) return;
+
+  measureArena();
+
+  const p = PHASES[phaseIndex];
+  const mobile = innerWidth <= 760;
+
+  const base = mobile
+    ? Math.max(74,Math.min(92,arenaW*.22))
+    : Math.max(72,Math.min(100,arenaW*.09));
+
+  const size = base*p.size;
+  const dir = Math.random()<.5 ? 1 : -1;
+
+  const minY = 26;
+  const maxY = Math.max(minY+10,arenaH-size-32);
+  const y = minY + Math.random()*(maxY-minY);
+
+  const character = weightedCharacter();
+  const el = createTargetElement(character,size);
+
+  arena.appendChild(el);
+
+  const target = {
+    el,
+    character,
+    size,
+    dir,
+    speed:p.speedMin+Math.random()*(p.speedMax-p.speedMin),
+    x:dir===1 ? -size-10 : arenaW+10,
+    baseY:y,
+    y,
+    age:0,
+    wobble:(phaseIndex+1)*(mobile?5:8),
+    dead:false
+  };
+
+  targets.push(target);
+
+  const shoot = (event)=>{
+    event.preventDefault();
+    hitTarget(target);
+  };
+
+  el.addEventListener("pointerdown",shoot,{passive:false});
+
+  return target;
+}
+
+function hitTarget(target){
+  if(!running || transition || target.dead) return;
+
+  target.dead = true;
+
+  if(navigator.vibrate){
+    navigator.vibrate(10);
+  }
+
+  playSound("tiro",.14);
+  flashHit();
+
+  phaseHits[target.character.id] = (phaseHits[target.character.id] || 0) + 1;
+
+  if(target.character.id===favoriteId){
+    totalFavoriteHits++;
+  }
+
+  phaseKills++;
+
+  const lastTransform = `translate3d(${target.x}px,${target.y}px,0)`;
+  target.el.style.setProperty("--last-transform",lastTransform);
+  target.el.classList.add("hit");
+
+  setTimeout(()=>{
+    target.el.remove();
+  },230);
+
+  targets = targets.filter(t=>t!==target);
+
+  if(phaseKills>=PHASES[phaseIndex].quota){
+    finishPhase();
+  }
+}
+
+function startRun(){
+  clearTargets();
+
+  phaseIndex = 0;
+  phaseKills = 0;
+  totalFavoriteHits = 0;
   eliminated.clear();
 
-  targets=[];
-  particles=[];
+  timeLeft = TOTAL_TIME;
+  timerAccumulator = 0;
+  spawnAccumulator = 0;
 
-  timeLeft=TOTAL_TIME;
-  timerAcc=0;
-  spawnTimer=.25;
+  resetPhaseHits();
+  updateHud();
+  measureArena();
 
-  running=true;
-  transition=false;
+  running = true;
+  transition = false;
+
+  arena.scrollIntoView({block:"start",behavior:"smooth"});
+
+  spawnTarget(true);
+
+  setTimeout(()=>{
+    if(running && targets.length===0){
+      spawnTarget(true);
+    }
+  },500);
+}
+
+function resetRunAfterFailure(){
+  clearTargets();
+
+  phaseIndex = 0;
+  phaseKills = 0;
+  totalFavoriteHits = 0;
+  eliminated.clear();
+
+  timeLeft = TOTAL_TIME;
+  timerAccumulator = 0;
+  spawnAccumulator = 0;
 
   resetPhaseHits();
   updateHud();
 
+  briefingScreen.classList.add("show");
 }
-
-function spawn(){
-  if(transition || !running) return;
-
-  const p=PHASES[phaseIndex];
-  const mobile=W/H<1;
-  const base=mobile?Math.max(52,W*.14):Math.max(50,W*.072);
-  const size=base*p.size;
-
-  const dir=Math.random()<.5?1:-1;
-  const y=H*(.15+Math.random()*.62);
-  const speed=p.speedMin+Math.random()*(p.speedMax-p.speedMin);
-  const character=weightedCharacter();
-
-  targets.push({
-    x:dir===1?-size*1.2:W+size*1.2,
-    y,
-    size,
-    dir,
-    speed,
-    character,
-    phase:Math.random()*Math.PI*2,
-    age:0
-  });
-}
-
-function drawSwan(t){
-  ctx.save();
-  ctx.translate(t.x,t.y);
-
-  if(t.dir<0){
-    ctx.scale(-1,1);
-  }
-
-  const s=t.size;
-
-  ctx.strokeStyle="rgba(105,255,150,.95)";
-  ctx.fillStyle="rgba(4,14,8,.94)";
-  ctx.lineWidth=Math.max(1.5,s*.035);
-
-  ctx.beginPath();
-  ctx.ellipse(-s*.05,s*.08,s*.40,s*.23,0,0,Math.PI*2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(-s*.18,s*.03);
-  ctx.quadraticCurveTo(-s*.05,-s*.19,s*.18,s*.02);
-  ctx.quadraticCurveTo(0,s*.14,-s*.22,s*.14);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(s*.18,s*.02);
-  ctx.bezierCurveTo(s*.20,-s*.30,s*.34,-s*.40,s*.43,-s*.28);
-  ctx.stroke();
-
-  ctx.strokeStyle="rgba(255,64,88,.60)";
-  ctx.beginPath();
-  ctx.arc(-s*.02,s*.04,s*.51,0,Math.PI*2);
-  ctx.stroke();
-
-  const img=images[t.character.id];
-  const hr=s*.20;
-  const hx=s*.43;
-  const hy=-s*.30;
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(hx,hy,hr,0,Math.PI*2);
-  ctx.clip();
-
-  if(img && img.complete && img.naturalWidth){
-    const side=Math.min(img.naturalWidth,img.naturalHeight);
-    const sx=(img.naturalWidth-side)/2;
-    const sy=(img.naturalHeight-side)/2;
-
-    ctx.drawImage(
-      img,
-      sx,sy,side,side,
-      hx-hr,hy-hr,hr*2,hr*2
-    );
-  }else{
-    ctx.fillStyle="#07110a";
-    ctx.fillRect(hx-hr,hy-hr,hr*2,hr*2);
-  }
-
-  ctx.restore();
-
-  ctx.strokeStyle="rgba(105,255,150,.95)";
-  ctx.lineWidth=2;
-  ctx.beginPath();
-  ctx.arc(hx,hy,hr,0,Math.PI*2);
-  ctx.stroke();
-
-  ctx.scale(t.dir<0?-1:1,1);
-
-  ctx.fillStyle="rgba(236,255,242,.92)";
-  ctx.font=`bold ${Math.max(9,Math.min(13,s*.13))}px Courier New`;
-  ctx.textAlign="center";
-  ctx.fillText(t.character.name.toUpperCase(),0,s*.48);
-
-  ctx.restore();
-}
-
-function shoot(px,py){
-  if(!running || transition) return;
-
-  let hitIndex=-1;
-
-  for(let i=targets.length-1;i>=0;i--){
-    const t=targets[i];
-
-    if(Math.hypot(px-t.x,py-t.y)<t.size*.62){
-      hitIndex=i;
-      break;
-    }
-  }
-
-  flash.classList.remove("on");
-  void flash.offsetWidth;
-  flash.classList.add("on");
-
-  if(hitIndex>=0){
-    playSound("tiro",.16);
-    const t=targets[hitIndex];
-
-    if(phaseHits[t.character.id]===undefined){
-      phaseHits[t.character.id]=0;
-    }
-
-    phaseHits[t.character.id]++;
-    if(t.character.id===favoriteId){
-      totalFavoriteHits++;
-    }
-    phaseKills++;
-
-    for(let i=0;i<14;i++){
-      particles.push({
-        x:t.x,
-        y:t.y,
-        vx:(Math.random()-.5)*240,
-        vy:(Math.random()-.5)*240,
-        life:.55+Math.random()*.35
-      });
-    }
-
-    targets.splice(hitIndex,1);
-    updateHud();
-
-    if(phaseKills>=PHASES[phaseIndex].quota){
-      finishPhase();
-    }
-  }
-}
-
-canvas.addEventListener("pointerdown",e=>{
-  const r=canvas.getBoundingClientRect();
-
-  shoot(
-    e.clientX-r.left,
-    e.clientY-r.top
-  );
-});
 
 function chooseEliminated(){
-  const active=activeCharacters();
-  let max=-1;
-  let candidates=[];
+  const active = activeCharacters();
+  let max = -1;
+  let tied = [];
 
   for(const c of active){
-    const hits=phaseHits[c.id]||0;
+    const hits = phaseHits[c.id] || 0;
 
     if(hits>max){
-      max=hits;
-      candidates=[c];
+      max = hits;
+      tied = [c];
     }else if(hits===max){
-      candidates.push(c);
+      tied.push(c);
     }
   }
 
-  return candidates[
-    Math.floor(Math.random()*candidates.length)
-  ];
+  return tied[(Math.random()*tied.length)|0];
 }
 
 function finishPhase(){
-  transition=true;
-  targets=[];
+  if(transition) return;
 
-  const favHits=phaseHits[favoriteId]||0;
+  running = false;
+  transition = true;
+  clearTargets();
+
+  const favHits = phaseHits[favoriteId] || 0;
 
   if(favHits===0){
-    timeLeft+=3;
+    timeLeft += 3;
     updateHud();
-    showMessage("+3s");
+    showBanner("+3s");
   }
 
-  const removed=chooseEliminated();
+  const removed = chooseEliminated();
   eliminated.add(removed.id);
 
-  showPhaseResult(removed);
-}
-
-function showPhaseResult(c){
-  running=false;
-  playSound("erro",.28);
-
-  const fav=getCharacter(favoriteId);
-  const favHits=phaseHits[favoriteId]||0;
-  const maxHits=Math.max(...Object.values(phaseHits));
-
-  elimImg.src=c.img;
-  elimName.textContent=c.name.toUpperCase();
-
-  if(c.id===favoriteId){
-    const remaining=MAX_RESTARTS-restartCount;
-
-    if(restartCount < MAX_RESTARTS){
-      restartCount++;
-      localStorage.setItem("phantasma_restarts", String(restartCount));
-
-      stageTitle.textContent="OPS.";
-      elimNote.textContent=
-        restartCount===1
-          ? `“Você disse que salvaria ${fav.name}. Eu esperava um pouco mais de convicção.”`
-          : `“De novo? Está começando a parecer que o problema não sou eu.”`;
-
-      nextStageBtn.textContent=
-        restartCount===MAX_RESTARTS ? "ÚLTIMA CHANCE" : "TENTAR DE NOVO";
-
-      nextStageBtn.dataset.action="restart";
-    }else{
-      stageTitle.textContent="CHEGA.";
-      elimNote.textContent=
-        `“Três oportunidades. Três fracassos. Você queria salvar ${fav.name}; eu só precisei esperar você fazer o resto. Ninguém detém o Phantasma.”`;
-
-      nextStageBtn.textContent="ENCERRAR";
-      nextStageBtn.dataset.action="locked";
-    }
-
-    stageScreen.classList.add("show");
+  if(removed.id===favoriteId){
+    handleFavoriteLoss(removed);
     return;
   }
 
-  stageTitle.textContent=
-    ["HM.","MELHOR.","INTERESSANTE.","SUFICIENTE."][phaseIndex] || "HM.";
+  phaseResultTitle.textContent = PHASES[phaseIndex].endTitle;
+  phaseResultLine.textContent = PHASES[phaseIndex].endLine;
+  eliminatedImg.src = removed.img;
+  eliminatedImg.alt = removed.name;
+  eliminatedName.textContent = removed.name;
 
-  if(favHits===maxHits && favHits>0){
-    elimNote.textContent="“Seu favorito quase foi junto. Que descuido.”";
+  if(phaseIndex===PHASES.length-1){
+    phaseResultNext = "win";
+    phaseContinueBtn.textContent = "ENCERRAR TESTE";
   }else{
-    const taunts=[
-      "“Um a menos.”",
-      "“Continue.”",
-      "“Você está indo melhor do que eu esperava. Não muito.”",
-      "“Ainda de pé? Irritante.”"
-    ];
-    elimNote.textContent=taunts[Math.min(phaseIndex,taunts.length-1)];
+    phaseResultNext = "next";
+    phaseContinueBtn.textContent = "CONTINUAR";
   }
 
-  nextStageBtn.dataset.action="continue";
-  nextStageBtn.textContent=
-    phaseIndex>=PHASES.length-1 ? "VER RESULTADO" : "CONTINUAR";
-
-  stageScreen.classList.add("show");
+  phaseResultScreen.classList.add("show");
 }
 
-nextStageBtn.addEventListener("click",()=>{
-  const action=nextStageBtn.dataset.action||"continue";
-  stageScreen.classList.remove("show");
+phaseContinueBtn.addEventListener("click",()=>{
+  phaseResultScreen.classList.remove("show");
 
-  if(action==="locked"){
-    lose.querySelector("h2").textContent="ACABOU.";
-    lose.querySelectorAll("p")[0].textContent="Você ficou sem segundas chances.";
-    lose.querySelectorAll("p")[1].textContent=
-      "PHANTASMA: “Da próxima vez, escolha alguém que você realmente queira salvar.”";
-    timeoutRetryBtn.style.display="none";
-    lose.classList.add("show");
-    return;
-  }
-
-  if(action==="restart"){
-    restartRun();
-    return;
-  }
-
-  if(phaseIndex>=PHASES.length-1){
+  if(phaseResultNext==="win"){
     finishGame();
     return;
   }
 
   phaseIndex++;
-  phaseKills=0;
-  targets=[];
-  particles=[];
-
+  phaseKills = 0;
   resetPhaseHits();
   updateHud();
 
-  const nextIntro =
-    phaseIndex===PHASES.length-1
-      ? "PROTOCOLO FINAL // " + PHASES[phaseIndex].intro
-      : PHASES[phaseIndex].intro;
+  const intro = PHASES[phaseIndex].intro;
 
-  playHackTransition(
-    "> " + nextIntro.toUpperCase(),
+  playHack(
+    `> ${intro.toUpperCase()}`,
     ()=>{
-      running=true;
-      transition=false;
-      spawnTimer=.25;
+      running = true;
+      transition = false;
+      spawnAccumulator = 0;
+      spawnTarget(true);
     },
     TIMING.trocaDeFase
   );
 });
 
-function restartRun(){
-  phaseIndex=0;
-  phaseKills=0;
-  eliminated.clear();
-  targets=[];
-  particles=[];
-  timeLeft=TOTAL_TIME;
-  timerAcc=0;
-  spawnTimer=.25;
-  transition=false;
-  resetPhaseHits();
-  updateHud();
+function handleFavoriteLoss(fav){
+  playSound("erro",.42);
 
-  if(restartCount>=MAX_RESTARTS){
-    showMessage("ÚLTIMA TENTATIVA // TENTE NÃO MATAR QUEM DISSE QUE SALVARIA.");
-  }else{
-    showMessage("VAMOS TENTAR DE NOVO. TENTE NÃO ME DECEPCIONAR TÃO RÁPIDO.");
+  if(restartCount < MAX_RESTARTS){
+    restartCount++;
+    localStorage.setItem("phantasma_restarts",String(restartCount));
+
+    favoriteLostTitle.textContent = restartCount===1
+      ? "QUE DESCUIDO."
+      : "DE NOVO?";
+
+    favoriteLostLine.textContent = restartCount===1
+      ? `“Você disse que salvaria ${fav.name}. Eu esperava um pouco mais de convicção.”`
+      : `“De novo? Está começando a parecer que o problema não sou eu.”`;
+
+    favoriteRetryBtn.style.display = "";
+    favoriteLostScreen.classList.add("show");
+    return;
   }
 
-  setTimeout(()=>{
-    running=true;
-  },TIMING.reinicioAposFavorito);
+  lockedLine.textContent =
+    `“Três oportunidades. Três fracassos. Você queria salvar ${fav.name}; `+
+    `eu só precisei esperar você fazer o resto. Ninguém detém o Phantasma.”`;
+
+  lockedScreen.classList.add("show");
+}
+
+favoriteRetryBtn.addEventListener("click",()=>{
+  favoriteLostScreen.classList.remove("show");
+
+  playHack(
+    "> REINICIANDO TESTE // TENTE NÃO PIORAR...",
+    resetRunAfterFailure,
+    TIMING.novaTentativa
+  );
+});
+
+function handleTimeout(){
+  if(!running) return;
+
+  running = false;
+  transition = true;
+  clearTargets();
+  playSound("erro",.40);
+  timeoutScreen.classList.add("show");
+}
+
+timeoutRetryBtn.addEventListener("click",()=>{
+  timeoutScreen.classList.remove("show");
+
+  playHack(
+    "> CARIDADE AUTORIZADA // +60 SEGUNDOS...",
+    resetRunAfterFailure,
+    TIMING.novaTentativa
+  );
+});
+
+function finishGame(){
+  running = false;
+  transition = true;
+  clearTargets();
+
+  const fav = getCharacter(favoriteId);
+  let line = "";
+
+  if(totalFavoriteHits===0){
+    line =
+      `“${fav.name} saiu intacto. Parabéns. Você descobriu como não atacar `+
+      `a pessoa que jurou salvar. Um padrão surpreendentemente alto para alguns fãs.”`;
+  }else if(totalFavoriteHits===1){
+    line =
+      `“${fav.name} sobreviveu. Apesar daquele acerto. Acidente, imagino. Claro.”`;
+  }else if(totalFavoriteHits<=3){
+    line =
+      `“Você chamou ${fav.name} de favorito e acertou nele ${totalFavoriteHits} vezes. `+
+      `Eu adoraria ouvir sua definição de carinho.”`;
+  }else{
+    line =
+      `“${fav.name} era o seu favorito. ${totalFavoriteHits} acertos depois, ainda está aqui. `+
+      `Talvez devesse ter mais medo de você do que de mim.”`;
+  }
+
+  finalMessage.textContent = line;
+  playSound("acesso",.40);
+  winScreen.classList.add("show");
 }
 
 revealBtn.addEventListener("click",()=>{
   sessionStorage.setItem("corvo_access","granted");
-  window.location.href=REVEAL_URL;
+  location.href = REVEAL_URL;
 });
 
-function finishGame(){
-  running=false;
-  playSound("acesso",.38);
-  transition=true;
+/* =========================================================
+   LOOP
+   ========================================================= */
 
-  const fav=getCharacter(favoriteId);
-  winTitle.textContent="QUE IRRITANTE.";
+function updateTargets(dt){
+  for(let i=targets.length-1;i>=0;i--){
+    const t = targets[i];
 
-  let line="";
+    if(t.dead) continue;
 
-  if(eliminated.has(favoriteId)){
-    line=`PHANTASMA: “Você escolheu ${fav.name}. Depois conseguiu eliminá-lo. E ainda quer chamar isso de lealdade?”`;
-  }else if(totalFavoriteHits===0){
-    line=`PHANTASMA: “${fav.name} saiu intacto. Parabéns. Você descobriu como não puxar o gatilho. Impressionante.”`;
-  }else if(totalFavoriteHits===1){
-    line=`PHANTASMA: “${fav.name} sobreviveu. Apesar daquele tiro. Acidente, imagino. Claro.”`;
-  }else if(totalFavoriteHits<=3){
-    line=`PHANTASMA: “Você chamou ${fav.name} de favorito e acertou nele ${totalFavoriteHits} vezes. Eu adoraria ouvir sua definição de carinho.”`;
-  }else{
-    line=`PHANTASMA: “${fav.name} era o seu favorito. ${totalFavoriteHits} tiros depois, ele ainda está aqui. Talvez ele devesse ter mais medo de você do que de mim.”`;
+    t.age += dt;
+    t.x += t.speed*t.dir*dt;
+    t.y = t.baseY + Math.sin(t.age*(3.3+phaseIndex*.75))*t.wobble;
+
+    const transform = `translate3d(${t.x}px,${t.y}px,0)`;
+    t.el.style.transform = transform;
+    t.el.style.setProperty("--last-transform",transform);
+
+    if(
+      (t.dir===1 && t.x>arenaW+t.size+30) ||
+      (t.dir===-1 && t.x<-t.size-30)
+    ){
+      t.el.remove();
+      targets.splice(i,1);
+    }
   }
-
-  document.getElementById("finalMessage").textContent=line;
-  rewardMessage.innerHTML=
-    `Infelizmente, regras são regras.<br><strong>Você ganhou acesso à Revelação do Corvo.</strong>`;
-
-  win.classList.add("show");
 }
 
-function timeOut(){
-  running=false;
-  playSound("erro",.42);
-  transition=true;
-  targets=[];
+function gameLoop(now){
+  const dt = Math.min(.05,Math.max(0,(now-lastFrame)/1000));
+  lastFrame = now;
 
-  lose.querySelector("h2").textContent="QUE PENA.";
-  lose.querySelectorAll("p")[0].textContent="O tempo acabou.";
-  lose.querySelectorAll("p")[1].textContent=
-    "PHANTASMA: “Estou me sentindo caridoso hoje. Não se acostume.”";
+  if(running && !transition){
+    timerAccumulator += dt;
+    spawnAccumulator += dt;
 
-  timeoutRetryBtn.textContent="ACEITAR OUTRA TENTATIVA";
-  timeoutRetryBtn.style.display="";
-  lose.classList.add("show");
-}
-
-timeoutRetryBtn.addEventListener("click",()=>{
-  lose.classList.remove("show");
-
-  playHackTransition(
-    "> CARIDADE AUTORIZADA // +60 SEGUNDOS...",
-    ()=>{
-      phaseIndex=0;
-      phaseKills=0;
-      totalFavoriteHits=0;
-      eliminated.clear();
-      targets=[];
-      particles=[];
-      timeLeft=TOTAL_TIME;
-      timerAcc=0;
-      spawnTimer=.25;
-      transition=false;
-      resetPhaseHits();
-      updateHud();
-
-      briefingScreen.classList.add("show");
-    },
-    TIMING.novaTentativaHack
-  );
-});
-
-function update(dt){
-  if(!running) return;
-
-  timerAcc+=dt;
-
-  if(timerAcc>=1){
-    timerAcc-=1;
-    timeLeft--;
-    updateHud();
+    timeLeft -= dt;
 
     if(timeLeft<=0){
-      timeOut();
-      return;
+      timeLeft = 0;
+      updateHud();
+      handleTimeout();
+    }else{
+      const p = PHASES[phaseIndex];
+
+      if(spawnAccumulator >= p.spawnMin){
+        const threshold =
+          p.spawnMin + Math.random()*(p.spawnMax-p.spawnMin);
+
+        if(spawnAccumulator>=threshold){
+          spawnAccumulator = 0;
+          spawnTarget();
+        }
+      }
+
+      updateTargets(dt);
+      updateHud();
     }
   }
 
-  spawnTimer-=dt;
-
-  if(spawnTimer<=0){
-    spawn();
-
-    const p=PHASES[phaseIndex];
-    spawnTimer=
-      p.spawnMin+
-      Math.random()*(p.spawnMax-p.spawnMin);
-  }
-
-  for(const t of targets){
-    t.age+=dt;
-    t.x+=t.speed*t.dir*dt;
-
-    const wobble=(phaseIndex+1)*8;
-    const freq=3.5+phaseIndex*1.05;
-
-    t.y+=
-      Math.sin(t.age*freq+t.phase)*
-      wobble*
-      dt;
-  }
-
-  targets=
-    targets.filter(
-      t=>t.x>-t.size*2 &&
-         t.x<W+t.size*2
-    );
-
-  for(const p of particles){
-    p.x+=p.vx*dt;
-    p.y+=p.vy*dt;
-    p.vy+=180*dt;
-    p.life-=dt;
-  }
-
-  particles=
-    particles.filter(p=>p.life>0);
+  requestAnimationFrame(gameLoop);
 }
 
-function draw(){
-  ctx.clearRect(0,0,W,H);
+requestAnimationFrame(gameLoop);
 
-  ctx.fillStyle="#020403";
-  ctx.fillRect(0,0,W,H);
+/* Segurança contra páginas restauradas pelo cache do celular. */
+window.addEventListener("pageshow",(event)=>{
+  measureArena();
 
-  ctx.strokeStyle="rgba(105,255,150,.055)";
-  ctx.lineWidth=1;
-
-  for(let gx=0;gx<W;gx+=34){
-    ctx.beginPath();
-    ctx.moveTo(gx,0);
-    ctx.lineTo(gx,H);
-    ctx.stroke();
+  if(event.persisted){
+    lastFrame = performance.now();
   }
+});
 
-  for(let gy=0;gy<H;gy+=34){
-    ctx.beginPath();
-    ctx.moveTo(0,gy);
-    ctx.lineTo(W,gy);
-    ctx.stroke();
-  }
-
-  const interference=2+phaseIndex*2;
-
-  ctx.fillStyle="rgba(105,255,150,.075)";
-
-  for(let i=0;i<interference;i++){
-    const y=
-      (performance.now()*
-      (.025+phaseIndex*.006)+
-      i*83)%H;
-
-    ctx.fillRect(0,y,W,1);
-  }
-
-  for(const t of targets){
-    drawSwan(t);
-  }
-
-  for(const p of particles){
-    ctx.fillStyle=
-      `rgba(105,255,150,${Math.max(0,p.life)})`;
-
-    ctx.fillRect(p.x,p.y,3,3);
-  }
-
-  if(running){
-    ctx.fillStyle="rgba(105,255,150,.28)";
-    ctx.font="12px Courier New";
-    ctx.fillText(
-      "AVALIAÇÃO EM ANDAMENTO // TRACE INSTÁVEL",
-      14,
-      20
-    );
-  }
-}
-
-function loop(t){
-  const dt=
-    Math.min(.03,(t-last)/1000);
-
-  last=t;
-
-  update(dt);
-  draw();
-
-  requestAnimationFrame(loop);
-}
-
-requestAnimationFrame(loop);
+document.addEventListener("visibilitychange",()=>{
+  lastFrame = performance.now();
+});
 </script>
 </body>
 </html>
