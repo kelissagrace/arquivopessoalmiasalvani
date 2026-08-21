@@ -538,6 +538,33 @@ function buildFavoriteGrid(){
 }
 buildFavoriteGrid();
 
+
+const origem = new URLSearchParams(window.location.search).get("origem") || "erro";
+const introTitle = document.getElementById("introTitle");
+const introCopy = document.getElementById("introCopy");
+
+if(origem === "acerto"){
+  introTitle.textContent = "AINDA SE SENTINDO INTELIGENTE?";
+  introCopy.innerHTML = `
+    <p>Ótimo.</p>
+    <p>Confiança torna isso muito mais divertido.</p>
+    <p>Você resolveu a charada.</p>
+    <p>Agora quero ver se você funciona bem com algo além do cérebro.</p>
+    <p>Os Cisnes sempre tiveram os pensantes... e os de força irracional.</p>
+    <p><strong>Não é, Killian?</strong></p>
+    <p class="small-note">Não precisa responder. Eu sei que dói quando você tenta.</p>
+  `;
+}else{
+  introTitle.textContent = "ENTÃO VOCÊ ACEITOU.";
+  introCopy.innerHTML = `
+    <p>Interessante.</p>
+    <p>Você falhou quando tudo o que precisava fazer era pensar.</p>
+    <p>Agora vamos descobrir se uma segunda chance ajuda.</p>
+    <p><strong>Não se preocupe. Eu torço por você.</strong></p>
+    <p class="small-note">Mentira.</p>
+  `;
+}
+
 document.getElementById("continueBtn").addEventListener("click",()=>{
   intro.classList.remove("show");
   favoriteScreen.classList.add("show");
