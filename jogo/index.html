@@ -649,6 +649,25 @@ button{
 
   .target{
     cursor:pointer;
+    min-width:96px;
+    min-height:96px;
+  }
+
+  .target .portrait{
+    width:48%;
+    right:0;
+    top:1%;
+    border-width:3px;
+  }
+
+  .target::before{
+    left:5%;
+    width:64%;
+  }
+
+  .target .neck{
+    right:17%;
+    width:28%;
   }
 
   .sound-toggle{
@@ -716,6 +735,71 @@ button{
     scroll-behavior:auto!important;
   }
 }
+
+/* ===== MOBILE HARDENING V18 ===== */
+@media(max-width:760px){
+  .overlay{
+    min-height:100%;
+    max-height:100%;
+  }
+
+  .panel{
+    width:100%;
+    max-width:100%;
+  }
+
+  .panel h2,
+  .panel p,
+  .system-lines,
+  .result-name{
+    overflow-wrap:anywhere;
+  }
+
+  .result-card{
+    width:100%;
+    max-width:100%;
+  }
+
+  .hack-message{
+    padding:
+      max(16px,env(safe-area-inset-top))
+      13px
+      max(20px,env(safe-area-inset-bottom));
+  }
+
+  .hack-message span{
+    display:block;
+    width:min(92vw,620px);
+    max-width:100%;
+    overflow-wrap:anywhere;
+    font-size:clamp(16px,5.5vw,27px);
+  }
+
+  .banner{
+    top:max(8px,env(safe-area-inset-top));
+    font-size:10px;
+  }
+}
+
+@media(max-width:340px){
+  .target .portrait{
+    width:50%;
+  }
+
+  .panel h2{
+    font-size:clamp(24px,9vw,38px);
+  }
+
+  .panel p{
+    font-size:12px;
+  }
+
+  .action{
+    padding-left:10px;
+    padding-right:10px;
+  }
+}
+
 </style>
 </head>
 
@@ -811,7 +895,7 @@ button{
       <div class="panel">
         <h2 class="bad" id="favoriteLostTitle">QUE DESCUIDO.</h2>
         <p id="favoriteLostLine"></p>
-        <button class="action" id="favoriteRetryBtn">TENTAR NOVAMENTE</button>
+        <button class="action" id="favoriteRetryBtn">ACEITAR SEGUNDA CHANCE</button>
       </div>
     </div>
 
@@ -820,7 +904,7 @@ button{
         <h2 class="bad">QUE PENA.</h2>
         <p>O tempo acabou.</p>
         <p><strong>“Estou me sentindo caridoso hoje. Não se acostume.”</strong></p>
-        <button class="action" id="timeoutRetryBtn">ACEITAR OUTRA TENTATIVA</button>
+        <button class="action" id="timeoutRetryBtn">ACEITAR A CARIDADE</button>
       </div>
     </div>
 
@@ -1119,7 +1203,29 @@ let arenaW = 0;
 let arenaH = 0;
 let phaseResultNext = null;
 
-let restartCount = Number(localStorage.getItem("phantasma_restarts") || 0);
+/*
+  CHANCES:
+  1 tentativa inicial + 2 novas tentativas = 3 oportunidades.
+
+  Antes isso ficava salvo em localStorage, então quem já tinha testado o
+  jogo podia voltar dias depois e ser tratado como se já tivesse gastado
+  todas as chances. Agora o contador é da sessão atual do teste.
+*/
+const RESTART_KEY = "phantasma_restarts_session";
+
+/* remove o contador antigo para não contaminar versões novas */
+localStorage.removeItem("phantasma_restarts");
+
+const navEntry = performance.getEntriesByType("navigation")[0];
+const isReload = navEntry && navEntry.type === "reload";
+
+/* Ao ENTRAR novamente no jogo por navegação normal, começa em 0.
+   Em um simples reload, preserva as chances já usadas. */
+if(!isReload){
+  sessionStorage.setItem(RESTART_KEY,"0");
+}
+
+let restartCount = Number(sessionStorage.getItem(RESTART_KEY) || 0);
 
 function origin(){
   return new URLSearchParams(location.search).get("origem") || "erro";
@@ -1422,8 +1528,13 @@ function spawnTarget(force=false){
   const p = PHASES[phaseIndex];
   const mobile = innerWidth <= 760;
 
+  /*
+    MOBILE:
+    Mantemos os alvos grandes o suficiente para distinguir os rostos
+    até no protocolo final, que usa size:.80.
+  */
   const base = mobile
-    ? Math.max(74,Math.min(92,arenaW*.22))
+    ? Math.max(118,Math.min(150,arenaW*.34))
     : Math.max(72,Math.min(100,arenaW*.09));
 
   const size = base*p.size;
@@ -1529,13 +1640,24 @@ function startRun(){
   },500);
 }
 
-function resetRunAfterFailure(){
+function startFinalChance(){
   clearTargets();
 
-  phaseIndex = 0;
+  /*
+    SEGUNDA CHANCE:
+    não volta ao começo. O Phantasma joga a pessoa direto
+    no protocolo final (fase 4).
+  */
+  phaseIndex = PHASES.length - 1;
   phaseKills = 0;
   totalFavoriteHits = 0;
-  eliminated.clear();
+
+  /* Se a segunda chance veio porque o favorito caiu,
+     ele volta para o protocolo final. Os demais eliminados
+     continuam fora. */
+  if(favoriteId){
+    eliminated.delete(favoriteId);
+  }
 
   timeLeft = TOTAL_TIME;
   timerAccumulator = 0;
@@ -1543,8 +1665,20 @@ function resetRunAfterFailure(){
 
   resetPhaseHits();
   updateHud();
+  measureArena();
 
-  briefingScreen.classList.add("show");
+  running = true;
+  transition = false;
+
+  arena.scrollIntoView({block:"start",behavior:"smooth"});
+  showBanner("PROTOCOLO FINAL.",1500);
+  spawnTarget(true);
+
+  setTimeout(()=>{
+    if(running && targets.length===0){
+      spawnTarget(true);
+    }
+  },450);
 }
 
 function chooseEliminated(){
@@ -1633,12 +1767,16 @@ phaseContinueBtn.addEventListener("click",()=>{
   );
 });
 
+/*
+  Só esta falha consome as duas chances limitadas.
+  Timeout continua sendo a "caridade" separada do Phantasma.
+*/
 function handleFavoriteLoss(fav){
   playSound("erro",.42);
 
   if(restartCount < MAX_RESTARTS){
     restartCount++;
-    localStorage.setItem("phantasma_restarts",String(restartCount));
+    sessionStorage.setItem(RESTART_KEY,String(restartCount));
 
     favoriteLostTitle.textContent = restartCount===1
       ? "QUE DESCUIDO."
@@ -1647,6 +1785,10 @@ function handleFavoriteLoss(fav){
     favoriteLostLine.textContent = restartCount===1
       ? `“Você disse que salvaria ${fav.name}. Eu esperava um pouco mais de convicção.”`
       : `“De novo? Está começando a parecer que o problema não sou eu.”`;
+
+    favoriteRetryBtn.textContent = restartCount===1
+      ? "ACEITAR SEGUNDA CHANCE"
+      : "ACEITAR ÚLTIMA CHANCE";
 
     favoriteRetryBtn.style.display = "";
     favoriteLostScreen.classList.add("show");
@@ -1664,8 +1806,8 @@ favoriteRetryBtn.addEventListener("click",()=>{
   favoriteLostScreen.classList.remove("show");
 
   playHack(
-    "> REINICIANDO TESTE // TENTE NÃO PIORAR...",
-    resetRunAfterFailure,
+    "> ESTOU ME SENTINDO CARIDOSO // PROTOCOLO FINAL AUTORIZADO...",
+    startFinalChance,
     TIMING.novaTentativa
   );
 });
@@ -1684,8 +1826,8 @@ timeoutRetryBtn.addEventListener("click",()=>{
   timeoutScreen.classList.remove("show");
 
   playHack(
-    "> CARIDADE AUTORIZADA // +60 SEGUNDOS...",
-    resetRunAfterFailure,
+    "> CARIDADE AUTORIZADA // PROTOCOLO FINAL...",
+    startFinalChance,
     TIMING.novaTentativa
   );
 });
@@ -1716,6 +1858,7 @@ function finishGame(){
   }
 
   finalMessage.textContent = line;
+  sessionStorage.removeItem(RESTART_KEY);
   playSound("acesso",.40);
   winScreen.classList.add("show");
 }
