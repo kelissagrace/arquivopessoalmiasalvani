@@ -120,4 +120,15 @@ input{
 }
 </style></head><body>
 <main class="wrap"><section class="card center"><div class="tag">Acesso concedido</div><h1 class="glitch">CORVO</h1><div class="date">XX.XX.2026</div><p>Agora que você sabe.</p><div class="quote">Consegue guardar esse o segredo?</div><p class="green">— PHANTASMA</p></section></main>
-<script>if(sessionStorage.getItem("phantasma_resultado")!=="ok")location.replace("index.html");sessionStorage.removeItem("phantasma_resultado");sessionStorage.removeItem("charada_idx")</script></body></html>
+<script>
+const acertouCharada = sessionStorage.getItem("phantasma_resultado") === "ok";
+const venceuJogo = sessionStorage.getItem("corvo_access") === "granted";
+
+if (!acertouCharada && !venceuJogo) {
+  location.replace("index.html");
+} else {
+  sessionStorage.removeItem("phantasma_resultado");
+  sessionStorage.removeItem("charada_idx");
+  sessionStorage.removeItem("corvo_access");
+}
+</script></body></html>
