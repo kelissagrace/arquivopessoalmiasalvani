@@ -735,6 +735,22 @@ body.preparing-session .readiness-gate{
   }
 }
 
+
+/* ===== V28 // TROCA DE PÁGINA SEM ESTÁGIO INTERMEDIÁRIO ===== */
+.simple-page-fade{
+  position:fixed;
+  inset:0;
+  z-index:220;
+  pointer-events:none;
+  background:#000;
+  opacity:0;
+  transition:opacity .58s cubic-bezier(.22,.8,.22,1);
+}
+
+.simple-page-fade.show{
+  opacity:1;
+}
+
 </style></head><body class="preparing-session awaiting-id">
 
 <canvas id="matrixBg" aria-hidden="true"></canvas>
@@ -821,30 +837,8 @@ body.preparing-session .readiness-gate{
   </section>
 </main>
 
-<div class="transition" id="transition" aria-hidden="true">
-  <canvas id="transitionMatrix"></canvas>
 
-  <div class="transition-box">
-    <div class="transition-title">SESSÃO // TRANSFERÊNCIA DE ROTA</div>
-
-    <div class="route-primary">
-      O sistema está abrindo uma passagem.
-    </div>
-
-    <div class="route-status">
-      <span id="routeLabel">&gt; preservando controle local...</span>
-      <strong id="routePct">0%</strong>
-    </div>
-
-    <div class="route-track">
-      <div class="route-fill" id="routeFill"></div>
-    </div>
-
-    <div class="route-foot" id="routeFoot">
-      arquivo_004 // aguardando autorização
-    </div>
-  </div>
-</div>
+<div class="simple-page-fade" id="simplePageFade" aria-hidden="true"></div>
 
 <script src="phantasma-audio.js"></script>
 <script>
@@ -1040,114 +1034,21 @@ identityForm.addEventListener("submit",(event)=>{
 });
 
 const continueBtn=document.getElementById("continueBtn");
-const transition=document.getElementById("transition");
-const transitionCanvas=document.getElementById("transitionMatrix");
-const transitionCtx=transitionCanvas.getContext("2d");
-const routeLabel=document.getElementById("routeLabel");
-const routePct=document.getElementById("routePct");
-const routeFill=document.getElementById("routeFill");
-const routeFoot=document.getElementById("routeFoot");
-
-let transitionAnimation=null;
-
-function startTransitionMatrix(){
-  const dpr=Math.min(window.devicePixelRatio||1,2);
-  transitionCanvas.width=Math.floor(innerWidth*dpr);
-  transitionCanvas.height=Math.floor(innerHeight*dpr);
-  transitionCanvas.style.width=innerWidth+"px";
-  transitionCanvas.style.height=innerHeight+"px";
-  transitionCtx.setTransform(dpr,0,0,dpr,0,0);
-
-  const size=16;
-  const drops=Array.from(
-    {length:Math.ceil(innerWidth/size)},
-    ()=>Math.random()*-35
-  );
-
-  function frame(){
-    transitionCtx.fillStyle="rgba(0,0,0,.13)";
-    transitionCtx.fillRect(0,0,innerWidth,innerHeight);
-    transitionCtx.font=size+"px monospace";
-
-    for(let i=0;i<drops.length;i++){
-      transitionCtx.fillStyle=Math.random()>.96
-        ?"rgba(230,255,236,.72)"
-        :"rgba(109,255,152,.52)";
-
-      transitionCtx.fillText(
-        glyphs[(Math.random()*glyphs.length)|0],
-        i*size,
-        drops[i]*size
-      );
-
-      if(drops[i]*size>innerHeight && Math.random()>.965){
-        drops[i]=0;
-      }
-      drops[i]+=.65+Math.random()*.42;
-    }
-
-    transitionAnimation=requestAnimationFrame(frame);
-  }
-
-  cancelAnimationFrame(transitionAnimation);
-  frame();
-}
+const simplePageFade=document.getElementById("simplePageFade");
 
 continueBtn.addEventListener("click",()=>{
   if(window.PhantasmaAudio){
     PhantasmaAudio.unlock();
-    PhantasmaAudio.play("click",.20);
+    PhantasmaAudio.play("click",.14);
   }
 
   continueBtn.disabled=true;
-  transition.classList.add("show");
-  transition.setAttribute("aria-hidden","false");
-  startTransitionMatrix();
-
-  routeFill.style.transition="none";
-  routeFill.style.width="0%";
-  routePct.textContent="0%";
-  routeLabel.textContent="> preservando controle local...";
-  routeFoot.textContent="arquivo_004 // aguardando autorização";
-
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>{
-      routeFill.style.transition="width 2.8s cubic-bezier(.18,.8,.24,1)";
-      routeFill.style.width="100%";
-    });
-  });
-
-  const begin=performance.now();
-
-  function updateRoute(now){
-    const p=Math.min(1,(now-begin)/2800);
-    const pct=Math.round((1-Math.pow(1-p,2.2))*100);
-    routePct.textContent=pct+"%";
-
-    if(pct<32){
-      routeLabel.textContent="> preservando controle local...";
-      routeFoot.textContent="arquivo_004 // aguardando autorização";
-    }else if(pct<68){
-      routeLabel.textContent="> abrindo canal restrito...";
-      routeFoot.textContent="rota isolada // transmissão estável";
-    }else if(pct<100){
-      routeLabel.textContent="> vinculando sessão ao arquivo...";
-      routeFoot.textContent="permissão temporária // quase pronta";
-    }else{
-      routeLabel.textContent="> acesso parcial concedido.";
-      routeFoot.textContent="VOCÊ TEM UMA CHANCE.";
-    }
-
-    if(p<1){
-      requestAnimationFrame(updateRoute);
-    }
-  }
-
-  requestAnimationFrame(updateRoute);
+  simplePageFade.classList.add("show");
+  simplePageFade.setAttribute("aria-hidden","false");
 
   setTimeout(()=>{
     location.href="charada.html";
-  },3500);
+  },620);
 });
 </script>
 </body></html>

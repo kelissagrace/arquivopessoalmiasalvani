@@ -593,7 +593,7 @@ body.takeover #matrix{
         <strong>CONTROLE LOCAL</strong>
       </div>
       <div class="system-body">
-        <div class="label">&gt; processando resposta capturada</div>
+        <div class="label">&gt; RESPOSTA CAPTURADA.</div>
         <div class="loader-line"><div class="loader-fill" id="loaderFill"></div></div>
         <div class="percent" id="loaderPct">0%</div>
 
@@ -847,7 +847,7 @@ function resolveResult(){
   if(result==="ok"){
     lock.classList.add("unlocked");
     lockStatus.textContent="ACESSO CONCEDIDO";
-    lockDetail.textContent="CHAVE ACEITA // CONTROLE LOCAL MANTIDO";
+    lockDetail.textContent="CHAVE ACEITA // BLOQUEIO REMOVIDO";
     sound("acesso",.38);
 
     setTimeout(runTakeover,1000);

@@ -145,7 +145,7 @@ document.getElementById("form").onsubmit=e=>{
   const destino="loading.html";
 
   if(window.PhantasmaFX){
-    PhantasmaFX.transitionTo(destino,"> RESPOSTA CAPTURADA.");
+    PhantasmaFX.transitionTo(destino);
   }else{
     location.href=destino;
   }
@@ -189,4 +189,4 @@ setInterval(()=>{loss.textContent=(8+Math.floor(Math.random()*27))+"%";if(Math.r
   }
 })();
 </script>
-<script src="phantasma-fx.js"></script><script src="phantasma-audio.js"></script></body></html>
+<script src="phantasma-fx.js?v=28"></script><script src="phantasma-audio.js"></script></body></html>

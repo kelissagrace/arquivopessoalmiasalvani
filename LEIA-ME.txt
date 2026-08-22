@@ -1,49 +1,76 @@
-PHANTASMA // SISTEMA V27
+PHANTASMA // V28 — LIMPEZA DAS TRANSIÇÕES
 
-SUBSTITUA SOMENTE:
+Você estava certa: a V26 reintroduziu uma etapa que já tinha sido removida.
+
+REMOVIDO:
+- "SESSÃO // ALTERAÇÃO DE ESTADO"
+- painel intermediário de RESPOSTA CAPTURADA
+- barra intermediária de transferência
+- porcentagem intermediária
+- "transferência concluída"
+- "abrindo próximo estado"
+- tela "TRANSFERÊNCIA DE ROTA" entre a abertura e a charada
+
+REGRA NOVA DAS TRANSIÇÕES
+==========================
+
+Troca de página não é conteúdo.
+Então troca de página agora é somente um FADE curto.
+
+Os únicos momentos que continuam ganhando uma tela própria são os que têm
+função narrativa:
+
+- abertura do site;
+- escolha do protegido;
+- tomada de controle pelo Phantasma;
+- provocações entre fases;
+- perda do protegido / segunda chance;
+- revelação final do CORVO.
+
+FLUXO DA RESPOSTA
+=================
+
+CHARADA
+  ↓
+fade curto
+  ↓
+RESPOSTA CAPTURADA.
+[ barra carregando ]
+  ↓
+cadeado
+
+CORRETA:
+cadeado abre
+  ↓
+tomada de controle do Phantasma
+
+INCORRETA:
+cadeado vermelho
+  ↓
+ACESSO NEGADO
+  ↓
+AGUARDE x3
+  ↓
+ESPERAVA MAIS.
+
+ONDE SUBSTITUIR
+===============
 
 NA RAIZ:
-- anuncio.html
+- index.html
+- charada.html
+- loading.html
+- phantasma-fx.js
 
-DENTRO DE jogo/:
-- jogo/index.html
+Não substitua jogo/index.html nem anuncio.html nesta atualização.
+A V27 dos casais + revelação final continua sendo a versão atual desses arquivos.
 
-1. REVELAÇÃO DO CORVO
-A página final deixou de ser estática.
+IMPORTANTE:
+charada.html usa:
+phantasma-fx.js?v=28
 
-Agora:
-- verifica o teste;
-- remove o bloqueio final;
-- descriptografa o codinome;
-- barra vai de 0% a 100%;
-- Matrix acelera;
-- CORVO é revelado com impacto;
-- a data entra depois;
-- a mensagem final aparece por etapas;
-- som de revelação é usado se estiver ativado.
+Isso ajuda a evitar o navegador carregar o JS antigo do cache.
 
-Tudo cabe em uma única viewport no desktop.
-
-2. CASAIS
-Se o jogador proteger um Cisne e o parceiro for o eliminado da fase,
-o resultado da fase recebe uma provocação específica.
-
-Pares:
-Dex + Olivia
-Declan + Charlotte
-Killian + Melissa
-Reid + Lara
-Chuck + Zuri
-
-As frases ficam centralizadas no começo do JavaScript em:
-
-const COUPLE_TAUNTS = {
-
-Você pode editar só esse bloco depois.
-
-3. PROTEGIDO NA REVELAÇÃO
-O jogo passa a salvar também:
-phantasma_protegido
-phantasma_protegido_id
-
-Isso permite usar o protegido em páginas futuras, caso queira.
+Depois do commit:
+PC: Ctrl + F5
+Celular: aba privada/anônima.
