@@ -948,8 +948,8 @@ button{
         <h2>QUE IRRITANTE.</h2>
         <p id="finalMessage"></p>
         <p>Infelizmente, regras são regras.</p>
-        <p><strong>Você ganhou acesso a pasta confidencial.</strong></p>
-        <button class="action" id="revealBtn">ABRIR ARQUIVO</button>
+        <p><strong>Você ganhou acesso à Revelação do Corvo.</strong></p>
+        <button class="action" id="revealBtn">ABRIR ARQUIVO DO CORVO</button>
       </div>
     </div>
 
@@ -974,17 +974,21 @@ button{
    ========================================================= */
 
 const TOTAL_TIME = 60;
+
+const VISITOR_NAME = (
+  sessionStorage.getItem("phantasma_nome") || ""
+).replace(/[<>]/g,"").trim().slice(0,18);
 const MAX_RESTARTS = 2;
 const REVEAL_URL = "../anuncio.html";
 
 const TIMING = {
   entradaAcerto: 2300,
   entradaErro: 2400,
-  preferenciaNaTela: 2800,
+  preferenciaNaTela: 3800,
   preparandoTeste: 2200,
   countdownPasso: 1150,
   agoraNaTela: 900,
-  trocaDeFase: 4800,
+  trocaDeFase: 3000,
   novaTentativa: 2200
 };
 
@@ -1512,8 +1516,12 @@ function selectFavorite(id){
 
   favoriteScreen.classList.remove("show");
 
+  const ownerPrefix = VISITOR_NAME
+    ? `&gt; ${VISITOR_NAME.toUpperCase()} // `
+    : "&gt; ";
+
   preferenceText.innerHTML =
-    `&gt; PREFERÊNCIA DECLARADA: <strong>${fav.name.toUpperCase()}</strong><br><br>`+
+    `${ownerPrefix}PREFERÊNCIA DECLARADA: <strong>${fav.name.toUpperCase()}</strong><br><br>`+
     `<strong>Hm. Interessante.</strong>`;
 
   preferenceScreen.classList.add("show");
