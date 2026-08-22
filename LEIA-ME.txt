@@ -1,97 +1,49 @@
-PHANTASMA // SISTEMA V26
+PHANTASMA // SISTEMA V27
 
-O FOCO DESTA VERSÃO:
-- abertura com mais suspense;
-- transições mais fluidas e menos "glitch por glitch";
-- briefing do protegido reescrito.
-
-SUBSTITUA:
+SUBSTITUA SOMENTE:
 
 NA RAIZ:
-- index.html
-- loading.html
-- phantasma-fx.js
+- anuncio.html
 
 DENTRO DE jogo/:
 - jogo/index.html
 
-NÃO precisa substituir:
-- charada.html
-- erro.html
-- anuncio.html
-- phantasma-audio.js
-- sons/
-- imagens
+1. REVELAÇÃO DO CORVO
+A página final deixou de ser estática.
 
-IMPORTANTE:
-charada.html já chama phantasma-fx.js.
-Então substituir phantasma-fx.js muda automaticamente a transição
-"RESPOSTA CAPTURADA." sem precisar mexer na charada.
+Agora:
+- verifica o teste;
+- remove o bloqueio final;
+- descriptografa o codinome;
+- barra vai de 0% a 100%;
+- Matrix acelera;
+- CORVO é revelado com impacto;
+- a data entra depois;
+- a mensagem final aparece por etapas;
+- som de revelação é usado se estiver ativado.
 
-ABERTURA V26
-A abertura agora respira:
+Tudo cabe em uma única viewport no desktop.
 
-> SINAL DETECTADO.
-> ORIGEM: NÃO IDENTIFICADA.
-> CONTROLE LOCAL DISPONÍVEL.
+2. CASAIS
+Se o jogador proteger um Cisne e o parceiro for o eliminado da fase,
+o resultado da fase recebe uma provocação específica.
 
-depois entra lentamente:
+Pares:
+Dex + Olivia
+Declan + Charlotte
+Killian + Melissa
+Reid + Lara
+Chuck + Zuri
 
-VOCÊ ESTÁ DISPOSTO A IR ATÉ O FINAL?
+As frases ficam centralizadas no começo do JavaScript em:
 
-só então aparece a barra de inicialização.
-Depois existe uma pausa antes de "QUEM ESTÁ AÍ?".
+const COUPLE_TAUNTS = {
 
-TEMPOS DA ABERTURA
-No index.html procure:
+Você pode editar só esse bloco depois.
 
-const OPENING_TIMING={
+3. PROTEGIDO NA REVELAÇÃO
+O jogo passa a salvar também:
+phantasma_protegido
+phantasma_protegido_id
 
-sinal:700
-origem:1600
-controle:2500
-pergunta:3500
-barra:5100
-duracaoBarra:3800
-pausaFinal:1250
-
-1000 = 1 segundo.
-
-BRIEFING DO JOGO
-Foi removido:
-"Agora escolha quem não proteger."
-
-Agora é:
-
-AGORA VOCÊ SABE O PREÇO.
-
-Você escolheu quem quer manter a salvo.
-Agora prove o quanto essa escolha vale.
-
-> OBJETIVO: ATINJA OS OUTROS CISNES ANTES DO TEMPO ACABAR.
-> RECOMPENSA: conclua o teste e o arquivo será liberado.
-> PROTEGIDO: NOME
-> ALERTA: SEU PROTEGIDO TAMBÉM ENTRARÁ NA LINHA DE TIRO.
-
-"Eu dei a você alguém para proteger. Não prometi facilitar."
-
-TRANSIÇÕES
-1. index -> charada:
-   barra de rota suave, sem texto tremendo.
-
-2. charada -> loading:
-   novo phantasma-fx.js com painel de alteração de estado,
-   progresso contínuo e sem dump aleatório.
-
-3. transições internas do jogo:
-   agora parecem reconfiguração do sistema;
-   fundo escurece, painel entra suavemente,
-   barra progride e a próxima tela aparece com fade.
-
-4. loading:
-   entrada das telas e troca de proprietário foram suavizadas.
-
-CACHE:
-Depois do commit:
-PC -> Ctrl + F5
-Celular -> teste em aba privada/anônima.
+Isso permite usar o protegido em páginas futuras, caso queira.

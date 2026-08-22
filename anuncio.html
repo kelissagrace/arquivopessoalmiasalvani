@@ -1,141 +1,651 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acesso concedido</title><style>
-:root{--g:#6dff98;--r:#ff3e58;--c:#31e6ff;--fg:#e9fff0}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#000;color:var(--fg);font-family:"Courier New",monospace}
-body{min-height:100vh;display:grid;place-items:center;padding:24px;overflow:hidden;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.8)),url("phantasma-bg.jpg") center/cover no-repeat fixed}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.03) 0 1px,transparent 2px 4px);opacity:.45;animation:scan .16s steps(2) infinite}
-body:after{content:"";position:fixed;inset:-5%;pointer-events:none;z-index:49;background:linear-gradient(90deg,transparent 48%,rgba(49,230,255,.04) 49%,transparent 50%);animation:drift 1.3s steps(2) infinite}
-@keyframes scan{50%{transform:translateY(1px)}}@keyframes drift{20%{transform:translateX(-2%)}21%{transform:translateX(2%)}53%{transform:translateX(-1%)}}
-.wrap{width:min(800px,100%);position:relative;z-index:2}.card{position:relative;overflow:hidden;border:1px solid rgba(109,255,152,.22);padding:clamp(28px,6vw,62px);background:rgba(0,5,2,.68);box-shadow:0 0 70px rgba(32,255,113,.08);backdrop-filter:blur(4px);animation:flick 5s infinite}
-.card:before,.card:after{content:"";position:absolute;left:-5%;width:110%;height:12px;pointer-events:none;opacity:0}.card:before{top:27%;background:rgba(49,230,255,.16);animation:tear 4s infinite}.card:after{top:68%;background:rgba(255,62,88,.12);animation:tear 5.3s infinite reverse}
-@keyframes flick{0%,92%,95%,100%{opacity:1}93%{opacity:.72;filter:contrast(1.6)}94%{transform:translateX(2px)}}@keyframes tear{0%,88%,100%{opacity:0;transform:none}89%{opacity:.65;transform:translateX(18px)}90%{opacity:.2;transform:translateX(-18px)}}
-.tag{color:var(--g);font-size:12px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:18px}h1{font-size:clamp(34px,8vw,72px);line-height:.95;margin:0 0 24px;letter-spacing:.06em;text-shadow:2px 0 var(--r),-2px 0 var(--c)}p{line-height:1.8;color:rgba(233,255,240,.72)}
-.quote{font-size:clamp(18px,3vw,24px);border-left:2px solid var(--g);padding-left:20px;margin:28px 0}.glitch{animation:glitch 2.8s infinite}@keyframes glitch{0%,88%,100%{transform:none}89%{transform:translate(4px,-1px)}90%{transform:translate(-3px,1px)}}
-.signal{font-size:11px;letter-spacing:.12em;color:rgba(109,255,152,.52)}.unstable{color:var(--r);animation:blink .65s steps(1) infinite}@keyframes blink{50%{opacity:.2}}
-button,a.btn{display:inline-block;margin-top:18px;border:1px solid var(--g);background:#0008;color:var(--g);padding:14px 20px;font:inherit;text-transform:uppercase;letter-spacing:.1em;text-decoration:none;cursor:pointer}button:hover,a.btn:hover{background:var(--g);color:#001306}
-input{width:100%;padding:15px 16px;margin-top:16px;background:#000d;border:1px solid rgba(109,255,152,.35);color:var(--fg);font:inherit;outline:none}.small{font-size:12px;color:#7d8d82;margin-top:18px}.center{text-align:center}.red{color:var(--r)}.green{color:var(--g)}
-@media(max-width:560px){body{padding:12px}.card{padding:28px 20px}}
-.date{font-size:clamp(46px,12vw,94px);font-weight:bold;color:var(--g);margin:24px 0}
-/* ===== MOBILE FIX V4 ===== */
-html{
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ACESSO CONCEDIDO // CORVO</title>
+
+<style>
+:root{
+  --g:#69ff96;
+  --r:#ff4058;
+  --c:#31e6ff;
+  --fg:#ecfff2;
+  --dim:#74837a;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
   min-height:100%;
   background:#000;
+  color:var(--fg);
+  font-family:"Courier New",monospace;
+  overflow:hidden;
   -webkit-text-size-adjust:100%;
 }
-body{
-  min-height:100svh;
-  min-height:100dvh;
-  height:auto;
-  overflow-x:hidden;
-  overflow-y:auto;
-  align-items:start;
-  justify-items:center;
-  padding:
-    max(16px, env(safe-area-inset-top))
-    max(12px, env(safe-area-inset-right))
-    max(24px, env(safe-area-inset-bottom))
-    max(12px, env(safe-area-inset-left));
-  background-attachment:scroll;
-}
-.wrap{
-  width:min(800px,100%);
-  margin:clamp(18px,5vh,56px) auto;
-}
-.card{
-  width:100%;
-}
-input,button,a.btn{
-  font-size:16px; /* evita zoom automático do iOS */
-}
-input{
-  scroll-margin-top:18vh;
-  scroll-margin-bottom:35vh;
-}
-@media (max-width:560px){
-  body{
-    display:block;
-    min-height:100dvh;
-    padding-top:max(14px, env(safe-area-inset-top));
-    padding-bottom:max(40px, env(safe-area-inset-bottom));
-  }
-  .wrap{
-    margin:14px auto 40px;
-    width:100%;
-  }
-  .card{
-    padding:24px 18px 28px;
-    min-height:auto;
-    backdrop-filter:blur(2px);
-  }
-  h1{
-    font-size:clamp(34px,13vw,58px);
-    word-break:normal;
-    overflow-wrap:anywhere;
-  }
-  .quote{
-    font-size:clamp(16px,5vw,20px);
-    line-height:1.55;
-    margin:20px 0;
-    padding-left:14px;
-  }
-  p{
-    line-height:1.6;
-  }
-  form{
-    width:100%;
-  }
-  input{
-    width:100%;
-    min-height:52px;
-  }
-  button,a.btn{
-    width:100%;
-    text-align:center;
-    min-height:50px;
-  }
-  .signal{
-    line-height:1.6;
-    overflow-wrap:anywhere;
-  }
-}
-/* Quando o teclado virtual reduz a viewport */
-@media (max-height:560px){
-  body{
-    display:block;
-  }
-  .wrap{
-    margin:8px auto 28px;
-  }
-  .card{
-    padding-top:18px;
-    padding-bottom:22px;
-  }
-  h1{
-    font-size:34px;
-    margin-bottom:14px;
-  }
-  .quote{
-    margin:14px 0;
-    font-size:16px;
-  }
-}
-</style></head><body>
-<main class="wrap"><section class="card center"><div class="tag">Acesso concedido</div><h1 class="glitch">CORVO</h1><div class="date">XX.XX.2026</div><p>Agora que você sabe.</p><div class="quote">Consegue guardar esse o segredo?</div><p class="green">— PHANTASMA</p></section></main>
-<script>
-const venceuJogo = sessionStorage.getItem("corvo_access") === "granted";
 
-if (!venceuJogo) {
-  location.replace("index.html");
-} else {
-  sessionStorage.removeItem("phantasma_resultado");
-  sessionStorage.removeItem("charada_idx");
-  sessionStorage.removeItem("corvo_access");
+body{
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  padding:
+    max(12px,env(safe-area-inset-top))
+    max(12px,env(safe-area-inset-right))
+    max(18px,env(safe-area-inset-bottom))
+    max(12px,env(safe-area-inset-left));
+  background:
+    linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.88)),
+    url("phantasma-bg.jpg") center/cover no-repeat;
 }
-</script><script src="phantasma-fx.js"></script>
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:50;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.026) 0 1px,
+      transparent 2px 5px
+    );
+  opacity:.48;
+}
+
+#matrix{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+  pointer-events:none;
+  opacity:.36;
+  transition:opacity .45s ease,filter .45s ease;
+}
+
+body.reveal-hot #matrix{
+  opacity:.70;
+  filter:contrast(1.28) brightness(1.12);
+}
+
+.reveal-shell{
+  position:relative;
+  z-index:4;
+  width:min(820px,96vw);
+  height:min(650px,calc(100dvh - 30px));
+  min-height:430px;
+  border:1px solid rgba(105,255,150,.22);
+  background:rgba(0,7,3,.79);
+  box-shadow:
+    0 22px 100px rgba(0,0,0,.64),
+    inset 0 0 50px rgba(105,255,150,.025);
+  overflow:hidden;
+}
+
+.reveal-shell::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(105,255,150,.035),transparent 35%);
+}
+
+.head{
+  height:36px;
+  padding:0 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  border-bottom:1px solid rgba(105,255,150,.13);
+  color:#728178;
+  font-size:9px;
+  letter-spacing:.13em;
+}
+
+.head strong{
+  color:var(--g);
+  font-weight:400;
+}
+
+.stage{
+  position:relative;
+  height:calc(100% - 36px);
+  display:grid;
+  place-items:center;
+  padding:clamp(18px,4vw,38px);
+  text-align:center;
+}
+
+/* phase 1 */
+.unlock{
+  width:min(650px,100%);
+  opacity:1;
+  transition:opacity .45s ease,transform .45s ease;
+}
+
+.unlock.hide{
+  opacity:0;
+  transform:scale(.985);
+}
+
+.kicker{
+  color:#708078;
+  font-size:10px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+}
+
+.unlock-title{
+  margin:18px 0 12px;
+  color:var(--fg);
+  font-size:clamp(25px,6vw,48px);
+  line-height:1;
+}
+
+.unlock-log{
+  min-height:76px;
+  margin:20px 0 16px;
+  text-align:left;
+  color:#849289;
+  font-size:11px;
+  line-height:1.7;
+}
+
+.unlock-line{
+  opacity:0;
+  transform:translateY(4px);
+  transition:.45s ease;
+}
+
+.unlock-line.show{
+  opacity:1;
+  transform:none;
+}
+
+.decrypt-track{
+  height:5px;
+  background:rgba(105,255,150,.08);
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(105,255,150,.12);
+}
+
+.decrypt-fill{
+  width:0;
+  height:100%;
+  background:var(--g);
+  box-shadow:0 0 15px rgba(105,255,150,.38);
+}
+
+.decrypt-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:9px;
+  color:#6f7e75;
+  font-size:10px;
+  letter-spacing:.08em;
+}
+
+.decrypt-meta strong{
+  color:var(--g);
+  font-weight:400;
+}
+
+/* phase 2 */
+.reveal{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:clamp(18px,4vw,40px);
+  opacity:0;
+  pointer-events:none;
+}
+
+.reveal.show{
+  opacity:1;
+  transition:opacity .55s ease;
+}
+
+.codename-wrap{
+  width:min(690px,100%);
+}
+
+.access-label{
+  color:var(--g);
+  font-size:10px;
+  letter-spacing:.18em;
+  opacity:0;
+}
+
+.access-label.show{
+  opacity:1;
+  transition:opacity .55s ease;
+}
+
+.codename{
+  margin:20px 0 10px;
+  min-height:1em;
+  color:var(--fg);
+  font-size:clamp(64px,15vw,140px);
+  line-height:.82;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-shadow:
+    4px 0 rgba(255,64,88,.52),
+    -4px 0 rgba(49,230,255,.45);
+  opacity:0;
+  transform:scale(.94);
+  filter:blur(7px);
+}
+
+.codename.show{
+  opacity:1;
+  transform:none;
+  filter:none;
+  transition:
+    opacity .85s ease,
+    transform .85s cubic-bezier(.22,.8,.22,1),
+    filter .85s ease;
+}
+
+.date{
+  min-height:1.1em;
+  margin-top:22px;
+  color:var(--g);
+  font-size:clamp(32px,8vw,72px);
+  letter-spacing:.07em;
+  opacity:0;
+  transform:translateY(8px);
+}
+
+.date.show{
+  opacity:1;
+  transform:none;
+  transition:.75s ease;
+}
+
+.secret{
+  margin-top:32px;
+  min-height:92px;
+  color:rgba(236,255,242,.76);
+  font-size:clamp(13px,2.3vw,18px);
+  line-height:1.75;
+}
+
+.secret-main,
+.secret-question,
+.signature{
+  opacity:0;
+  transform:translateY(5px);
+}
+
+.secret-main.show,
+.secret-question.show,
+.signature.show{
+  opacity:1;
+  transform:none;
+  transition:.65s ease;
+}
+
+.secret-question{
+  margin-top:8px;
+  color:var(--fg);
+  font-size:clamp(17px,3.2vw,25px);
+}
+
+.signature{
+  margin-top:18px;
+  color:var(--g);
+  font-size:12px;
+}
+
+.cursor{
+  display:inline-block;
+  width:.65em;
+  height:1em;
+  vertical-align:-.14em;
+  background:var(--g);
+  margin-left:5px;
+  animation:blink .72s steps(2) infinite;
+}
+
+@keyframes blink{
+  50%{opacity:0}
+}
+
+.reveal-flash{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  pointer-events:none;
+  opacity:0;
+  background:
+    linear-gradient(90deg,rgba(49,230,255,.12),transparent 32%,rgba(255,64,88,.12));
+}
+
+.reveal-flash.go{
+  animation:flash .18s steps(2) 4;
+}
+
+@keyframes flash{
+  0%,100%{opacity:0}
+  50%{opacity:1}
+}
+
+@media(max-width:560px){
+  .reveal-shell{
+    width:100%;
+    height:calc(100dvh - 24px);
+    min-height:430px;
+  }
+
+  .stage{
+    padding:18px 14px;
+  }
+
+  .codename{
+    font-size:clamp(58px,21vw,94px);
+  }
+
+  .date{
+    font-size:clamp(29px,11vw,50px);
+  }
+
+  .secret{
+    margin-top:24px;
+  }
+}
+
+@media(max-height:560px) and (orientation:landscape){
+  .reveal-shell{
+    height:calc(100dvh - 16px);
+    min-height:0;
+  }
+
+  .stage{
+    padding:12px 20px;
+  }
+
+  .unlock-log{
+    min-height:54px;
+    margin:10px 0;
+  }
+
+  .codename{
+    margin:8px 0;
+    font-size:clamp(50px,12vw,92px);
+  }
+
+  .date{
+    margin-top:10px;
+    font-size:clamp(26px,7vw,48px);
+  }
+
+  .secret{
+    margin-top:14px;
+    min-height:70px;
+  }
+}
+</style>
+</head>
+
+<body>
+<canvas id="matrix"></canvas>
+<div class="reveal-flash" id="revealFlash"></div>
+
+<main class="reveal-shell">
+  <div class="head">
+    <span>ARQUIVO FINAL // DESCRIPTOGRAFIA</span>
+    <strong id="headStatus">ACESSO VALIDADO</strong>
+  </div>
+
+  <section class="stage">
+    <div class="unlock" id="unlock">
+      <div class="kicker">TESTE CONCLUÍDO // RECOMPENSA AUTORIZADA</div>
+      <div class="unlock-title">LIBERANDO ARQUIVO.</div>
+
+      <div class="unlock-log">
+        <div class="unlock-line" id="line1">&gt; verificando integridade do teste...</div>
+        <div class="unlock-line" id="line2">&gt; removendo bloqueio final...</div>
+        <div class="unlock-line" id="line3">&gt; descriptografando codinome...</div>
+      </div>
+
+      <div class="decrypt-track">
+        <div class="decrypt-fill" id="decryptFill"></div>
+      </div>
+
+      <div class="decrypt-meta">
+        <span id="decryptStatus">&gt; iniciando...</span>
+        <strong id="decryptPct">0%</strong>
+      </div>
+    </div>
+
+    <div class="reveal" id="reveal">
+      <div class="codename-wrap">
+        <div class="access-label" id="accessLabel">ACESSO CONCEDIDO // ARQUIVO ABERTO</div>
+
+        <div class="codename" id="codename">CORVO</div>
+
+        <div class="date" id="date">XX.XX.2026</div>
+
+        <div class="secret">
+          <div class="secret-main" id="secretMain">Agora que você sabe.</div>
+          <div class="secret-question" id="secretQuestion">
+            Consegue guardar esse segredo?<span class="cursor"></span>
+          </div>
+          <div class="signature" id="signature">— PHANTASMA</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
 <script src="phantasma-audio.js"></script>
 <script>
-setTimeout(()=>{
+"use strict";
+
+if(sessionStorage.getItem("corvo_access")!=="granted"){
+  location.replace("index.html");
+}
+
+const visitorName=(sessionStorage.getItem("phantasma_nome")||"")
+  .replace(/[<>]/g,"").trim().slice(0,18);
+
+const protectedName=(sessionStorage.getItem("phantasma_protegido")||"")
+  .replace(/[<>]/g,"").trim().slice(0,18);
+
+const headStatus=document.getElementById("headStatus");
+const unlock=document.getElementById("unlock");
+const reveal=document.getElementById("reveal");
+
+const line1=document.getElementById("line1");
+const line2=document.getElementById("line2");
+const line3=document.getElementById("line3");
+
+const decryptFill=document.getElementById("decryptFill");
+const decryptPct=document.getElementById("decryptPct");
+const decryptStatus=document.getElementById("decryptStatus");
+
+const accessLabel=document.getElementById("accessLabel");
+const codename=document.getElementById("codename");
+const date=document.getElementById("date");
+const secretMain=document.getElementById("secretMain");
+const secretQuestion=document.getElementById("secretQuestion");
+const signature=document.getElementById("signature");
+const revealFlash=document.getElementById("revealFlash");
+
+function sound(name,vol=.28){
   if(window.PhantasmaAudio){
-    PhantasmaAudio.play("revelacao",.38);
+    PhantasmaAudio.play(name,vol);
   }
-},500);
-</script></body></html>
+}
+
+function flash(){
+  revealFlash.classList.remove("go");
+  void revealFlash.offsetWidth;
+  revealFlash.classList.add("go");
+  sound("glitch",.22);
+}
+
+/* ===== matrix ===== */
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/[]{}";
+let drops=[],cols=0,w=0,h=0,fs=15,last=0,hot=false;
+
+function resizeMatrix(){
+  const dpr=Math.min(devicePixelRatio||1,2);
+  w=innerWidth;h=innerHeight;
+  fs=w<560?13:15;
+
+  canvas.width=Math.max(1,Math.floor(w*dpr));
+  canvas.height=Math.max(1,Math.floor(h*dpr));
+  canvas.style.width=w+"px";
+  canvas.style.height=h+"px";
+
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  cols=Math.ceil(w/fs);
+  drops=Array.from({length:cols},(_,i)=>drops[i]??Math.random()*-38);
+}
+
+function matrixLoop(now){
+  if(now-last>35){
+    last=now;
+
+    ctx.fillStyle="rgba(0,0,0,.105)";
+    ctx.fillRect(0,0,w,h);
+    ctx.font=fs+'px "Courier New",monospace';
+
+    for(let i=0;i<cols;i++){
+      ctx.fillStyle=Math.random()>.972
+        ?"rgba(225,255,232,.66)"
+        :"rgba(105,255,150,.40)";
+
+      ctx.fillText(
+        glyphs[(Math.random()*glyphs.length)|0],
+        i*fs,
+        drops[i]*fs
+      );
+
+      if(drops[i]*fs>h && Math.random()>.970){
+        drops[i]=Math.random()*-15;
+      }
+
+      drops[i]+=hot
+        ? .95+Math.random()*.60
+        : .38+Math.random()*.30;
+    }
+  }
+
+  requestAnimationFrame(matrixLoop);
+}
+
+resizeMatrix();
+requestAnimationFrame(matrixLoop);
+addEventListener("resize",resizeMatrix,{passive:true});
+
+/* ===== reveal sequence ===== */
+const TIMING={
+  line1:500,
+  line2:1250,
+  line3:2050,
+  decryptStart:2450,
+  decryptDuration:3300,
+  revealPause:650,
+  codename:520,
+  date:1550,
+  secret:2500,
+  question:3300,
+  signature:4200
+};
+
+setTimeout(()=>line1.classList.add("show"),TIMING.line1);
+setTimeout(()=>line2.classList.add("show"),TIMING.line2);
+setTimeout(()=>line3.classList.add("show"),TIMING.line3);
+
+setTimeout(()=>{
+  const start=performance.now();
+
+  function progress(now){
+    const p=Math.min(1,(now-start)/TIMING.decryptDuration);
+    const eased=1-Math.pow(1-p,2.5);
+    const pct=Math.round(eased*100);
+
+    decryptFill.style.width=pct+"%";
+    decryptPct.textContent=pct+"%";
+
+    if(pct<28){
+      decryptStatus.textContent="> removendo camada 1...";
+    }else if(pct<58){
+      decryptStatus.textContent="> reconstruindo arquivo...";
+    }else if(pct<84){
+      decryptStatus.textContent="> validando assinatura...";
+    }else if(pct<100){
+      decryptStatus.textContent="> revelação pronta...";
+    }else{
+      decryptStatus.textContent="> descriptografia concluída.";
+      headStatus.textContent="ARQUIVO LIBERADO";
+
+      setTimeout(beginReveal,TIMING.revealPause);
+    }
+
+    if(p<1){
+      requestAnimationFrame(progress);
+    }
+  }
+
+  requestAnimationFrame(progress);
+},TIMING.decryptStart);
+
+function beginReveal(){
+  unlock.classList.add("hide");
+  document.body.classList.add("reveal-hot");
+  hot=true;
+  sound("revelacao",.44);
+
+  setTimeout(()=>{
+    reveal.classList.add("show");
+    accessLabel.classList.add("show");
+  },280);
+
+  setTimeout(()=>{
+    flash();
+    codename.classList.add("show");
+  },TIMING.codename);
+
+  setTimeout(()=>{
+    date.classList.add("show");
+  },TIMING.date);
+
+  setTimeout(()=>{
+    secretMain.classList.add("show");
+  },TIMING.secret);
+
+  setTimeout(()=>{
+    secretQuestion.classList.add("show");
+    hot=false;
+    document.body.classList.remove("reveal-hot");
+  },TIMING.question);
+
+  setTimeout(()=>{
+    signature.classList.add("show");
+  },TIMING.signature);
+}
+
+/* limpa somente flags de acesso; mantém nome/protegido durante a sessão */
+setTimeout(()=>{
+  sessionStorage.removeItem("corvo_access");
+  sessionStorage.removeItem("phantasma_resultado");
+  sessionStorage.removeItem("charada_idx");
+},9000);
+</script>
+</body>
+</html>
