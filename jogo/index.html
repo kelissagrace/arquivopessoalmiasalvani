@@ -237,7 +237,7 @@ button{
   position:absolute;
   right:3%;
   top:4%;
-  width:40%;
+  width:56%;
   aspect-ratio:1;
   object-fit:cover;
   border-radius:50%;
@@ -800,6 +800,41 @@ button{
   }
 }
 
+
+/* ===== DESKTOP: ROSTOS MAIS LEGÍVEIS ===== */
+@media(min-width:761px){
+  .target .portrait{
+    width:56%;
+    right:-2%;
+    top:-2%;
+    border-width:3px;
+    box-shadow:
+      3px 0 0 rgba(255,64,88,.58),
+      -3px 0 0 rgba(49,230,255,.48),
+      0 0 20px rgba(105,255,150,.16);
+  }
+
+  .target::before{
+    left:4%;
+    top:44%;
+    width:62%;
+    height:31%;
+  }
+
+  .target .wing{
+    left:17%;
+    top:45%;
+    width:36%;
+  }
+
+  .target .neck{
+    right:18%;
+    top:20%;
+    width:28%;
+    height:38%;
+  }
+}
+
 </style>
 </head>
 
@@ -913,8 +948,8 @@ button{
         <h2>QUE IRRITANTE.</h2>
         <p id="finalMessage"></p>
         <p>Infelizmente, regras são regras.</p>
-        <p><strong>Você ganhou acesso à pasta restrita.</strong></p>
-        <button class="action" id="revealBtn">ABRIR ARQUIVO</button>
+        <p><strong>Você ganhou acesso à Revelação do Corvo.</strong></p>
+        <button class="action" id="revealBtn">ABRIR ARQUIVO DO CORVO</button>
       </div>
     </div>
 
@@ -945,15 +980,70 @@ const REVEAL_URL = "../anuncio.html";
 const TIMING = {
   entradaAcerto: 2300,
   entradaErro: 2400,
-  preferenciaNaTela: 3800,
+  preferenciaNaTela: 2800,
   preparandoTeste: 2200,
   countdownPasso: 1150,
-  agoraNaTela: 1000,
-  trocaDeFase: 4500,
+  agoraNaTela: 900,
+  trocaDeFase: 4800,
   novaTentativa: 2200
 };
 
 const FAVORITE_WEIGHTS = [1.8,2.0,2.5,4.5];
+
+/*
+  =========================================================
+  TAMANHO DOS CISNES — EDITE AQUI
+  =========================================================
+  Desktop foi aumentado bastante para os rostos ficarem legíveis.
+*/
+const TARGET_SIZE = {
+  mobileMin: 118,
+  mobileMax: 150,
+  mobileRatio: .34,
+
+  desktopMin: 150,
+  desktopMax: 190,
+  desktopRatio: .16
+};
+
+/*
+  =========================================================
+  TEXTOS DO FAVORITO — EDITE AQUI
+  =========================================================
+
+  Estes são TODOS os textos ligados ao favorito.
+  Você pode mudar apenas as frases abaixo sem procurar
+  pelo restante do código.
+*/
+const FAVORITE_TEXTS = {
+  // Vitória: favorito não foi atingido nenhuma vez.
+  intacto: (nome) =>
+    `“${nome} saiu intacto. Então você consegue ser leal quando quer. Que inconveniente.”`,
+
+  // Vitória: favorito foi atingido uma vez.
+  umAcerto: (nome) =>
+    `“Um acerto em ${nome}. Só um. É assim que vocês fãs chamam de ‘proteger’?”`,
+
+  // Vitória: favorito foi atingido 2 ou 3 vezes.
+  algunsAcertos: (nome, total) =>
+    `“Você escolheu ${nome} para salvar e acertou nele ${total} vezes. Continue me explicando como isso é lealdade.”`,
+
+  // Vitória: favorito foi atingido 4+ vezes.
+  muitosAcertos: (nome, total) =>
+    `“${nome} era seu favorito. ${total} acertos. Talvez eu não seja a maior ameaça aqui.”`,
+
+  // Favorito eliminado pela primeira vez.
+  primeiraFalha: (nome) =>
+    `“Você escolheu ${nome} para salvar. E foi você quem o tirou do jogo. Quer mesmo uma segunda chance?”`,
+
+  // Favorito eliminado pela segunda vez.
+  segundaFalha: (nome) =>
+    `“${nome} de novo. A essa altura, chamar isso de acidente seria ofensivo até para você.”`,
+
+  // Terceira falha: acabou.
+  terceiraFalha: (nome) =>
+    `“Três oportunidades. Três fracassos. Você queria salvar ${nome}; eu só precisei esperar você fazer o resto. Ninguém detém o Phantasma.”`
+};
 
 const PHASES = [
   {
@@ -1533,9 +1623,20 @@ function spawnTarget(force=false){
     Mantemos os alvos grandes o suficiente para distinguir os rostos
     até no protocolo final, que usa size:.80.
   */
+  /*
+    TAMANHO DOS CISNES
+    Mobile continua grande; desktop foi aumentado para facilitar
+    distinguir os personagens mesmo no protocolo final.
+  */
   const base = mobile
-    ? Math.max(118,Math.min(150,arenaW*.34))
-    : Math.max(72,Math.min(100,arenaW*.09));
+    ? Math.max(
+        TARGET_SIZE.mobileMin,
+        Math.min(TARGET_SIZE.mobileMax, arenaW*TARGET_SIZE.mobileRatio)
+      )
+    : Math.max(
+        TARGET_SIZE.desktopMin,
+        Math.min(TARGET_SIZE.desktopMax, arenaW*TARGET_SIZE.desktopRatio)
+      );
 
   const size = base*p.size;
   const dir = Math.random()<.5 ? 1 : -1;
@@ -1783,8 +1884,8 @@ function handleFavoriteLoss(fav){
       : "DE NOVO?";
 
     favoriteLostLine.textContent = restartCount===1
-      ? `“Você disse que salvaria ${fav.name}. Eu esperava um pouco mais de convicção.”`
-      : `“De novo? Está começando a parecer que o problema não sou eu.”`;
+      ? FAVORITE_TEXTS.primeiraFalha(fav.name)
+      : FAVORITE_TEXTS.segundaFalha(fav.name);
 
     favoriteRetryBtn.textContent = restartCount===1
       ? "ACEITAR SEGUNDA CHANCE"
@@ -1796,8 +1897,7 @@ function handleFavoriteLoss(fav){
   }
 
   lockedLine.textContent =
-    `“Três oportunidades. Três fracassos. Você queria salvar ${fav.name}; `+
-    `eu só precisei esperar você fazer o resto. Ninguém detém o Phantasma.”`;
+    FAVORITE_TEXTS.terceiraFalha(fav.name);
 
   lockedScreen.classList.add("show");
 }
@@ -1841,20 +1941,13 @@ function finishGame(){
   let line = "";
 
   if(totalFavoriteHits===0){
-    line =
-      `“${fav.name} saiu intacto. Parabéns. Você descobriu como não atacar `+
-      `a pessoa que jurou salvar. Um padrão surpreendentemente alto para alguns fãs.”`;
+    line = FAVORITE_TEXTS.intacto(fav.name);
   }else if(totalFavoriteHits===1){
-    line =
-      `“${fav.name} sobreviveu. Apesar daquele acerto. Acidente, imagino. Claro.”`;
+    line = FAVORITE_TEXTS.umAcerto(fav.name);
   }else if(totalFavoriteHits<=3){
-    line =
-      `“Você chamou ${fav.name} de favorito e acertou nele ${totalFavoriteHits} vezes. `+
-      `Eu adoraria ouvir sua definição de carinho.”`;
+    line = FAVORITE_TEXTS.algunsAcertos(fav.name,totalFavoriteHits);
   }else{
-    line =
-      `“${fav.name} era o seu favorito. ${totalFavoriteHits} acertos depois, ainda está aqui. `+
-      `Talvez devesse ter mais medo de você do que de mim.”`;
+    line = FAVORITE_TEXTS.muitosAcertos(fav.name,totalFavoriteHits);
   }
 
   finalMessage.textContent = line;
