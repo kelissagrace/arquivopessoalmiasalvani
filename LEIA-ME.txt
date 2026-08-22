@@ -1,58 +1,36 @@
-PHANTASMA — SOM EM TODO O FLUXO
+TESTE — IDENTIFICAÇÃO DO USUÁRIO
 
-ESTRUTURA PARA O GITHUB:
+SUBSTITUA:
 
-index.html
-charada.html
-loading.html
-erro.html
-anuncio.html
-phantasma-bg.jpg
-phantasma-fx.js
-phantasma-audio.js
+NA RAIZ:
+- index.html
+- loading.html
+- erro.html
 
-sons/
-  ambiente.wav
-  acesso.wav
-  agora.wav
-  click.wav
-  countdown.wav
-  erro.wav
-  glitch.wav
-  revelacao.wav
-  tecla.wav
-  tiro.wav
+DENTRO DE jogo/:
+- jogo/index.html
 
-jogo/
-  index.html
-  dex.jpg
-  olivia.jpg
-  declan.jpg
-  charlotte.jpg
-  killian.jpg
-  melissa.jpg
-  reid.jpg
-  lara.jpg
-  chuck.jpg
-  zuri.jpg
+NÃO precisa substituir:
+- charada.html
+- anuncio.html
+- phantasma-fx.js
+- phantasma-audio.js
+- sons/
+- imagens dos personagens
 
-ONDE TEM SOM:
-- INDEX: ambiente + clique + glitch da transição.
-- CHARADA: ambiente + teclas + envio da resposta.
-- LOADING: ambiente + confirmação + erro + glitch/invasão.
-- ERRO: ambiente + erro/glitch ao aceitar segunda chance.
-- JOGO: ambiente + transições + countdown + tiros + erro + vitória.
-- ANÚNCIO: ambiente + som de revelação.
+NOVO FLUXO:
+1. Primeira página pergunta o nome.
+2. Nome é salvo em sessionStorage como "phantasma_nome".
+3. A página inicial registra a identidade.
+4. Na transferência de controle, o nome real digitado aparece como
+   PROPRIETÁRIO DA SESSÃO e é substituído por PHANTASMA.
+5. Se a charada estiver errada:
+   "Sério, NOME. Eu tinha expectativas..."
+6. No jogo, a escolha aparece:
+   NOME // PREFERÊNCIA DECLARADA: KILLIAN
 
-IMPORTANTE:
-Navegadores não permitem som automático real antes da primeira interação do usuário.
-No primeiro clique/toque, o sistema desbloqueia o áudio e grava isso na sessão.
-O botão SOM: ATIVAR / ON / OFF aparece nas páginas.
+O nome é limitado a 18 caracteres para não quebrar mobile.
 
-ATENÇÃO AO ANÚNCIO:
-Nesta versão, anuncio.html só abre depois de VENCER O JOGO.
-Isso combina com o fluxo atual, em que tanto quem acerta quanto quem erra vai ao teste.
-
-COMO SUBIR:
-Pode substituir os HTMLs da raiz e jogo/index.html pelos deste pacote,
-e enviar as pastas sons/ e jogo/ mantendo exatamente os nomes.
+Para testar a tela de nome novamente:
+- abra o site em uma NOVA ABA anônima; ou
+- feche a aba e abra outra sessão.

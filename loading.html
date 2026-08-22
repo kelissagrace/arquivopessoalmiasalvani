@@ -292,6 +292,355 @@ body.matrix-danger #matrixCanvas{
   78%{transform:translateX(-7px)}
 }
 
+/* ===== TRANSFERÊNCIA DE CONTROLE // V11 ===== */
+.breach-shell{
+  position:relative;
+  width:min(860px,94vw);
+  min-height:430px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid rgba(105,255,150,.18);
+  background:
+    linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,.90)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 46px,
+      rgba(105,255,150,.025) 47px 48px
+    );
+  box-shadow:
+    0 0 80px rgba(105,255,150,.05),
+    inset 0 0 50px rgba(105,255,150,.02);
+}
+
+.breach-shell::before,
+.breach-shell::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:8;
+  opacity:0;
+}
+
+.breach-shell::before{
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 12%,
+      rgba(49,230,255,.22) 13% 16%,
+      transparent 17% 45%,
+      rgba(255,64,88,.20) 46% 50%,
+      transparent 51% 76%,
+      rgba(105,255,150,.14) 77% 80%,
+      transparent 81%
+    );
+}
+
+.breach-shell.corrupt::before{
+  animation:ownershipTear .42s steps(2) 8;
+}
+
+.breach-shell::after{
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 18px,
+      rgba(255,255,255,.035) 19px 20px
+    );
+}
+
+.breach-shell.corrupt::after{
+  opacity:.65;
+  animation:breachScan .10s steps(2) infinite;
+}
+
+.breach-noise{
+  position:absolute;
+  inset:-8%;
+  z-index:1;
+  opacity:.0;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(105,255,150,.08),transparent 34%),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 8px,
+      rgba(105,255,150,.025) 9px 10px
+    );
+}
+
+.breach-shell.corrupt .breach-noise{
+  opacity:1;
+  animation:noiseShift .14s steps(2) infinite;
+}
+
+.breach-terminal{
+  position:absolute;
+  left:clamp(18px,5vw,54px);
+  right:clamp(18px,5vw,54px);
+  top:clamp(22px,5vw,48px);
+  z-index:3;
+  text-align:left;
+  font-size:clamp(11px,1.8vw,15px);
+  line-height:1.8;
+  letter-spacing:.08em;
+}
+
+.breach-line{
+  color:rgba(105,255,150,.62);
+  opacity:0;
+  transform:translateX(-8px);
+}
+
+.breach-line.show{
+  opacity:1;
+  transform:none;
+  transition:opacity .18s linear,transform .18s linear;
+}
+
+.breach-line.bad{
+  color:var(--r);
+  text-shadow:2px 0 rgba(49,230,255,.24);
+  animation:terminalBad .16s steps(2) 5;
+}
+
+.ownership{
+  position:relative;
+  z-index:4;
+  width:min(640px,86vw);
+  text-align:center;
+  opacity:0;
+  transform:scale(.97);
+}
+
+.ownership.show{
+  opacity:1;
+  transform:none;
+  transition:opacity .28s ease,transform .28s ease;
+}
+
+.ownership-label{
+  color:#68786f;
+  font-size:10px;
+  letter-spacing:.18em;
+  margin-bottom:16px;
+}
+
+.ownership-old,
+.ownership-new{
+  font-weight:700;
+  font-size:clamp(34px,8vw,76px);
+  line-height:1;
+  letter-spacing:.08em;
+}
+
+.ownership-old{
+  color:rgba(236,255,242,.76);
+  text-shadow:2px 0 var(--r),-2px 0 var(--c);
+}
+
+.ownership-old.revoked{
+  color:var(--r);
+  text-decoration:line-through;
+  opacity:.42;
+  transform:skewX(-8deg) translateX(-8px);
+  filter:blur(.4px);
+  transition:.25s steps(2);
+}
+
+.ownership-arrow{
+  margin:18px 0;
+  color:var(--r);
+  font-size:clamp(18px,4vw,30px);
+  letter-spacing:.4em;
+  opacity:.0;
+}
+
+.ownership-arrow.show{
+  opacity:1;
+  animation:arrowPulse .20s steps(2) infinite;
+}
+
+.ownership-new{
+  color:var(--g);
+  opacity:0;
+  transform:translateY(8px) scale(.94);
+  text-shadow:
+    5px 0 var(--r),
+    -5px 0 var(--c);
+}
+
+.ownership-new.show{
+  opacity:1;
+  transform:none;
+  animation:
+    phantomNameIn .72s steps(2) both,
+    phantomNameFlicker .22s steps(2) 7 .72s;
+}
+
+.breach-final{
+  position:relative;
+  z-index:5;
+  width:min(720px,88vw);
+  opacity:0;
+  text-align:center;
+  color:var(--g);
+  font-size:clamp(28px,7vw,64px);
+  line-height:.95;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-shadow:
+    4px 0 var(--r),
+    -4px 0 var(--c);
+}
+
+.breach-final span{
+  display:block;
+  margin-top:20px;
+  color:rgba(236,255,242,.60);
+  font-size:clamp(10px,1.8vw,14px);
+  line-height:1.5;
+  letter-spacing:.14em;
+  text-shadow:none;
+}
+
+.breach-final.show{
+  opacity:1;
+  animation:finalClaim .82s steps(2) both;
+}
+
+@keyframes ownershipTear{
+  0%,38%,100%{opacity:0;transform:none}
+  40%{opacity:1;transform:translateX(8%) skewX(-7deg)}
+  58%{opacity:.45;transform:translateX(-7%) skewX(5deg)}
+  72%{opacity:0}
+}
+
+@keyframes breachScan{
+  50%{transform:translateY(2px)}
+}
+
+@keyframes noiseShift{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(5px,-2px)}
+  50%{transform:translate(-4px,3px)}
+  75%{transform:translate(2px,-1px)}
+}
+
+@keyframes terminalBad{
+  0%,100%{transform:none;opacity:1}
+  30%{transform:translateX(5px);opacity:.5}
+  60%{transform:translateX(-4px)}
+}
+
+@keyframes arrowPulse{
+  0%,100%{transform:scaleX(1);opacity:.6}
+  50%{transform:scaleX(1.12);opacity:1}
+}
+
+@keyframes phantomNameIn{
+  0%{
+    opacity:0;
+    clip-path:inset(0 0 92% 0);
+    transform:translateX(18px) scale(1.06);
+  }
+  30%{
+    opacity:.45;
+    clip-path:inset(48% 0 18% 0);
+    transform:translateX(-14px);
+  }
+  56%{
+    opacity:.82;
+    clip-path:inset(14% 0 52% 0);
+    transform:translateX(8px);
+  }
+  78%{
+    opacity:.95;
+    clip-path:inset(0);
+  }
+  100%{
+    opacity:1;
+    clip-path:inset(0);
+    transform:none;
+  }
+}
+
+@keyframes phantomNameFlicker{
+  0%,72%,100%{filter:none}
+  74%{filter:contrast(2) brightness(1.2);transform:translateX(5px)}
+  84%{transform:translateX(-4px)}
+}
+
+@keyframes finalClaim{
+  0%{
+    opacity:0;
+    transform:scale(1.04);
+    filter:blur(5px) contrast(2);
+  }
+  35%{
+    opacity:.55;
+    transform:translateX(10px);
+  }
+  58%{
+    opacity:.85;
+    transform:translateX(-7px);
+    filter:blur(1px) contrast(1.6);
+  }
+  100%{
+    opacity:1;
+    transform:none;
+    filter:none;
+  }
+}
+
+@media(max-width:560px){
+  .breach-shell{
+    width:100%;
+    min-height:430px;
+  }
+
+  .breach-terminal{
+    left:16px;
+    right:16px;
+    top:22px;
+  }
+
+  .ownership{
+    width:92%;
+  }
+
+  .ownership-old,
+  .ownership-new{
+    font-size:clamp(32px,11vw,54px);
+  }
+
+  .breach-final{
+    width:92%;
+    font-size:clamp(27px,10vw,46px);
+  }
+}
+
+@media(max-height:560px) and (orientation:landscape){
+  .breach-shell{
+    min-height:360px;
+  }
+
+  .breach-terminal{
+    top:14px;
+    font-size:10px;
+  }
+
+  .ownership-old,
+  .ownership-new{
+    font-size:clamp(28px,7vw,48px);
+  }
+
+  .ownership-arrow{
+    margin:10px 0;
+  }
+}
+
+
 
 
 /* ===== CORRETO / INVASÃO ===== */
@@ -576,7 +925,27 @@ body.matrix-danger #matrixCanvas{
   </section>
 
   <section class="screen" id="breachScreen">
-    <div class="wait-word" id="breachWord">&gt; CONTROLE TRANSFERIDO</div>
+    <div class="breach-shell">
+      <div class="breach-noise"></div>
+
+      <div class="breach-terminal" id="breachTerminal">
+        <div class="breach-line" id="breachLine1">&gt; SESSÃO: ATIVA</div>
+        <div class="breach-line" id="breachLine2">&gt; PROPRIETÁRIO: USUÁRIO</div>
+        <div class="breach-line" id="breachLine3">&gt; PRIVILÉGIOS: PARCIAIS</div>
+      </div>
+
+      <div class="ownership" id="ownership">
+        <div class="ownership-label">PROPRIETÁRIO DA SESSÃO</div>
+        <div class="ownership-old" id="ownershipOld">USUÁRIO</div>
+        <div class="ownership-arrow" id="ownershipArrow">/////</div>
+        <div class="ownership-new" id="ownershipNew">PHANTASMA</div>
+      </div>
+
+      <div class="breach-final" id="breachFinal">
+        CONTROLE TRANSFERIDO
+        <span>VOCÊ NÃO ESTÁ MAIS SOZINHO AQUI.</span>
+      </div>
+    </div>
   </section>
 
   <section class="screen" id="takeoverScreen">
@@ -607,10 +976,24 @@ const TIMING = {
   cadeadoFechado: 650,
   desbloqueio: 1100,
   negadoNaTela: 1350,
-  depoisDoAguarde: 350
+  depoisDoAguarde: 350,
+
+  /* transferência de controle */
+  takeoverLinha1: 180,
+  takeoverLinha2: 520,
+  takeoverLinha3: 860,
+  takeoverCorrupcao: 1250,
+  takeoverDono: 1650,
+  takeoverRevoga: 2150,
+  takeoverPhantasma: 2650,
+  takeoverFinal: 3650,
+  takeoverSaida: 4850
 };
 
 const result = sessionStorage.getItem("phantasma_resultado");
+const visitorName = (
+  sessionStorage.getItem("phantasma_nome") || "USUÁRIO"
+).replace(/[<>]/g,"").trim().slice(0,18) || "USUÁRIO";
 
 if(result!=="ok" && result!=="erro"){
   location.replace("charada.html");
@@ -630,10 +1013,22 @@ const lockStatus = document.getElementById("lockStatus");
 const lockMicro = document.getElementById("lockMicro");
 
 const waitWord = document.getElementById("waitWord");
-const breachWord = document.getElementById("breachWord");
+const breachShell = document.querySelector(".breach-shell");
+const breachTerminal = document.getElementById("breachTerminal");
+const breachLine1 = document.getElementById("breachLine1");
+const breachLine2 = document.getElementById("breachLine2");
+const breachLine3 = document.getElementById("breachLine3");
+const ownership = document.getElementById("ownership");
+const ownershipOld = document.getElementById("ownershipOld");
+const ownershipArrow = document.getElementById("ownershipArrow");
+const ownershipNew = document.getElementById("ownershipNew");
+const breachFinal = document.getElementById("breachFinal");
 const glitchFlash = document.getElementById("glitchFlash");
 
 const gameBtn = document.getElementById("gameBtn");
+
+ownershipOld.textContent = visitorName.toUpperCase();
+breachLine2.textContent = `> PROPRIETÁRIO: ${visitorName.toUpperCase()}`;
 
 /* ===== fundo hacker leve ===== */
 const matrixCanvas = document.getElementById("matrixCanvas");
@@ -792,6 +1187,91 @@ function showLock(){
 }
 
 /* ===== resposta correta ===== */
+function resetBreach(){
+  breachShell.classList.remove("corrupt");
+  breachLine1.className="breach-line";
+  breachLine2.className="breach-line";
+  breachLine3.className="breach-line";
+  ownership.classList.remove("show");
+  ownershipOld.classList.remove("revoked");
+  ownershipOld.textContent=visitorName.toUpperCase();
+  breachLine2.textContent=`> PROPRIETÁRIO: ${visitorName.toUpperCase()}`;
+  ownershipArrow.classList.remove("show");
+  ownershipNew.classList.remove("show");
+  breachFinal.classList.remove("show");
+}
+
+function runOwnershipTakeover(){
+  resetBreach();
+  showOnly(breachScreen);
+
+  document.body.classList.add("matrix-hot");
+
+  setTimeout(()=>{
+    breachLine1.classList.add("show");
+    sound("click",.15);
+  },TIMING.takeoverLinha1);
+
+  setTimeout(()=>{
+    breachLine2.classList.add("show");
+    sound("click",.15);
+  },TIMING.takeoverLinha2);
+
+  setTimeout(()=>{
+    breachLine3.classList.add("show");
+    sound("click",.15);
+  },TIMING.takeoverLinha3);
+
+  setTimeout(()=>{
+    breachShell.classList.add("corrupt");
+
+    breachLine1.textContent="> SESSÃO: COMPROMETIDA";
+    breachLine2.textContent="> PROPRIETÁRIO: REESCREVENDO...";
+    breachLine3.textContent="> PRIVILÉGIOS: ROOT";
+
+    breachLine1.classList.add("bad");
+    breachLine2.classList.add("bad");
+    breachLine3.classList.add("bad");
+
+    glitch();
+    sound("erro",.28);
+  },TIMING.takeoverCorrupcao);
+
+  setTimeout(()=>{
+    breachTerminal.style.opacity=".20";
+    ownership.classList.add("show");
+  },TIMING.takeoverDono);
+
+  setTimeout(()=>{
+    ownershipOld.classList.add("revoked");
+    ownershipArrow.classList.add("show");
+    sound("glitch",.30);
+  },TIMING.takeoverRevoga);
+
+  setTimeout(()=>{
+    ownershipNew.classList.add("show");
+    sound("glitch",.38);
+  },TIMING.takeoverPhantasma);
+
+  setTimeout(()=>{
+    ownership.style.display="none";
+    breachTerminal.style.display="none";
+    breachFinal.classList.add("show");
+    glitch();
+  },TIMING.takeoverFinal);
+
+  setTimeout(()=>{
+    glitch();
+
+    showOnly(takeoverScreen);
+    takeoverScreen.classList.remove("invasion");
+    void takeoverScreen.offsetWidth;
+    takeoverScreen.classList.add("invasion");
+
+    document.body.classList.remove("matrix-hot");
+  },TIMING.takeoverSaida);
+}
+
 function grantAccess(){
   lock.classList.add("unlocked");
   lockStatus.textContent = "ACESSO CONCEDIDO";
@@ -799,25 +1279,7 @@ function grantAccess(){
   sound("acesso",.40);
 
   setTimeout(()=>{
-    document.body.classList.add("matrix-hot");
-    glitch();
-
-    showOnly(breachScreen);
-    breachWord.textContent = "> CONTROLE TRANSFERIDO // PHANTASMA";
-    sound("glitch",.34);
-
-    setTimeout(()=>{
-      glitch();
-      showOnly(takeoverScreen);
-      takeoverScreen.classList.remove("invasion");
-      void takeoverScreen.offsetWidth;
-      takeoverScreen.classList.add("invasion");
-
-      setTimeout(()=>{
-        document.body.classList.remove("matrix-hot");
-      },1700);
-    },1050);
-
+    runOwnershipTakeover();
   },TIMING.desbloqueio);
 }
 

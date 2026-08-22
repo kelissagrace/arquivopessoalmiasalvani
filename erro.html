@@ -49,16 +49,26 @@ button:hover{background:var(--g);color:#001407}
 <section class="card">
   <div class="tag">resposta incorreta // falha registrada</div>
   <h1 class="glitch">ESPERAVA MAIS.</h1>
-  <p class="phantasma">Sério. Eu tinha expectativas. Não muitas. Mas tinha.</p>
+  <p class="phantasma" id="namedTaunt">Sério. Eu tinha expectativas. Não muitas. Mas tinha.</p>
   <p>Você falhou na charada.</p>
   <p>Então vou simplificar as coisas para você.</p>
-  <p class="phantasma">Tente não desperdiçá-la.</p>
+  <p class="phantasma">Uma segunda chance. Tente não desperdiçá-la.</p>
 
   <button id="go">INICIAR SEGUNDA CHANCE</button>
   <div class="small">Redirecionando para o teste...</div>
 </section>
 
 <script>
+const visitorName=(sessionStorage.getItem("phantasma_nome")||"")
+  .replace(/[<>]/g,"")
+  .trim()
+  .slice(0,18);
+
+if(visitorName){
+  document.getElementById("namedTaunt").textContent=
+    `Sério, ${visitorName}. Eu tinha expectativas. Não muitas. Mas tinha.`;
+}
+
 const GAME_URL = "jogo/?origem=erro";
 
 function irParaOJogo(){
@@ -98,16 +108,6 @@ resizeMatrix();
 addEventListener("resize",resizeMatrix,{passive:true});
 matrixLoop();
 
-</script>
-<script src="phantasma-audio.js"></script>
-<script>
-document.getElementById("go").addEventListener("pointerdown",()=>{
-  if(window.PhantasmaAudio){
-    PhantasmaAudio.unlock();
-    PhantasmaAudio.play("erro",.22);
-    setTimeout(()=>PhantasmaAudio.play("glitch",.28),100);
-  }
-},{once:true});
 </script>
 </body>
 </html>
