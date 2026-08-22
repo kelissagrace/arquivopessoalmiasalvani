@@ -418,75 +418,89 @@ button{
 }
 
 /* =========================================================
-   HACK TRANSITION
-   DOM/CSS, sem canvas adicional.
+   TRANSIÇÕES DO SISTEMA // V26
+   Sem piscadas agressivas. Movimento contínuo.
    ========================================================= */
+
+.overlay.show{
+  display:flex;
+  animation:overlayIn .34s ease both;
+}
+
+.overlay.show .panel{
+  animation:panelIn .42s cubic-bezier(.22,.8,.22,1) both;
+}
+
+@keyframes overlayIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes panelIn{
+  from{opacity:0;transform:translateY(8px) scale(.995);filter:blur(3px)}
+  to{opacity:1;transform:none;filter:none}
+}
 
 .hack{
   position:absolute;
   inset:0;
   z-index:90;
   display:none;
+  place-items:center;
   overflow:hidden;
-  background:#000;
+  padding:clamp(18px,4vw,34px);
+  background:rgba(0,0,0,.91);
+  backdrop-filter:blur(4px);
   pointer-events:none;
+  opacity:0;
+  transition:opacity .26s ease;
 }
 
-.hack.show{display:block}
+.hack.show{
+  display:grid;
+  opacity:1;
+}
+
+.hack.leaving{
+  opacity:0;
+}
 
 .hack::before{
   content:"";
   position:absolute;
   inset:0;
-  z-index:3;
+  z-index:2;
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,.055) 0 1px,
+      rgba(255,255,255,.020) 0 1px,
       transparent 2px 5px
     ),
-    radial-gradient(circle at center,transparent 0 24%,rgba(0,0,0,.52) 70%,#000 100%);
-  animation:hackScan .12s steps(2) infinite;
+    radial-gradient(
+      circle at center,
+      transparent 0 28%,
+      rgba(0,0,0,.24) 62%,
+      rgba(0,0,0,.70) 100%
+    );
 }
 
 .matrix-layer{
   position:absolute;
   inset:0;
   overflow:hidden;
-  opacity:.62;
+  opacity:.24;
 }
 
 .matrix-col{
   position:absolute;
   top:-120%;
-  color:rgba(105,255,150,.60);
+  color:rgba(105,255,150,.28);
   font-size:13px;
   line-height:1.05;
   white-space:pre;
   writing-mode:vertical-rl;
   text-orientation:upright;
   animation:matrixFall linear infinite;
-  text-shadow:1px 0 rgba(49,230,255,.20);
-}
-
-.hack-message{
-  position:absolute;
-  inset:0;
-  z-index:5;
-  display:grid;
-  place-items:center;
-  padding:24px;
-  text-align:center;
-}
-
-.hack-message span{
-  color:var(--g);
-  font-size:clamp(17px,4vw,30px);
-  font-weight:700;
-  letter-spacing:.08em;
-  line-height:1.3;
-  text-shadow:3px 0 var(--r),-3px 0 var(--c);
-  animation:hackText .22s steps(2) infinite;
 }
 
 @keyframes matrixFall{
@@ -494,14 +508,79 @@ button{
   to{transform:translateY(245%)}
 }
 
-@keyframes hackScan{
-  50%{transform:translateY(2px)}
+.hack-card{
+  position:relative;
+  z-index:5;
+  width:min(650px,92%);
+  padding:clamp(22px,4vw,36px);
+  border:1px solid rgba(105,255,150,.24);
+  background:rgba(0,7,3,.84);
+  box-shadow:
+    0 22px 80px rgba(0,0,0,.54),
+    inset 0 0 35px rgba(105,255,150,.022);
+  opacity:0;
+  transform:translateY(9px);
 }
 
-@keyframes hackText{
-  0%,72%,100%{transform:none}
-  74%{transform:translateX(5px)}
-  82%{transform:translateX(-4px)}
+.hack.show .hack-card{
+  animation:hackCardIn .45s cubic-bezier(.22,.8,.22,1) .06s forwards;
+}
+
+@keyframes hackCardIn{
+  to{opacity:1;transform:none}
+}
+
+.hack-kicker{
+  color:#718078;
+  font-size:10px;
+  letter-spacing:.14em;
+}
+
+.hack-message{
+  position:static;
+  display:block;
+  padding:0;
+  margin:16px 0 20px;
+  text-align:left;
+}
+
+.hack-message span{
+  color:var(--fg);
+  font-size:clamp(18px,3.6vw,30px);
+  font-weight:700;
+  letter-spacing:.025em;
+  line-height:1.25;
+  text-shadow:none;
+  animation:none;
+}
+
+.hack-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:7px;
+  color:#718078;
+  font-size:10px;
+  letter-spacing:.07em;
+}
+
+.hack-meta strong{
+  color:var(--g);
+  font-weight:400;
+}
+
+.hack-track{
+  height:4px;
+  overflow:hidden;
+  background:rgba(105,255,150,.08);
+  box-shadow:0 0 0 1px rgba(105,255,150,.12);
+}
+
+.hack-fill{
+  width:0;
+  height:100%;
+  background:var(--g);
+  box-shadow:0 0 13px rgba(105,255,150,.34);
 }
 
 .banner{
@@ -871,6 +950,169 @@ button{
   }
 }
 
+
+/* ===== V25 // JOGO EM UMA TELA NO DESKTOP ===== */
+@media(min-width:761px){
+  html,body{
+    width:100%;
+    height:100%;
+    min-height:100%;
+    overflow:hidden;
+  }
+
+  body{
+    min-height:100dvh;
+    padding:10px 14px;
+  }
+
+  .app{
+    width:min(1120px,100%);
+    height:calc(100dvh - 20px);
+    margin:0 auto;
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    gap:7px;
+  }
+
+  .top{
+    margin:0;
+    min-height:58px;
+    align-items:center;
+  }
+
+  .brand-title{
+    font-size:clamp(19px,2.2vw,28px);
+  }
+
+  .brand-sub{
+    margin-top:2px;
+    font-size:9px;
+  }
+
+  .hud{
+    font-size:10px;
+    gap:5px 12px;
+  }
+
+  .progress-track{
+    flex-basis:280px;
+    width:280px;
+  }
+
+  .arena{
+    height:auto;
+    min-height:0;
+    max-height:none;
+  }
+
+  .tip{
+    margin:0;
+    min-height:14px;
+    font-size:9px;
+  }
+
+  .overlay{
+    overflow:hidden;
+    padding:14px 20px;
+  }
+
+  .panel{
+    max-height:100%;
+    padding:2px 4px;
+  }
+
+  .panel h2{
+    margin-bottom:9px;
+    font-size:clamp(28px,4vw,48px);
+  }
+
+  .panel p{
+    margin:5px 0;
+    line-height:1.42;
+    font-size:13px;
+  }
+
+  .favorite-grid{
+    width:min(650px,100%);
+    margin-top:11px;
+    gap:6px;
+  }
+
+  .favorite-card{
+    padding:5px;
+  }
+
+  .favorite-card span{
+    padding-top:4px;
+    font-size:9px;
+  }
+
+  .system-lines{
+    margin:10px auto;
+    line-height:1.48;
+    font-size:11px;
+  }
+
+  .action{
+    min-height:42px;
+    margin-top:10px;
+    padding:9px 14px;
+  }
+
+  .protection-actions{
+    margin-top:11px;
+  }
+
+  .result-card{
+    margin:9px auto;
+    padding:9px;
+  }
+
+  .result-card img{
+    width:58px;
+    height:58px;
+  }
+}
+
+/* ===== O PREÇO DO ACESSO ===== */
+.access-cost{
+  width:min(670px,100%);
+  margin:10px auto 0;
+  padding:13px 15px;
+  border:1px solid rgba(255,64,88,.28);
+  background:rgba(28,0,5,.20);
+  text-align:left;
+}
+
+.access-cost .rule{
+  margin:5px 0;
+  color:rgba(236,255,242,.76);
+  line-height:1.45;
+}
+
+.access-cost .rule strong{
+  color:var(--g);
+}
+
+.access-cost .danger{
+  color:var(--r);
+}
+
+.access-cost .protected{
+  color:var(--g);
+  font-weight:700;
+}
+
+@media(max-width:760px){
+  .access-cost{
+    padding:12px;
+  }
+
+  .access-cost .rule{
+    font-size:13px;
+  }
+}
+
 </style>
 </head>
 
@@ -897,7 +1139,23 @@ button{
 
     <div class="hack" id="hack" aria-hidden="true">
       <div class="matrix-layer" id="matrixLayer"></div>
-      <div class="hack-message"><span id="hackText">&gt; ACESSANDO...</span></div>
+
+      <div class="hack-card">
+        <div class="hack-kicker">SESSÃO // RECONFIGURAÇÃO</div>
+
+        <div class="hack-message">
+          <span id="hackText">&gt; ACESSANDO...</span>
+        </div>
+
+        <div class="hack-meta">
+          <span id="hackStatus">&gt; preparando estado...</span>
+          <strong id="hackPct">0%</strong>
+        </div>
+
+        <div class="hack-track">
+          <div class="hack-fill" id="hackFill"></div>
+        </div>
+      </div>
     </div>
 
     <div class="overlay" id="intro">
@@ -944,14 +1202,23 @@ button{
 
     <div class="overlay" id="briefingScreen">
       <div class="panel">
-        <h2>VAMOS DEVAGAR.</h2>
-        <p>Não quero que você se machuque tentando acompanhar.</p>
-        <div class="system-lines">
-          &gt; ALVOS CARREGADOS...<br>
-          &gt; TRANSMISSÃO SINCRONIZADA...<br>
-          &gt; AGUARDANDO SUA CONFIRMAÇÃO...
+        <div class="small-note">CONDIÇÃO DE ACESSO // PHANTASMA</div>
+        <h2>AGORA VOCÊ SABE O PREÇO.</h2>
+        <p>Você escolheu quem quer manter a salvo.</p>
+        <p><strong>Agora prove o quanto essa escolha vale.</strong></p>
+
+        <div class="access-cost">
+          <div class="rule">&gt; OBJETIVO: <strong>ATINJA OS OUTROS CISNES ANTES DO TEMPO ACABAR.</strong></div>
+          <div class="rule">&gt; RECOMPENSA: conclua o teste e o arquivo será liberado.</div>
+          <div class="rule">&gt; PROTEGIDO: <span class="protected" id="briefingProtectedName">---</span></div>
+          <div class="rule danger">&gt; ALERTA: SEU PROTEGIDO TAMBÉM ENTRARÁ NA LINHA DE TIRO.</div>
         </div>
-        <button class="action" id="briefingBtn">COMEÇAR</button>
+
+        <p class="small-note">
+          Eu dei a você alguém para proteger. Não prometi facilitar.
+        </p>
+
+        <button class="action" id="briefingBtn">INICIAR TESTE</button>
       </div>
     </div>
 
@@ -1168,6 +1435,9 @@ const flash = document.getElementById("flash");
 const hack = document.getElementById("hack");
 const hackText = document.getElementById("hackText");
 const matrixLayer = document.getElementById("matrixLayer");
+const hackStatus = document.getElementById("hackStatus");
+const hackPct = document.getElementById("hackPct");
+const hackFill = document.getElementById("hackFill");
 
 const intro = document.getElementById("intro");
 const introBtn = document.getElementById("introBtn");
@@ -1181,6 +1451,7 @@ const preferenceScreen = document.getElementById("preferenceScreen");
 const preferenceText = document.getElementById("preferenceText");
 const briefingScreen = document.getElementById("briefingScreen");
 const briefingBtn = document.getElementById("briefingBtn");
+const briefingProtectedName = document.getElementById("briefingProtectedName");
 const countdownScreen = document.getElementById("countdownScreen");
 const countdownNumber = document.getElementById("countdownNumber");
 
@@ -1446,13 +1717,60 @@ function playHack(message,callback,duration=2300){
   transition = true;
 
   hackText.textContent = message;
+  hackStatus.textContent = "> preparando estado...";
+  hackPct.textContent = "0%";
+
   buildMatrix();
+
+  hack.classList.remove("leaving");
   hack.classList.add("show");
   hack.setAttribute("aria-hidden","false");
-  playSound("glitch",.28);
+
+  hackFill.style.transition="none";
+  hackFill.style.width="0%";
+
+  playSound("click",.10);
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      hackFill.style.transition=
+        `width ${Math.max(900,duration-420)}ms cubic-bezier(.18,.8,.24,1)`;
+      hackFill.style.width="100%";
+    });
+  });
+
+  const started=performance.now();
+  const progressDuration=Math.max(900,duration-420);
+
+  function frame(now){
+    const p=Math.min(1,(now-started)/progressDuration);
+    const pct=Math.round((1-Math.pow(1-p,2.2))*100);
+
+    hackPct.textContent=pct+"%";
+
+    if(pct<34){
+      hackStatus.textContent="> preparando estado...";
+    }else if(pct<70){
+      hackStatus.textContent="> sincronizando sessão...";
+    }else if(pct<100){
+      hackStatus.textContent="> aplicando configuração...";
+    }else{
+      hackStatus.textContent="> pronto.";
+    }
+
+    if(p<1){
+      requestAnimationFrame(frame);
+    }
+  }
+
+  requestAnimationFrame(frame);
 
   setTimeout(()=>{
-    hack.classList.remove("show");
+    hack.classList.add("leaving");
+  },Math.max(500,duration-260));
+
+  setTimeout(()=>{
+    hack.classList.remove("show","leaving");
     hack.setAttribute("aria-hidden","true");
     transition = false;
 
@@ -1601,6 +1919,7 @@ confirmProtectionBtn.addEventListener("click",()=>{
     playHack(
       "> PROTEÇÃO REGISTRADA // TESTE RECONFIGURADO...",
       ()=>{
+        briefingProtectedName.textContent = protectedOne.name.toUpperCase();
         briefingScreen.classList.add("show");
       },
       TIMING.preparandoTeste
