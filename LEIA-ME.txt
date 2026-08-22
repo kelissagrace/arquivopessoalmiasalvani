@@ -1,36 +1,93 @@
-TESTE — IDENTIFICAÇÃO DO USUÁRIO
+PHANTASMA // SISTEMA V24
 
-SUBSTITUA:
+ESTA VERSÃO VOLTA AO VISUAL MODERNO.
+NÃO É CMD.
+
+O conceito agora é:
+VOCÊ TEM O CONTROLE -> PHANTASMA ROUBA O CONTROLE -> ELE DEIXA VOCÊ COM A RESPONSABILIDADE DA ESCOLHA.
+
+SUBSTITUA SOMENTE:
 
 NA RAIZ:
 - index.html
 - loading.html
-- erro.html
 
 DENTRO DE jogo/:
 - jogo/index.html
 
-NÃO precisa substituir:
+NÃO substitua nesta atualização:
 - charada.html
+- erro.html
 - anuncio.html
 - phantasma-fx.js
 - phantasma-audio.js
 - sons/
-- imagens dos personagens
+- fotos
 
-NOVO FLUXO:
-1. Primeira página pergunta o nome.
-2. Nome é salvo em sessionStorage como "phantasma_nome".
-3. A página inicial registra a identidade.
-4. Na transferência de controle, o nome real digitado aparece como
-   PROPRIETÁRIO DA SESSÃO e é substituído por PHANTASMA.
-5. Se a charada estiver errada:
-   "Sério, NOME. Eu tinha expectativas..."
-6. No jogo, a escolha aparece:
-   NOME // PREFERÊNCIA DECLARADA: KILLIAN
+NOVO FLUXO DA ABERTURA:
+1. "VOCÊ ESTÁ DISPOSTO A IR ATÉ O FINAL?"
+2. barra de inicialização
+3. "QUEM ESTÁ AÍ?"
+4. nome registrado
+5. experiência moderna normal
 
-O nome é limitado a 18 caracteres para não quebrar mobile.
+NOVA TOMADA DE CONTROLE:
+- acesso concedido
+- painel mostra o nome como proprietário
+- CONTROLE LOCAL = 100%
+- processo externo é detectado
+- controle remoto cresce aos poucos
+- o sistema tenta se defender e falha
+- botão RECUPERAR CONTROLE fica disponível por um momento
+- se clicar: AÇÃO BLOQUEADA PELO PROCESSO REMOTO
+- privilégios locais são revogados
+- CONTROLE REMOTO = 100%
+- nome do usuário é riscado
+- PHANTASMA vira proprietário
+- só então aparece "VOCÊ ACHOU QUE SERIA FÁCIL ASSIM?"
 
-Para testar a tela de nome novamente:
-- abra o site em uma NOVA ABA anônima; ou
-- feche a aba e abra outra sessão.
+NOVA MECÂNICA DO JOGO:
+"FAVORITO" virou "PROTEGIDO".
+
+A pessoa vê:
+VOCÊ TEM O PODER DE ESCOLHER UM.
+Apenas um.
+Entre todos os Cisnes...
+quem você protegeria?
+
+Depois de clicar em alguém:
+PROTEGIDO SELECIONADO: NOME
+Tem certeza?
+Depois disso, não diga que eu escolhi por você.
+
+Botões:
+CONFIRMAR PROTEÇÃO
+ESCOLHER OUTRO
+
+Depois:
+PROTEÇÃO REGISTRADA
+NOME está sob sua responsabilidade.
+
+Durante o jogo:
+- acertar o protegido mostra "AVISO // PROTEGIDO ATINGIDO"
+- deixar o protegido intacto dá +3s
+- perder o protegido dispara textos psicológicos
+- segunda chance continua indo direto ao protocolo final
+- 1 tentativa inicial + 2 chances por perda do protegido continuam preservadas
+- timeout continua sendo uma caridade separada
+
+TEMPOS DO JOGO:
+A V24 usa os seus valores mais recentes:
+entradaAcerto: 2300
+entradaErro: 2400
+preferenciaNaTela: 3800
+preparandoTeste: 2200
+countdownPasso: 1150
+agoraNaTela: 1000
+trocaDeFase: 5500
+novaTentativa: 2200
+
+CACHE:
+Depois do commit:
+PC -> Ctrl + F5
+Celular -> teste também em aba privada/anônima.
