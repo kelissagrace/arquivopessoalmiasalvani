@@ -835,6 +835,42 @@ button{
   }
 }
 
+
+/* ===== PROTEGIDO // confirmação psicológica ===== */
+.protection-panel{
+  max-width:650px;
+}
+
+#protectionConfirmName{
+  color:var(--g);
+  margin-top:10px;
+  overflow-wrap:anywhere;
+}
+
+.protection-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:18px;
+}
+
+.action.secondary{
+  border-color:rgba(233,255,240,.34);
+  color:rgba(233,255,240,.76);
+}
+
+.action.secondary:hover,
+.action.secondary:focus-visible{
+  background:rgba(233,255,240,.12);
+  color:var(--fg);
+}
+
+@media(max-width:560px){
+  .protection-actions{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 
@@ -876,16 +912,32 @@ button{
 
     <div class="overlay" id="favoriteScreen">
       <div class="panel">
-        <h2>ANTES DISSO...</h2>
-        <p>Todo mundo tem um favorito.</p>
-        <p><strong>Qual Cisne você salvaria?</strong></p>
+        <div class="small-note">CONTROLE CONCEDIDO // ESCOLHA LOCAL</div>
+        <h2>VOCÊ TEM O PODER DE ESCOLHER UM.</h2>
+        <p>Apenas um.</p>
+        <p>Entre todos os Cisnes...</p>
+        <p><strong>quem você protegeria?</strong></p>
         <div class="favorite-grid" id="favoriteGrid"></div>
+      </div>
+    </div>
+
+    <div class="overlay" id="protectionConfirmScreen">
+      <div class="panel protection-panel">
+        <div class="small-note">PROTEGIDO SELECIONADO</div>
+        <h2 id="protectionConfirmName">---</h2>
+        <p>Tem certeza?</p>
+        <p><strong>Depois disso, não diga que eu escolhi por você.</strong></p>
+        <div class="protection-actions">
+          <button class="action" id="confirmProtectionBtn">CONFIRMAR PROTEÇÃO</button>
+          <button class="action secondary" id="changeProtectionBtn">ESCOLHER OUTRO</button>
+        </div>
       </div>
     </div>
 
     <div class="overlay" id="preferenceScreen">
       <div class="panel">
-        <h2>INTERESSANTE.</h2>
+        <div class="small-note">RESPONSABILIDADE REGISTRADA</div>
+        <h2>PROTEÇÃO REGISTRADA.</h2>
         <div class="system-lines" id="preferenceText"></div>
       </div>
     </div>
@@ -928,7 +980,7 @@ button{
 
     <div class="overlay" id="favoriteLostScreen">
       <div class="panel">
-        <h2 class="bad" id="favoriteLostTitle">QUE DESCUIDO.</h2>
+        <div class="small-note">STATUS DO PROTEGIDO</div><h2 class="bad" id="favoriteLostTitle">PERDIDO.</h2>
         <p id="favoriteLostLine"></p>
         <button class="action" id="favoriteRetryBtn">ACEITAR SEGUNDA CHANCE</button>
       </div>
@@ -987,8 +1039,8 @@ const TIMING = {
   preferenciaNaTela: 3800,
   preparandoTeste: 2200,
   countdownPasso: 1150,
-  agoraNaTela: 900,
-  trocaDeFase: 3000,
+  agoraNaTela: 1000,
+  trocaDeFase: 5500,
   novaTentativa: 2200
 };
 
@@ -1019,34 +1071,27 @@ const TARGET_SIZE = {
   Você pode mudar apenas as frases abaixo sem procurar
   pelo restante do código.
 */
-const FAVORITE_TEXTS = {
-  // Vitória: favorito não foi atingido nenhuma vez.
+const PROTECTED_TEXTS = {
   intacto: (nome) =>
-    `“${nome} saiu intacto. Então você consegue ser leal quando quer. Que inconveniente.”`,
+    `“Você escolheu ${nome}. E, contra as minhas expectativas, manteve sua palavra. Que inconveniente.”`,
 
-  // Vitória: favorito foi atingido uma vez.
   umAcerto: (nome) =>
-    `“Um acerto em ${nome}. Só um. É assim que vocês fãs chamam de ‘proteger’?”`,
+    `“Um acerto em ${nome}. Foi só um acidente, não foi? É sempre mais confortável chamar assim.”`,
 
-  // Vitória: favorito foi atingido 2 ou 3 vezes.
   algunsAcertos: (nome, total) =>
-    `“Você escolheu ${nome} para salvar e acertou nele ${total} vezes. Continue me explicando como isso é lealdade.”`,
+    `“Você fez questão de escolher ${nome} para proteger. ${total} acertos depois, eu só estou assistindo você esquecer.”`,
 
-  // Vitória: favorito foi atingido 4+ vezes.
   muitosAcertos: (nome, total) =>
-    `“${nome} era seu favorito. ${total} acertos. Talvez eu não seja a maior ameaça aqui.”`,
+    `“${nome} estava sob sua responsabilidade. ${total} acertos. Talvez eu não seja a maior ameaça aqui.”`,
 
-  // Favorito eliminado pela primeira vez.
   primeiraFalha: (nome) =>
-    `“Você escolheu ${nome} para salvar. E foi você quem o tirou do jogo. Quer mesmo uma segunda chance?”`,
+    `“Foi você quem escolheu ${nome}. Eu só coloquei o alvo na sua frente. Quer tentar salvá-lo de novo?”`,
 
-  // Favorito eliminado pela segunda vez.
   segundaFalha: (nome) =>
-    `“${nome} de novo. A essa altura, chamar isso de acidente seria ofensivo até para você.”`,
+    `“${nome}, de novo. Ainda tentando? Isso já não parece proteção. Parece culpa.”`,
 
-  // Terceira falha: acabou.
   terceiraFalha: (nome) =>
-    `“Três oportunidades. Três fracassos. Você queria salvar ${nome}; eu só precisei esperar você fazer o resto. Ninguém detém o Phantasma.”`
+    `“Você queria o poder de escolher ${nome}. Eu só tive a gentileza de dar a você. Três oportunidades foram suficientes.”`
 };
 
 const PHASES = [
@@ -1057,7 +1102,7 @@ const PHASES = [
     spawnMin:.90,
     spawnMax:1.35,
     size:1.12,
-    intro:"Vamos começar devagar. Vocês fãs costumam ser muito corajosos quando estão só comentando a história.",
+    intro:"Vamos começar devagar. Você disse que protegeria um. Eu não disse o que aconteceria com os outros.",
     endTitle:"HM.",
     endLine:"Olha só. É bem mais fácil quando eles são apenas alvos, não é?"
   },
@@ -1068,9 +1113,9 @@ const PHASES = [
     spawnMin:.70,
     spawnMax:1.05,
     size:1.00,
-    intro:"Quantas vezes você já disse que faria qualquer coisa pelos Cisnes? Sempre achei essa frase divertida.",
+    intro:"Curioso. Para salvar alguém, você está ficando bastante confortável em escolher quem não salvar.",
     endTitle:"QUE BONITO.",
-    endLine:"Toda essa lealdade... e ainda assim você continua escolhendo."
+    endLine:"Depois você inventa uma justificativa. Vocês fãs são ótimos nisso."
   },
   {
     quota:16,
@@ -1079,9 +1124,9 @@ const PHASES = [
     spawnMin:.52,
     spawnMax:.82,
     size:.90,
-    intro:"Vocês passam tanto tempo escolhendo lados, defendendo favoritos, justificando decisões... eu só tirei a parte confortável.",
+    intro:"É sempre assim com vocês fãs? O protegido ganha um nome. Os outros viram consequência?",
     endTitle:"ADORÁVEL.",
-    endLine:"Continue. Tenho certeza de que seu favorito entenderia."
+    endLine:"Continue. Tenho certeza de que seu protegido entenderia."
   },
   {
     quota:20,
@@ -1090,9 +1135,9 @@ const PHASES = [
     spawnMin:.34,
     spawnMax:.58,
     size:.80,
-    intro:"Vocês sempre discutem qual Cisne seria capaz de trair alguém. Nunca perguntam o que vocês fariam.",
+    intro:"Você queria o poder de escolher. Eu só tive a gentileza de dar a você.",
     endTitle:"SUFICIENTE.",
-    endLine:"Parabéns. Depois disso, eu evitaria usar a palavra “lealdade” com tanta facilidade."
+    endLine:"Talvez o teste nunca tenha sido descobrir quem você salvaria. Talvez fosse descobrir o que você faria com os outros."
   }
 ];
 
@@ -1128,6 +1173,10 @@ const intro = document.getElementById("intro");
 const introBtn = document.getElementById("introBtn");
 const favoriteScreen = document.getElementById("favoriteScreen");
 const favoriteGrid = document.getElementById("favoriteGrid");
+const protectionConfirmScreen = document.getElementById("protectionConfirmScreen");
+const protectionConfirmName = document.getElementById("protectionConfirmName");
+const confirmProtectionBtn = document.getElementById("confirmProtectionBtn");
+const changeProtectionBtn = document.getElementById("changeProtectionBtn");
 const preferenceScreen = document.getElementById("preferenceScreen");
 const preferenceText = document.getElementById("preferenceText");
 const briefingScreen = document.getElementById("briefingScreen");
@@ -1281,6 +1330,7 @@ if(soundEnabled && audioUnlocked){
    ========================================================= */
 
 let favoriteId = null;
+let pendingProtectedId = null;
 let phaseIndex = 0;
 let phaseKills = 0;
 let phaseHits = {};
@@ -1511,18 +1561,37 @@ introBtn.addEventListener("click",()=>{
 });
 
 function selectFavorite(id){
-  favoriteId = id;
-  const fav = getCharacter(id);
+  pendingProtectedId = id;
+  const chosen = getCharacter(id);
 
   favoriteScreen.classList.remove("show");
+
+  protectionConfirmName.textContent = chosen.name.toUpperCase();
+  protectionConfirmScreen.classList.add("show");
+}
+
+changeProtectionBtn.addEventListener("click",()=>{
+  pendingProtectedId = null;
+  protectionConfirmScreen.classList.remove("show");
+  favoriteScreen.classList.add("show");
+});
+
+confirmProtectionBtn.addEventListener("click",()=>{
+  if(!pendingProtectedId) return;
+
+  favoriteId = pendingProtectedId;
+  const protectedOne = getCharacter(favoriteId);
+
+  protectionConfirmScreen.classList.remove("show");
 
   const ownerPrefix = VISITOR_NAME
     ? `&gt; ${VISITOR_NAME.toUpperCase()} // `
     : "&gt; ";
 
   preferenceText.innerHTML =
-    `${ownerPrefix}PREFERÊNCIA DECLARADA: <strong>${fav.name.toUpperCase()}</strong><br><br>`+
-    `<strong>Hm. Interessante.</strong>`;
+    `${ownerPrefix}PROTEGIDO: <strong>${protectedOne.name.toUpperCase()}</strong><br><br>`+
+    `<strong>${protectedOne.name} está sob sua responsabilidade.</strong><br>`+
+    `Hm. Vamos descobrir o que essa palavra significa para você.`;
 
   preferenceScreen.classList.add("show");
 
@@ -1530,14 +1599,14 @@ function selectFavorite(id){
     preferenceScreen.classList.remove("show");
 
     playHack(
-      "> TESTE RECONFIGURADO // AGUARDANDO INÍCIO...",
+      "> PROTEÇÃO REGISTRADA // TESTE RECONFIGURADO...",
       ()=>{
         briefingScreen.classList.add("show");
       },
       TIMING.preparandoTeste
     );
   },TIMING.preferenciaNaTela);
-}
+});
 
 briefingBtn.addEventListener("click",()=>{
   briefingScreen.classList.remove("show");
@@ -1700,6 +1769,7 @@ function hitTarget(target){
 
   if(target.character.id===favoriteId){
     totalFavoriteHits++;
+    showBanner("AVISO // PROTEGIDO ATINGIDO",1100);
   }
 
   phaseKills++;
@@ -1821,7 +1891,7 @@ function finishPhase(){
   if(favHits===0){
     timeLeft += 3;
     updateHud();
-    showBanner("+3s");
+    showBanner("PROTEGIDO INTACTO // +3s",1450);
   }
 
   const removed = chooseEliminated();
@@ -1888,15 +1958,15 @@ function handleFavoriteLoss(fav){
     sessionStorage.setItem(RESTART_KEY,String(restartCount));
 
     favoriteLostTitle.textContent = restartCount===1
-      ? "QUE DESCUIDO."
-      : "DE NOVO?";
+      ? "PROTEGIDO PERDIDO."
+      : "AINDA TENTANDO?";
 
     favoriteLostLine.textContent = restartCount===1
-      ? FAVORITE_TEXTS.primeiraFalha(fav.name)
-      : FAVORITE_TEXTS.segundaFalha(fav.name);
+      ? PROTECTED_TEXTS.primeiraFalha(fav.name)
+      : PROTECTED_TEXTS.segundaFalha(fav.name);
 
     favoriteRetryBtn.textContent = restartCount===1
-      ? "ACEITAR SEGUNDA CHANCE"
+      ? "TENTAR SALVÁ-LO DE NOVO"
       : "ACEITAR ÚLTIMA CHANCE";
 
     favoriteRetryBtn.style.display = "";
@@ -1905,7 +1975,7 @@ function handleFavoriteLoss(fav){
   }
 
   lockedLine.textContent =
-    FAVORITE_TEXTS.terceiraFalha(fav.name);
+    PROTECTED_TEXTS.terceiraFalha(fav.name);
 
   lockedScreen.classList.add("show");
 }
@@ -1914,7 +1984,7 @@ favoriteRetryBtn.addEventListener("click",()=>{
   favoriteLostScreen.classList.remove("show");
 
   playHack(
-    "> ESTOU ME SENTINDO CARIDOSO // PROTOCOLO FINAL AUTORIZADO...",
+    "> VAMOS VER SE CULPA MELHORA SUA PRECISÃO // PROTOCOLO FINAL...",
     startFinalChance,
     TIMING.novaTentativa
   );
@@ -1949,13 +2019,13 @@ function finishGame(){
   let line = "";
 
   if(totalFavoriteHits===0){
-    line = FAVORITE_TEXTS.intacto(fav.name);
+    line = PROTECTED_TEXTS.intacto(fav.name);
   }else if(totalFavoriteHits===1){
-    line = FAVORITE_TEXTS.umAcerto(fav.name);
+    line = PROTECTED_TEXTS.umAcerto(fav.name);
   }else if(totalFavoriteHits<=3){
-    line = FAVORITE_TEXTS.algunsAcertos(fav.name,totalFavoriteHits);
+    line = PROTECTED_TEXTS.algunsAcertos(fav.name,totalFavoriteHits);
   }else{
-    line = FAVORITE_TEXTS.muitosAcertos(fav.name,totalFavoriteHits);
+    line = PROTECTED_TEXTS.muitosAcertos(fav.name,totalFavoriteHits);
   }
 
   finalMessage.textContent = line;
