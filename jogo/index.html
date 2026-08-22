@@ -2147,7 +2147,12 @@ function hitTarget(target){
 
   if(target.character.id===favoriteId){
     totalFavoriteHits++;
-    showBanner("AVISO // PROTEGIDO ATINGIDO",1100);
+
+    /* REGRA MANUAL // atingir o protegido custa 1 segundo */
+    timeLeft = Math.max(0,timeLeft - 1);
+    updateHud();
+
+    showBanner("PROTEGIDO ATINGIDO // -1s",1250);
   }
 
   phaseKills++;
