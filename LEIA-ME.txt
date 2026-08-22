@@ -1,93 +1,97 @@
-PHANTASMA // SISTEMA V24
+PHANTASMA // SISTEMA V26
 
-ESTA VERSÃO VOLTA AO VISUAL MODERNO.
-NÃO É CMD.
+O FOCO DESTA VERSÃO:
+- abertura com mais suspense;
+- transições mais fluidas e menos "glitch por glitch";
+- briefing do protegido reescrito.
 
-O conceito agora é:
-VOCÊ TEM O CONTROLE -> PHANTASMA ROUBA O CONTROLE -> ELE DEIXA VOCÊ COM A RESPONSABILIDADE DA ESCOLHA.
-
-SUBSTITUA SOMENTE:
+SUBSTITUA:
 
 NA RAIZ:
 - index.html
 - loading.html
+- phantasma-fx.js
 
 DENTRO DE jogo/:
 - jogo/index.html
 
-NÃO substitua nesta atualização:
+NÃO precisa substituir:
 - charada.html
 - erro.html
 - anuncio.html
-- phantasma-fx.js
 - phantasma-audio.js
 - sons/
-- fotos
+- imagens
 
-NOVO FLUXO DA ABERTURA:
-1. "VOCÊ ESTÁ DISPOSTO A IR ATÉ O FINAL?"
-2. barra de inicialização
-3. "QUEM ESTÁ AÍ?"
-4. nome registrado
-5. experiência moderna normal
+IMPORTANTE:
+charada.html já chama phantasma-fx.js.
+Então substituir phantasma-fx.js muda automaticamente a transição
+"RESPOSTA CAPTURADA." sem precisar mexer na charada.
 
-NOVA TOMADA DE CONTROLE:
-- acesso concedido
-- painel mostra o nome como proprietário
-- CONTROLE LOCAL = 100%
-- processo externo é detectado
-- controle remoto cresce aos poucos
-- o sistema tenta se defender e falha
-- botão RECUPERAR CONTROLE fica disponível por um momento
-- se clicar: AÇÃO BLOQUEADA PELO PROCESSO REMOTO
-- privilégios locais são revogados
-- CONTROLE REMOTO = 100%
-- nome do usuário é riscado
-- PHANTASMA vira proprietário
-- só então aparece "VOCÊ ACHOU QUE SERIA FÁCIL ASSIM?"
+ABERTURA V26
+A abertura agora respira:
 
-NOVA MECÂNICA DO JOGO:
-"FAVORITO" virou "PROTEGIDO".
+> SINAL DETECTADO.
+> ORIGEM: NÃO IDENTIFICADA.
+> CONTROLE LOCAL DISPONÍVEL.
 
-A pessoa vê:
-VOCÊ TEM O PODER DE ESCOLHER UM.
-Apenas um.
-Entre todos os Cisnes...
-quem você protegeria?
+depois entra lentamente:
 
-Depois de clicar em alguém:
-PROTEGIDO SELECIONADO: NOME
-Tem certeza?
-Depois disso, não diga que eu escolhi por você.
+VOCÊ ESTÁ DISPOSTO A IR ATÉ O FINAL?
 
-Botões:
-CONFIRMAR PROTEÇÃO
-ESCOLHER OUTRO
+só então aparece a barra de inicialização.
+Depois existe uma pausa antes de "QUEM ESTÁ AÍ?".
 
-Depois:
-PROTEÇÃO REGISTRADA
-NOME está sob sua responsabilidade.
+TEMPOS DA ABERTURA
+No index.html procure:
 
-Durante o jogo:
-- acertar o protegido mostra "AVISO // PROTEGIDO ATINGIDO"
-- deixar o protegido intacto dá +3s
-- perder o protegido dispara textos psicológicos
-- segunda chance continua indo direto ao protocolo final
-- 1 tentativa inicial + 2 chances por perda do protegido continuam preservadas
-- timeout continua sendo uma caridade separada
+const OPENING_TIMING={
 
-TEMPOS DO JOGO:
-A V24 usa os seus valores mais recentes:
-entradaAcerto: 2300
-entradaErro: 2400
-preferenciaNaTela: 3800
-preparandoTeste: 2200
-countdownPasso: 1150
-agoraNaTela: 1000
-trocaDeFase: 5500
-novaTentativa: 2200
+sinal:700
+origem:1600
+controle:2500
+pergunta:3500
+barra:5100
+duracaoBarra:3800
+pausaFinal:1250
+
+1000 = 1 segundo.
+
+BRIEFING DO JOGO
+Foi removido:
+"Agora escolha quem não proteger."
+
+Agora é:
+
+AGORA VOCÊ SABE O PREÇO.
+
+Você escolheu quem quer manter a salvo.
+Agora prove o quanto essa escolha vale.
+
+> OBJETIVO: ATINJA OS OUTROS CISNES ANTES DO TEMPO ACABAR.
+> RECOMPENSA: conclua o teste e o arquivo será liberado.
+> PROTEGIDO: NOME
+> ALERTA: SEU PROTEGIDO TAMBÉM ENTRARÁ NA LINHA DE TIRO.
+
+"Eu dei a você alguém para proteger. Não prometi facilitar."
+
+TRANSIÇÕES
+1. index -> charada:
+   barra de rota suave, sem texto tremendo.
+
+2. charada -> loading:
+   novo phantasma-fx.js com painel de alteração de estado,
+   progresso contínuo e sem dump aleatório.
+
+3. transições internas do jogo:
+   agora parecem reconfiguração do sistema;
+   fundo escurece, painel entra suavemente,
+   barra progride e a próxima tela aparece com fade.
+
+4. loading:
+   entrada das telas e troca de proprietário foram suavizadas.
 
 CACHE:
 Depois do commit:
 PC -> Ctrl + F5
-Celular -> teste também em aba privada/anônima.
+Celular -> teste em aba privada/anônima.

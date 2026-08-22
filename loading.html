@@ -80,13 +80,11 @@ body.takeover #matrix{
 
 .screen.show{
   display:block;
-  animation:screenIn .42s steps(2) both;
+  animation:screenIn .58s cubic-bezier(.22,.8,.22,1) both;
 }
 
 @keyframes screenIn{
-  0%{opacity:0;transform:scale(.99);filter:blur(4px) contrast(1.7)}
-  46%{opacity:.74;transform:translateX(4px)}
-  70%{transform:translateX(-3px)}
+  0%{opacity:0;transform:translateY(7px) scale(.995);filter:blur(4px)}
   100%{opacity:1;transform:none;filter:none}
 }
 
@@ -277,14 +275,13 @@ body.takeover #matrix{
 .owner-new.show{
   opacity:1;
   transform:none;
-  animation:ownerTake .68s steps(2) both;
+  animation:ownerTake .82s cubic-bezier(.22,.8,.22,1) both;
 }
 
 @keyframes ownerTake{
-  0%{opacity:0;clip-path:inset(0 0 88% 0);transform:translateX(12px)}
-  34%{opacity:.4;clip-path:inset(44% 0 18% 0);transform:translateX(-9px)}
-  68%{opacity:.82;clip-path:inset(10% 0 48% 0);transform:translateX(6px)}
-  100%{opacity:1;clip-path:inset(0);transform:none}
+  0%{opacity:0;transform:translateY(10px);filter:blur(5px)}
+  55%{opacity:.75;filter:blur(1px)}
+  100%{opacity:1;transform:none;filter:none}
 }
 
 .control-row{
@@ -375,13 +372,15 @@ body.takeover #matrix{
 }
 
 .control-grid.blocked{
-  animation:gridDamage .18s steps(2) 5;
+  animation:gridDamage .44s cubic-bezier(.36,.07,.19,.97) both;
 }
 
 @keyframes gridDamage{
-  25%{transform:translateX(5px)}
-  50%{transform:translateX(-4px)}
-  75%{transform:translateY(2px)}
+  15%{transform:translateX(4px)}
+  35%{transform:translateX(-3px)}
+  55%{transform:translateX(2px)}
+  75%{transform:translateX(-1px)}
+  100%{transform:none}
 }
 
 /* final taunt */
@@ -464,6 +463,121 @@ body.takeover #matrix{
   body{display:block;overflow-y:auto}
   .stage{margin:14px auto}
 }
+
+/* ===== V25 // UMA TELA SÓ NO DESKTOP ===== */
+@media(min-width:701px){
+  html,body{
+    width:100%;
+    height:100%;
+    min-height:100%;
+    overflow:hidden;
+  }
+
+  body{
+    min-height:100dvh;
+    padding:12px;
+  }
+
+  .stage{
+    height:calc(100dvh - 24px);
+    max-height:760px;
+    display:grid;
+    align-items:center;
+  }
+
+  .screen{
+    min-height:0;
+    max-height:100%;
+  }
+
+  .system-panel{
+    max-height:calc(100dvh - 24px);
+  }
+
+  .system-head{
+    padding:8px 12px;
+    min-height:32px;
+  }
+
+  .system-body{
+    padding:18px 22px;
+  }
+
+  .control-grid{
+    gap:10px;
+  }
+
+  .owner-card,
+  .control-card,
+  .log-card{
+    padding:12px 14px;
+  }
+
+  .owner-name{
+    font-size:clamp(28px,4.2vw,48px);
+  }
+
+  .owner-new{
+    font-size:clamp(30px,4.7vw,54px);
+  }
+
+  .control-row{
+    margin:9px 0;
+  }
+
+  .permission{
+    margin-top:10px;
+    padding-top:9px;
+    line-height:1.45;
+  }
+
+  .recover{
+    min-height:40px;
+    margin-top:10px;
+  }
+
+  .log-card{
+    min-height:112px;
+    max-height:132px;
+    font-size:10px;
+    line-height:1.48;
+  }
+
+  .taunt{
+    margin-top:11px;
+    padding-top:11px;
+  }
+
+  .taunt h1{
+    margin:0 0 8px;
+    font-size:clamp(30px,4.2vw,48px);
+    line-height:.98;
+  }
+
+  .taunt p{
+    margin:4px 0;
+    line-height:1.42;
+    font-size:13px;
+  }
+
+  .action{
+    min-height:42px;
+    margin-top:10px;
+    padding:9px 14px;
+  }
+
+  /* Quando a tomada termina, o histórico recolhe.
+     Assim o desfecho inteiro aparece sem rolar a página. */
+  .control-grid.complete .log-card{
+    display:none;
+  }
+
+  .control-grid.complete .owner-card,
+  .control-grid.complete .control-card{
+    min-height:132px;
+  }
+}
+
 </style>
 </head>
 
@@ -848,6 +962,7 @@ async function runTakeover(){
   addLog("[PHANTASMA] Eu disse que você podia entrar. Não que podia mandar aqui.");
   await wait(700);
 
+  controlGrid.classList.add("complete");
   taunt.classList.add("show");
 }
 

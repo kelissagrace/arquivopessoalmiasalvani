@@ -544,6 +544,197 @@ body.preparing-session .readiness-gate{
   .readiness-question{font-size:clamp(30px,11vw,50px)}
 }
 
+
+/* ===== V26 // ABERTURA MAIS CINEMATOGRÁFICA ===== */
+.readiness-card{
+  min-height:min(470px,72dvh);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.readiness-prelude{
+  position:relative;
+  z-index:2;
+  min-height:82px;
+  margin:22px 0 4px;
+  color:#728178;
+  font-size:11px;
+  line-height:1.75;
+  letter-spacing:.08em;
+}
+
+.readiness-event{
+  opacity:0;
+  transform:translateY(5px);
+  transition:
+    opacity .65s ease,
+    transform .65s cubic-bezier(.22,.8,.22,1);
+}
+
+.readiness-event.show{
+  opacity:1;
+  transform:none;
+}
+
+.readiness-question{
+  opacity:0;
+  transform:translateY(10px);
+  filter:blur(5px);
+  transition:
+    opacity 1s ease,
+    transform 1s cubic-bezier(.22,.8,.22,1),
+    filter 1s ease;
+}
+
+.readiness-question.show{
+  opacity:1;
+  transform:none;
+  filter:none;
+}
+
+.readiness-progress{
+  position:relative;
+  z-index:2;
+  margin-top:8px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:
+    opacity .7s ease,
+    transform .7s cubic-bezier(.22,.8,.22,1);
+}
+
+.readiness-progress.show{
+  opacity:1;
+  transform:none;
+}
+
+.readiness-card.ready{
+  animation:readinessRelease .75s ease both;
+}
+
+@keyframes readinessRelease{
+  0%{filter:none}
+  55%{filter:brightness(1.12)}
+  100%{filter:none}
+}
+
+/* ===== V26 // TRANSIÇÃO DE ROTA ===== */
+.transition{
+  background:rgba(0,0,0,.90)!important;
+  backdrop-filter:blur(5px);
+  opacity:0;
+  transition:opacity .35s ease;
+}
+
+.transition.show{
+  display:grid;
+  opacity:1;
+  animation:none!important;
+}
+
+.transition canvas{
+  opacity:.26!important;
+}
+
+.transition:before{
+  background:
+    linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.46)),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.025) 0 1px,
+      transparent 2px 5px
+    )!important;
+  animation:none!important;
+}
+
+.transition:after{
+  display:none!important;
+}
+
+.transition-box{
+  width:min(700px,92vw)!important;
+  padding:clamp(24px,5vw,42px)!important;
+  background:rgba(0,7,3,.82)!important;
+  border:1px solid rgba(109,255,152,.24)!important;
+  box-shadow:
+    0 24px 90px rgba(0,0,0,.55),
+    inset 0 0 40px rgba(109,255,152,.025)!important;
+  transform:translateY(10px) scale(.99);
+  opacity:0;
+  animation:routeCardIn .55s cubic-bezier(.22,.8,.22,1) .12s forwards;
+}
+
+@keyframes routeCardIn{
+  to{opacity:1;transform:none}
+}
+
+.transition-title{
+  color:#7d8d82!important;
+  font-size:10px!important;
+  letter-spacing:.16em!important;
+  text-shadow:none!important;
+  margin-bottom:18px!important;
+}
+
+.route-primary{
+  color:var(--fg);
+  font-size:clamp(22px,4vw,36px);
+  line-height:1.18;
+  margin-bottom:20px;
+}
+
+.route-status{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  color:#718078;
+  font-size:10px;
+  letter-spacing:.08em;
+  margin:10px 0 8px;
+}
+
+.route-status strong{
+  color:var(--g);
+  font-weight:400;
+}
+
+.route-track{
+  height:4px;
+  background:rgba(109,255,152,.08);
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(109,255,152,.12);
+}
+
+.route-fill{
+  width:0;
+  height:100%;
+  background:var(--g);
+  box-shadow:0 0 14px rgba(109,255,152,.36);
+  transition:width 2.8s cubic-bezier(.18,.8,.24,1);
+}
+
+.route-foot{
+  min-height:1.5em;
+  margin-top:13px;
+  color:#728178;
+  font-size:11px;
+}
+
+@media(max-width:560px){
+  .readiness-card{
+    min-height:min(500px,78dvh);
+  }
+
+  .readiness-prelude{
+    margin-top:16px;
+  }
+
+  .route-primary{
+    font-size:clamp(20px,7vw,30px);
+  }
+}
+
 </style></head><body class="preparing-session awaiting-id">
 
 <canvas id="matrixBg" aria-hidden="true"></canvas>
@@ -551,12 +742,24 @@ body.preparing-session .readiness-gate{
 
 <section class="readiness-gate" id="readinessGate" aria-label="Inicialização da sessão">
   <div class="readiness-card">
-    <div class="readiness-tag">&gt; preparando sessão // controle local</div>
-    <div class="readiness-question">VOCÊ ESTÁ DISPOSTO A IR ATÉ O FINAL?</div>
-    <div class="readiness-track">
-      <div class="readiness-fill" id="readinessFill"></div>
+    <div class="readiness-tag">SESSÃO // INICIALIZAÇÃO</div>
+
+    <div class="readiness-prelude">
+      <div class="readiness-event" id="openingEvent1">&gt; SINAL DETECTADO.</div>
+      <div class="readiness-event" id="openingEvent2">&gt; ORIGEM: NÃO IDENTIFICADA.</div>
+      <div class="readiness-event" id="openingEvent3">&gt; CONTROLE LOCAL DISPONÍVEL.</div>
     </div>
-    <div class="readiness-status" id="readinessStatus">&gt; verificando conexão...</div>
+
+    <div class="readiness-question" id="readinessQuestion">
+      VOCÊ ESTÁ DISPOSTO A IR ATÉ O FINAL?
+    </div>
+
+    <div class="readiness-progress" id="readinessProgress">
+      <div class="readiness-track">
+        <div class="readiness-fill" id="readinessFill"></div>
+      </div>
+      <div class="readiness-status" id="readinessStatus">&gt; aguardando resposta do sistema...</div>
+    </div>
   </div>
 </section>
 
@@ -620,12 +823,26 @@ body.preparing-session .readiness-gate{
 
 <div class="transition" id="transition" aria-hidden="true">
   <canvas id="transitionMatrix"></canvas>
+
   <div class="transition-box">
-    <div class="transition-title">ACESSANDO...</div>
-    <div class="transition-line" id="line1">&gt; ESTABELECENDO CONEXÃO...</div>
-    <div class="transition-line" id="line2">&gt; LOCALIZANDO ARQUIVO...</div>
-    <div class="transition-line" id="line3">&gt; ACESSO PARCIAL CONCEDIDO...</div>
-    <div class="transition-line" id="line4">&gt; VOCÊ TEM UMA CHANCE.</div>
+    <div class="transition-title">SESSÃO // TRANSFERÊNCIA DE ROTA</div>
+
+    <div class="route-primary">
+      O sistema está abrindo uma passagem.
+    </div>
+
+    <div class="route-status">
+      <span id="routeLabel">&gt; preservando controle local...</span>
+      <strong id="routePct">0%</strong>
+    </div>
+
+    <div class="route-track">
+      <div class="route-fill" id="routeFill"></div>
+    </div>
+
+    <div class="route-foot" id="routeFoot">
+      arquivo_004 // aguardando autorização
+    </div>
   </div>
 </div>
 
@@ -724,38 +941,74 @@ if(storedName){
 /* A abertura sempre vem antes da identificação. */
 const readinessFill=document.getElementById("readinessFill");
 const readinessStatus=document.getElementById("readinessStatus");
-const readinessStart=performance.now();
-const readinessDuration=3900;
+const readinessQuestion=document.getElementById("readinessQuestion");
+const readinessProgress=document.getElementById("readinessProgress");
+const openingEvent1=document.getElementById("openingEvent1");
+const openingEvent2=document.getElementById("openingEvent2");
+const openingEvent3=document.getElementById("openingEvent3");
+const readinessCard=document.querySelector(".readiness-card");
 
-function readinessFrame(now){
-  const p=Math.min(1,(now-readinessStart)/readinessDuration);
-  const eased=1-Math.pow(1-p,2.7);
-  const pct=Math.round(eased*100);
+/*
+  V26 // ritmo da abertura
+  A intenção aqui é deixar o primeiro contato respirar.
+*/
+const OPENING_TIMING={
+  sinal:700,
+  origem:1600,
+  controle:2500,
+  pergunta:3500,
+  barra:5100,
+  duracaoBarra:3800,
+  pausaFinal:1250
+};
 
-  readinessFill.style.width=pct+"%";
+setTimeout(()=>openingEvent1.classList.add("show"),OPENING_TIMING.sinal);
+setTimeout(()=>openingEvent2.classList.add("show"),OPENING_TIMING.origem);
+setTimeout(()=>openingEvent3.classList.add("show"),OPENING_TIMING.controle);
 
-  if(pct<28){
-    readinessStatus.textContent="> verificando conexão...";
-  }else if(pct<58){
-    readinessStatus.textContent="> estabelecendo controle local...";
-  }else if(pct<84){
-    readinessStatus.textContent="> preparando identificação...";
-  }else{
-    readinessStatus.textContent="> sessão pronta.";
+setTimeout(()=>{
+  readinessQuestion.classList.add("show");
+},OPENING_TIMING.pergunta);
+
+setTimeout(()=>{
+  readinessProgress.classList.add("show");
+
+  const barStart=performance.now();
+
+  function readinessFrame(now){
+    const p=Math.min(1,(now-barStart)/OPENING_TIMING.duracaoBarra);
+    const eased=1-Math.pow(1-p,2.45);
+    const pct=Math.round(eased*100);
+
+    readinessFill.style.width=pct+"%";
+
+    if(pct<24){
+      readinessStatus.textContent="> verificando integridade da sessão...";
+    }else if(pct<53){
+      readinessStatus.textContent="> atribuindo controle local...";
+    }else if(pct<79){
+      readinessStatus.textContent="> isolando canal de acesso...";
+    }else if(pct<100){
+      readinessStatus.textContent="> preparando identificação...";
+    }else{
+      readinessStatus.textContent="> sessão pronta // controle local ativo.";
+    }
+
+    if(p<1){
+      requestAnimationFrame(readinessFrame);
+    }else{
+      readinessStatus.classList.add("ready");
+      readinessCard.classList.add("ready");
+
+      setTimeout(()=>{
+        document.body.classList.remove("preparing-session");
+        setTimeout(()=>visitorNameInput.focus({preventScroll:true}),280);
+      },OPENING_TIMING.pausaFinal);
+    }
   }
 
-  if(p<1){
-    requestAnimationFrame(readinessFrame);
-  }else{
-    readinessStatus.classList.add("ready");
-    setTimeout(()=>{
-      document.body.classList.remove("preparing-session");
-      setTimeout(()=>visitorNameInput.focus({preventScroll:true}),220);
-    },650);
-  }
-}
-
-requestAnimationFrame(readinessFrame);
+  requestAnimationFrame(readinessFrame);
+},OPENING_TIMING.barra);
 
 identityForm.addEventListener("submit",(event)=>{
   event.preventDefault();
@@ -790,12 +1043,10 @@ const continueBtn=document.getElementById("continueBtn");
 const transition=document.getElementById("transition");
 const transitionCanvas=document.getElementById("transitionMatrix");
 const transitionCtx=transitionCanvas.getContext("2d");
-const lines=[
-  document.getElementById("line1"),
-  document.getElementById("line2"),
-  document.getElementById("line3"),
-  document.getElementById("line4")
-];
+const routeLabel=document.getElementById("routeLabel");
+const routePct=document.getElementById("routePct");
+const routeFill=document.getElementById("routeFill");
+const routeFoot=document.getElementById("routeFoot");
 
 let transitionAnimation=null;
 
@@ -845,28 +1096,58 @@ function startTransitionMatrix(){
 continueBtn.addEventListener("click",()=>{
   if(window.PhantasmaAudio){
     PhantasmaAudio.unlock();
-    PhantasmaAudio.play("click",.24);
+    PhantasmaAudio.play("click",.20);
   }
+
   continueBtn.disabled=true;
   transition.classList.add("show");
-  if(window.PhantasmaAudio) PhantasmaAudio.play("glitch",.34);
   transition.setAttribute("aria-hidden","false");
   startTransitionMatrix();
 
-  lines.forEach(line=>line.classList.remove("active"));
+  routeFill.style.transition="none";
+  routeFill.style.width="0%";
+  routePct.textContent="0%";
+  routeLabel.textContent="> preservando controle local...";
+  routeFoot.textContent="arquivo_004 // aguardando autorização";
 
-  const timings=[500,1300,2200,3100];
-
-  timings.forEach((time,index)=>{
-    setTimeout(()=>{
-      lines.forEach(line=>line.classList.remove("active"));
-      lines[index].classList.add("active");
-    },time);
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      routeFill.style.transition="width 2.8s cubic-bezier(.18,.8,.24,1)";
+      routeFill.style.width="100%";
+    });
   });
+
+  const begin=performance.now();
+
+  function updateRoute(now){
+    const p=Math.min(1,(now-begin)/2800);
+    const pct=Math.round((1-Math.pow(1-p,2.2))*100);
+    routePct.textContent=pct+"%";
+
+    if(pct<32){
+      routeLabel.textContent="> preservando controle local...";
+      routeFoot.textContent="arquivo_004 // aguardando autorização";
+    }else if(pct<68){
+      routeLabel.textContent="> abrindo canal restrito...";
+      routeFoot.textContent="rota isolada // transmissão estável";
+    }else if(pct<100){
+      routeLabel.textContent="> vinculando sessão ao arquivo...";
+      routeFoot.textContent="permissão temporária // quase pronta";
+    }else{
+      routeLabel.textContent="> acesso parcial concedido.";
+      routeFoot.textContent="VOCÊ TEM UMA CHANCE.";
+    }
+
+    if(p<1){
+      requestAnimationFrame(updateRoute);
+    }
+  }
+
+  requestAnimationFrame(updateRoute);
 
   setTimeout(()=>{
     location.href="charada.html";
-  },4300);
+  },3500);
 });
 </script>
 </body></html>
