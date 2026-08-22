@@ -1421,6 +1421,62 @@ const CHARACTERS = [
   {id:"zuri",name:"Zuri",img:"zuri.jpg"}
 ];
 
+/*
+  =========================================================
+  CASAIS — PIADAS QUANDO O PAR DO PROTEGIDO É ELIMINADO
+  =========================================================
+  Edite só estas frases se quiser mudar o tom depois.
+*/
+const COUPLES = {
+  dex:"olivia",
+  olivia:"dex",
+  declan:"charlotte",
+  charlotte:"declan",
+  killian:"melissa",
+  melissa:"killian",
+  reid:"lara",
+  lara:"reid",
+  chuck:"zuri",
+  zuri:"chuck"
+};
+
+const COUPLE_TAUNTS = {
+  "dex:olivia":
+    "Dex está salvo. Olivia, nem tanto. Espero que ele aprecie o seu conceito de final feliz.",
+
+  "olivia:dex":
+    "Olivia continua. Dex não. Tecnicamente você cumpriu sua promessa. Romanticamente... um desastre.",
+
+  "declan:charlotte":
+    "Declan está intacto. Charlotte saiu do jogo. Que maneira eficiente de simplificar um relacionamento.",
+
+  "charlotte:declan":
+    "Charlotte está segura. Declan virou consequência. Tenho certeza de que ela vai entender.",
+
+  "killian:melissa":
+    "Você salvou Killian e tirou Melissa do caminho. Isso conta como proteção... ou ciúme?",
+
+  "melissa:killian":
+    "Melissa ficou. Killian não. Não se preocupe, eu não vou contar quem apertou o gatilho.",
+
+  "reid:lara":
+    "Reid continua. Lara não. Que bom que eu mandei você escolher só um, não é?",
+
+  "lara:reid":
+    "Lara está protegida. Reid virou estatística. O amor é mesmo cheio de sacrifícios.",
+
+  "chuck:zuri":
+    "Chuck está salvo. Zuri não. Parece que alguém levou 'escolher um' a sério demais.",
+
+  "zuri:chuck":
+    "Zuri continua. Chuck não. Um casal a menos, uma promessa tecnicamente cumprida."
+};
+
+function coupleTaunt(protectedId,removedId){
+  if(COUPLES[protectedId]!==removedId) return null;
+  return COUPLE_TAUNTS[`${protectedId}:${removedId}`] || null;
+}
+
 /* =========================================================
    DOM
    ========================================================= */
@@ -1900,6 +1956,9 @@ confirmProtectionBtn.addEventListener("click",()=>{
   favoriteId = pendingProtectedId;
   const protectedOne = getCharacter(favoriteId);
 
+  sessionStorage.setItem("phantasma_protegido_id",favoriteId);
+  sessionStorage.setItem("phantasma_protegido",protectedOne.name);
+
   protectionConfirmScreen.classList.remove("show");
 
   const ownerPrefix = VISITOR_NAME
@@ -2221,8 +2280,16 @@ function finishPhase(){
     return;
   }
 
-  phaseResultTitle.textContent = PHASES[phaseIndex].endTitle;
-  phaseResultLine.textContent = PHASES[phaseIndex].endLine;
+  const relationshipTaunt = coupleTaunt(favoriteId,removed.id);
+
+  if(relationshipTaunt){
+    phaseResultTitle.textContent = "QUE ROMÂNTICO.";
+    phaseResultLine.textContent = relationshipTaunt;
+  }else{
+    phaseResultTitle.textContent = PHASES[phaseIndex].endTitle;
+    phaseResultLine.textContent = PHASES[phaseIndex].endLine;
+  }
+
   eliminatedImg.src = removed.img;
   eliminatedImg.alt = removed.name;
   eliminatedName.textContent = removed.name;
@@ -2355,7 +2422,14 @@ function finishGame(){
 
 revealBtn.addEventListener("click",()=>{
   sessionStorage.setItem("corvo_access","granted");
-  location.href = REVEAL_URL;
+
+  playHack(
+    "> TESTE CONCLUÍDO // LIBERANDO ARQUIVO FINAL...",
+    ()=>{
+      location.href = REVEAL_URL;
+    },
+    2800
+  );
 });
 
 /* =========================================================
