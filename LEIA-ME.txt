@@ -1,76 +1,21 @@
-PHANTASMA // V28 — LIMPEZA DAS TRANSIÇÕES
+PHANTASMA // V29
 
-Você estava certa: a V26 reintroduziu uma etapa que já tinha sido removida.
+NOVA REGRA:
+Se o jogador acertar o próprio PROTEGIDO:
+- perde 1 segundo imediatamente;
+- HUD atualiza na hora;
+- aparece: PROTEGIDO ATINGIDO // -1s
 
-REMOVIDO:
-- "SESSÃO // ALTERAÇÃO DE ESTADO"
-- painel intermediário de RESPOSTA CAPTURADA
-- barra intermediária de transferência
-- porcentagem intermediária
-- "transferência concluída"
-- "abrindo próximo estado"
-- tela "TRANSFERÊNCIA DE ROTA" entre a abertura e a charada
+ONDE SUBSTITUIR:
+jogo/index.html
 
-REGRA NOVA DAS TRANSIÇÕES
-==========================
+AJUSTE MANUAL:
+No código procure:
 
-Troca de página não é conteúdo.
-Então troca de página agora é somente um FADE curto.
+timeLeft = Math.max(0,timeLeft - 1);
 
-Os únicos momentos que continuam ganhando uma tela própria são os que têm
-função narrativa:
+Para perder 2 segundos:
+timeLeft = Math.max(0,timeLeft - 2);
 
-- abertura do site;
-- escolha do protegido;
-- tomada de controle pelo Phantasma;
-- provocações entre fases;
-- perda do protegido / segunda chance;
-- revelação final do CORVO.
-
-FLUXO DA RESPOSTA
-=================
-
-CHARADA
-  ↓
-fade curto
-  ↓
-RESPOSTA CAPTURADA.
-[ barra carregando ]
-  ↓
-cadeado
-
-CORRETA:
-cadeado abre
-  ↓
-tomada de controle do Phantasma
-
-INCORRETA:
-cadeado vermelho
-  ↓
-ACESSO NEGADO
-  ↓
-AGUARDE x3
-  ↓
-ESPERAVA MAIS.
-
-ONDE SUBSTITUIR
-===============
-
-NA RAIZ:
-- index.html
-- charada.html
-- loading.html
-- phantasma-fx.js
-
-Não substitua jogo/index.html nem anuncio.html nesta atualização.
-A V27 dos casais + revelação final continua sendo a versão atual desses arquivos.
-
-IMPORTANTE:
-charada.html usa:
-phantasma-fx.js?v=28
-
-Isso ajuda a evitar o navegador carregar o JS antigo do cache.
-
-Depois do commit:
-PC: Ctrl + F5
-Celular: aba privada/anônima.
+Para perder 3 segundos:
+timeLeft = Math.max(0,timeLeft - 3);
