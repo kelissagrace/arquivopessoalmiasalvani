@@ -59,16 +59,19 @@ body::after{
 #matrix{
   position:fixed;
   inset:0;
-  z-index:0;
+  z-index:1;
   overflow:hidden;
   pointer-events:none;
-  opacity:.22;
+  opacity:.42;
+  transition:opacity .35s ease, filter .35s ease;
+  background:
+    linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,.28));
 }
 
 .matrix-col{
   position:absolute;
   top:-130%;
-  color:rgba(105,255,150,.45);
+  color:rgba(105,255,150,.62);
   font-size:13px;
   line-height:1.05;
   writing-mode:vertical-rl;
@@ -83,9 +86,25 @@ body::after{
   to{transform:translateY(250%)}
 }
 
+body.matrix-hot #matrix{
+  opacity:.72;
+  filter:contrast(1.35) brightness(1.15);
+}
+
+body.matrix-danger #matrix .matrix-col{
+  color:rgba(255,64,88,.58);
+  text-shadow:
+    1px 0 rgba(255,64,88,.42),
+    -1px 0 rgba(49,230,255,.20);
+}
+
+body.matrix-hot #matrix .matrix-col{
+  animation-duration:1.25s !important;
+}
+
 .stage{
   position:relative;
-  z-index:2;
+  z-index:3;
   width:min(850px,100%);
   min-height:min(620px,78dvh);
   display:grid;
@@ -205,6 +224,22 @@ body::after{
   transform:translate(6px,-5px) rotate(-36deg);
 }
 
+.lock.pending-denied{
+  filter:drop-shadow(0 0 22px rgba(255,64,88,.26));
+}
+
+.lock.pending-denied .lock-body,
+.lock.pending-denied .shackle{
+  border-color:var(--r);
+  box-shadow:
+    inset 0 0 25px rgba(255,64,88,.06),
+    0 0 20px rgba(255,64,88,.10);
+}
+
+.lock.pending-denied .lock-hole{
+  background:var(--r);
+}
+
 .lock.denied{
   animation:deniedShake .13s steps(2) 7;
   filter:drop-shadow(0 0 25px rgba(255,64,88,.32));
@@ -261,6 +296,25 @@ body::after{
   animation:waitBlink .62s steps(2) 3;
 }
 
+#breachScreen .wait-word{
+  font-size:clamp(24px,6vw,54px);
+  color:var(--r);
+  opacity:1;
+  animation:breachPulse .18s steps(2) infinite;
+}
+
+@keyframes breachPulse{
+  0%,60%,100%{
+    transform:none;
+    text-shadow:5px 0 var(--r),-5px 0 var(--c);
+  }
+  62%{
+    transform:translateX(8px);
+    text-shadow:9px 0 var(--r),-8px 0 var(--c);
+  }
+  78%{transform:translateX(-7px)}
+}
+
 @keyframes waitBlink{
   0%,35%{opacity:0;transform:scale(.96)}
   36%,78%{opacity:1;transform:scale(1)}
@@ -275,6 +329,113 @@ body::after{
   padding:clamp(24px,6vw,56px);
   text-align:left;
   overflow:hidden;
+  position:relative;
+}
+
+.takeover::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  background:
+    linear-gradient(90deg,
+      transparent 0 17%,
+      rgba(49,230,255,.20) 18% 20%,
+      transparent 21% 46%,
+      rgba(255,64,88,.18) 47% 50%,
+      transparent 51%);
+}
+
+#takeoverScreen.invasion .takeover{
+  animation:
+    takeoverCrash .92s steps(2) both,
+    takeoverFlicker 4.2s 1s infinite;
+}
+
+#takeoverScreen.invasion .takeover::before{
+  animation:takeoverTear .62s steps(2) 4;
+}
+
+#takeoverScreen.invasion .takeover-tag{
+  animation:takeoverTag .42s steps(2) 3;
+}
+
+#takeoverScreen.invasion h1{
+  animation:
+    takeoverTitleIn 1.05s steps(2) both,
+    titleCorrupt .22s steps(2) 9 1.05s;
+}
+
+#takeoverScreen.invasion p{
+  animation:copyRecover .72s ease both;
+}
+
+#takeoverScreen.invasion p:nth-of-type(1){animation-delay:.72s}
+#takeoverScreen.invasion p:nth-of-type(2){animation-delay:.88s}
+#takeoverScreen.invasion p:nth-of-type(3){animation-delay:1.02s}
+#takeoverScreen.invasion .action{animation:copyRecover .72s ease 1.15s both}
+
+@keyframes takeoverCrash{
+  0%{opacity:0;transform:scale(1.04) translateX(14px);filter:blur(8px) contrast(2.2)}
+  20%{opacity:.28;transform:scale(1.025) translateX(-12px)}
+  38%{opacity:.66;transform:translateX(9px);filter:blur(3px) contrast(1.8)}
+  56%{opacity:.88;transform:translateX(-7px)}
+  72%{opacity:.96;transform:translateX(4px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+
+@keyframes takeoverTear{
+  0%,40%,100%{opacity:0;transform:none}
+  42%{opacity:1;transform:translateX(8%) skewX(-7deg)}
+  58%{opacity:.5;transform:translateX(-7%) skewX(5deg)}
+  70%{opacity:0}
+}
+
+@keyframes takeoverTitleIn{
+  0%{
+    opacity:0;
+    transform:translateX(-22px);
+    clip-path:inset(0 0 88% 0);
+    text-shadow:10px 0 var(--r),-10px 0 var(--c);
+  }
+  28%{
+    opacity:.45;
+    transform:translateX(14px);
+    clip-path:inset(42% 0 22% 0);
+  }
+  48%{
+    opacity:.75;
+    transform:translateX(-9px);
+    clip-path:inset(12% 0 55% 0);
+  }
+  68%{
+    opacity:.92;
+    transform:translateX(5px);
+    clip-path:inset(0 0 0 0);
+  }
+  100%{
+    opacity:1;
+    transform:none;
+    clip-path:inset(0);
+  }
+}
+
+@keyframes takeoverTag{
+  0%,100%{opacity:1}
+  35%{opacity:.1;transform:translateX(4px)}
+  70%{opacity:.65;transform:translateX(-3px)}
+}
+
+@keyframes takeoverFlicker{
+  0%,91%,94%,100%{filter:none}
+  92%{filter:contrast(1.65) brightness(1.15)}
+  93%{transform:translateX(1px)}
+}
+
+@keyframes copyRecover{
+  from{opacity:0;transform:translateY(7px);filter:blur(2px)}
+  to{opacity:1;transform:none;filter:none}
 }
 
 .takeover-tag{
@@ -441,6 +602,10 @@ body::after{
     <div class="wait-word" id="waitWord">AGUARDE</div>
   </section>
 
+  <section class="screen" id="breachScreen">
+    <div class="wait-word" id="breachWord">&gt; CONTROLE TRANSFERIDO</div>
+  </section>
+
   <section class="screen" id="takeoverScreen">
     <div class="takeover">
       <div class="takeover-tag">controle da sessão alterado</div>
@@ -465,11 +630,11 @@ body::after{
   ============================================================
 */
 const TIMING = {
-  carregamento: 4200,
-  cadeadoFechado: 650,
-  desbloqueio: 2100,
-  negadoNaTela: 2350,
-  depoisDoAguarde: 500
+  carregamento: 5000,
+  cadeadoFechado: 800,
+  desbloqueio: 3100,
+  negadoNaTela: 3350,
+  depoisDoAguarde: 1000
 };
 
 const result = sessionStorage.getItem("phantasma_resultado");
@@ -481,6 +646,7 @@ if(result!=="ok" && result!=="erro"){
 const loadScreen = document.getElementById("loadScreen");
 const lockScreen = document.getElementById("lockScreen");
 const waitScreen = document.getElementById("waitScreen");
+const breachScreen = document.getElementById("breachScreen");
 const takeoverScreen = document.getElementById("takeoverScreen");
 
 const loaderBar = document.getElementById("loaderBar");
@@ -491,6 +657,7 @@ const lockStatus = document.getElementById("lockStatus");
 const lockMicro = document.getElementById("lockMicro");
 
 const waitWord = document.getElementById("waitWord");
+const breachWord = document.getElementById("breachWord");
 const glitchFlash = document.getElementById("glitchFlash");
 
 const gameBtn = document.getElementById("gameBtn");
@@ -502,13 +669,13 @@ const glyphs = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/[]{}";
 function buildMatrix(){
   matrix.innerHTML = "";
 
-  const count = innerWidth < 560 ? 12 : 24;
+  const count = innerWidth < 560 ? 16 : 30;
 
   for(let i=0;i<count;i++){
     const col = document.createElement("div");
     col.className = "matrix-col";
     col.style.left = `${(i/(count-1))*100}%`;
-    col.style.animationDuration = `${3 + Math.random()*4}s`;
+    col.style.animationDuration = `${2.4 + Math.random()*3.4}s`;
     col.style.animationDelay = `${-Math.random()*6}s`;
 
     let str = "";
@@ -533,7 +700,7 @@ function sound(name,volume=.35){
 }
 
 function showOnly(screen){
-  [loadScreen,lockScreen,waitScreen,takeoverScreen]
+  [loadScreen,lockScreen,waitScreen,breachScreen,takeoverScreen]
     .forEach(s=>s.classList.toggle("show",s===screen));
 }
 
@@ -569,8 +736,21 @@ requestAnimationFrame(animateLoader);
 
 function showLock(){
   showOnly(lockScreen);
-  lockStatus.textContent = "ARQUIVO BLOQUEADO";
-  lockMicro.textContent = "CHAVE DE ACESSO // VERIFICANDO";
+
+  lock.classList.remove("unlocked","denied","pending-denied");
+  lockStatus.classList.remove("denied");
+
+  if(result==="erro"){
+    lock.classList.add("pending-denied");
+    lockStatus.classList.add("denied");
+    lockStatus.textContent = "ARQUIVO BLOQUEADO";
+    lockMicro.textContent = "CHAVE RECUSADA // ACESSO RESTRITO";
+    document.body.classList.add("matrix-danger");
+  }else{
+    lockStatus.textContent = "ARQUIVO BLOQUEADO";
+    lockMicro.textContent = "CHAVE DE ACESSO // VERIFICANDO";
+  }
+
   sound("click",.18);
 
   setTimeout(()=>{
@@ -590,16 +770,33 @@ function grantAccess(){
   sound("acesso",.40);
 
   setTimeout(()=>{
+    document.body.classList.add("matrix-hot");
     glitch();
+
+    showOnly(breachScreen);
+    breachWord.textContent = "> CONTROLE TRANSFERIDO // PHANTASMA";
+    sound("glitch",.34);
+
     setTimeout(()=>{
+      glitch();
       showOnly(takeoverScreen);
-    },260);
+      takeoverScreen.classList.remove("invasion");
+      void takeoverScreen.offsetWidth;
+      takeoverScreen.classList.add("invasion");
+
+      setTimeout(()=>{
+        document.body.classList.remove("matrix-hot");
+      },1700);
+    },1050);
+
   },TIMING.desbloqueio);
 }
 
 /* ===== resposta incorreta ===== */
 function denyAccess(){
+  lock.classList.remove("pending-denied");
   lock.classList.add("denied");
+  document.body.classList.add("matrix-danger");
   lockStatus.classList.add("denied");
   lockStatus.textContent = "ACESSO NEGADO";
   lockMicro.textContent = "CHAVE RECUSADA // PERMISSÃO REVOGADA";
@@ -614,6 +811,7 @@ function denyAccess(){
       waitWord.classList.remove("blink");
 
       setTimeout(()=>{
+        document.body.classList.remove("matrix-danger");
         location.replace("erro.html");
       },TIMING.depoisDoAguarde);
 
